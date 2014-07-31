@@ -1,0 +1,3 @@
+netgen_ez_sylius_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: NetgenEzSyliusBundle:Default:index }

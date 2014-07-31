@@ -1,0 +1,19 @@
+{
+    "name": "netgen/ezsyliusbundle",
+    "description": "Bundle for eZ Publish which intgrates some Sylius features like cart ",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Netgen",
+            "homepage": "http://www.netgenlabs.com"
+        }
+    ],
+    "require": {
+        "ezsystems/ezpublish-kernel": "*"
+    },
+    "minimum-stability": "dev",
+    "target-dir": "Netgen/EzSyliusBundle",
+    "autoload": {
+        "psr-0": { "Netgen\\EzSyliusBundle": "" }
+    }
+}
