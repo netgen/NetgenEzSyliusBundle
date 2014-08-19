@@ -1,18 +1,15 @@
 parameters:
-#    netgen_ez_sylius.example.class: Netgen\EzSyliusBundle\Example
+    netgen_ez_sylius.cart_item_resolver.class: Netgen\EzSyliusBundle\Cart\ItemResolver
+    netgen_ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
 
 services:
-#    netgen_ez_sylius.example:
-#        class: %netgen_ez_sylius.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
-
      netgen_ez_sylius.cart_item_resolver:
-         class: Netgen\EzSyliusBundle\Cart\ItemResolver
+         class: %netgen_ez_sylius.cart_item_resolver.class%
          arguments:
              - @ezpublish.api.repository
 
      netgen_ez_sylius.configuration_factory:
-         class: Sylius\Bundle\ResourceBundle\Controller\Configuration
+         class: %netgen_ez_sylius.configuration_factory.class%
          factory_service: sylius.controller.configuration_factory
          factory_method: createConfiguration
          arguments:
@@ -30,6 +27,8 @@ services:
      gedmo.listener.softdeleteable:
          class: Gedmo\SoftDeleteable\SoftDeleteableListener
          tags:
-             - { name: doctrine.event_subscriber, connection: default }
+             - { name: doctrine.event_subscriber, connection: eng_repository_connection }
          calls:
              - [ setAnnotationReader, [ @annotation_reader ] ]
+
+
