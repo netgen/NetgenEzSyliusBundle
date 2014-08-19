@@ -2,7 +2,7 @@
 
 namespace Netgen\EzSyliusBundle\Entity;
 
-use Sylius\Bundle\CartBundle\Model\CartItem as BaseCartItem;
+use Sylius\Component\Cart\Model\CartItem as BaseCartItem;
 
 class CartItem extends BaseCartItem
 {
