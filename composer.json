@@ -9,7 +9,16 @@
         }
     ],
     "require": {
-        "ezsystems/ezpublish-kernel": "*"
+        "ezsystems/ezpublish-kernel": ">=2014.07",
+        "doctrine/orm": "~2.3",
+        "sylius/cart-bundle": "0.10.*@dev",
+        "sylius/order-bundle": "0.10.*@dev",
+        "sylius/resource-bundle": "0.10.*@dev",
+        "sylius/flow-bundle": "0.10.*@dev",
+        "sylius/money-bundle": "0.10.*@dev",
+        "sylius/product": "0.10.*@dev",
+        "sylius/order": "0.10.*@dev",
+        "friendsofsymfony/rest-bundle": "1.4.*@dev"
     },
     "minimum-stability": "dev",
     "target-dir": "Netgen/EzSyliusBundle",
