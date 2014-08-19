@@ -119,7 +119,7 @@ class EzProduct implements ProductInterface
         /** @var Content $product */
         $this->productContent = $contentService->loadContent( $contentId );
         /** @var Location $productLocation */
-        $this->productLocation = $locationService->loadLocation( $product->contentInfo->mainLocationId );
+        $this->productLocation = $locationService->loadLocation( $this->productContent->contentInfo->mainLocationId );
     }
 
     /**
