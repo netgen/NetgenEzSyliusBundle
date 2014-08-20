@@ -2,10 +2,9 @@
 
 namespace Netgen\EzSyliusBundle\Cart;
 
-use Sylius\Bundle\CartBundle\Model\CartItemInterface;
-use Sylius\Bundle\CartBundle\Resolver\ItemResolverInterface;
-use Sylius\Bundle\CartBundle\Resolver\ItemResolvingException;
-use Symfony\Component\HttpFoundation\Request;
+use Sylius\Component\Cart\Model\CartItemInterface;
+use Sylius\Component\Cart\Resolver\ItemResolverInterface;
+use Sylius\Component\Cart\Resolver\ItemResolvingException;
 use Netgen\EzSyliusBundle\Entity\EzProduct;
 
 class ItemResolver implements ItemResolverInterface
