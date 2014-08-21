@@ -11,6 +11,8 @@ use Sylius\Component\Variation\Model\VariantInterface as BaseVariantInterface;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\Core\FieldType\XmlText\Value as XmlTextValue;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 
 class EzProduct implements ProductInterface
 {
@@ -101,25 +103,40 @@ class EzProduct implements ProductInterface
     /**
      * Constructor.
      */
-    public function __construct()
+    public function __construct(/*ContainerInterface $container*/)
     {
         $this->attributes = new ArrayCollection();
         $this->variants = new ArrayCollection();
         $this->options = new ArrayCollection();
+        //$this->container = $container;
     }
 
     /**
      * setting the product content object from ez
      */
-    public function setEzContentAsProduct($contentId, $repository)
+    public function setEzContentAsProduct($contentId, $repository, $allowed_types_identifier)
     {
         $contentService = $repository->getContentService();
         $locationService = $repository->getLocationService();
+        $contentTypeService = $repository->getContentTypeService();
 
-        /** @var Content $product */
-        $this->productContent = $contentService->loadContent( $contentId );
-        /** @var Location $productLocation */
-        $this->productLocation = $locationService->loadLocation( $this->productContent->contentInfo->mainLocationId );
+        //get allowed type by identifier
+        $allowed_type = $contentTypeService->loadContentTypeByIdentifier($allowed_types_identifier);
+        //get product
+        $content = $contentService->loadContent( $contentId );
+        //get product content type
+        $contentType = $contentTypeService->loadContentType($content->contentInfo->contentTypeId);
+
+        //check if content type is allowed
+        if ($contentType == $allowed_type){
+            /** @var Content $product */
+            $this->productContent = $content;
+            /** @var Location $productLocation */
+            $this->productLocation = $locationService->loadLocation( $this->productContent->contentInfo->mainLocationId );
+        }
+        else{
+            throw new \Exception("Wrong content type."); // sylius ne hendla exception?
+        }
     }
 
     /**
@@ -148,6 +165,9 @@ class EzProduct implements ProductInterface
         return $this;
     }
 
+    public function getPrice (){
+        return $this->productContent->getFieldValue('price')->value*100; // (*100) sylius specific
+    }
     /**
      * {@inheritdoc}
      */
@@ -172,10 +192,10 @@ class EzProduct implements ProductInterface
     public function getDescription()
     {
         /** @var XmlTextValue $body */
-        $body = $this->productContent->getFieldValue("body");
-        $converter = $container->get( "ezpublish.fieldType.ezxmltext.converter.html5" );
-        $html5String = $converter->convert( $body->xml );
-        return $body->xml->textContent;
+        $description = $this->productContent->getFieldValue("short_description");
+        //$converter = $this->container->get( "ezpublish.fieldType.ezxmltext.converter.html5" );
+        //$html5String = $converter->convert( $description->xml );
+        return $description;
     }
 
     /**
@@ -193,7 +213,7 @@ class EzProduct implements ProductInterface
      */
     public function isAvailable()
     {
-        return new \DateTime() >= $this->productContent->contentInfo->publishedDate;
+        return new \DateTime() >= $this->productContent->getFieldValue("available_from")->value;
     }
 
     /**
@@ -201,7 +221,7 @@ class EzProduct implements ProductInterface
      */
     public function getAvailableOn()
     {
-        return $this->productContent->contentInfo->publishedDate;
+        return $this->productContent->getFieldValue("available_from")->value;
     }
 
     /**
@@ -219,7 +239,7 @@ class EzProduct implements ProductInterface
      */
     public function getMetaKeywords()
     {
-        $meta = $this->productContent->getFieldValue("metadata");
+        $meta = $this->productContent->getFieldValue("metadata")->keywords;
         return $meta;
     }
 
@@ -238,7 +258,7 @@ class EzProduct implements ProductInterface
      */
     public function getMetaDescription()
     {
-        $meta = $this->productContent->getFieldValue("metadata");
+        $meta = $this->productContent->getFieldValue("metadata")->description;
         return $meta;
     }
 
@@ -515,7 +535,7 @@ class EzProduct implements ProductInterface
      */
     public function getUpdatedAt()
     {
-        return $this->productContent->contentInfo->publishedDate;
+        return $this->productContent->contentInfo->modificationDate;
     }
 
     /**
@@ -532,7 +552,16 @@ class EzProduct implements ProductInterface
      */
     public function isDeleted()
     {
-        return null !== $this->deletedAt && new \DateTime() >= $this->deletedAt;
+        /*$trashService = $this->repository->getTrashService();
+        try{
+            $trashedItem = $trashService->loadTrashItem($this->productLocation->id);
+            return true;
+        } catch (NotFoundException $ex) {
+            return false;
+        }*/
+        //return null !== $this->deletedAt && new \DateTime() >= $this->deletedAt;
+
+        return null;
     }
 
     /**
