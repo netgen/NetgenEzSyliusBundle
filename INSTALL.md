@@ -9,6 +9,7 @@
         "sylius/flow-bundle": "0.10.*@dev",
         "sylius/product": "0.10.*@dev",
         "sylius/order": "0.10.*@dev",
+        "doctrine/orm": "~2.3",
         "friendsofsymfony/rest-bundle": "1.4.*@dev"
 
 - do
@@ -17,7 +18,7 @@ php composer.phar update
 - in src/Netgen
 git clone git@bitbucket.org:netgen/ezsyliusbundle.git
 
-- enable in ezpublish/EzPublishKernel.php
+- enable in ezpublish/EzPublishKernel.php (DoctrineBundle must be enabled AFTER Sylius):
             new Sylius\Bundle\ResourceBundle\SyliusResourceBundle(),
             new Sylius\Bundle\MoneyBundle\SyliusMoneyBundle(),
             new Sylius\Bundle\OrderBundle\SyliusOrderBundle(),
@@ -93,7 +94,8 @@ fos_rest:
         formats:
             json: true
     format_listener:
-        prefer_extension: true
+        rules:
+            - prefer_extension: true
     body_listener:
         decoders:
             json: fos_rest.decoder.json
@@ -102,4 +104,6 @@ fos_rest:
 
 
 - run:
-sudo php ezpublish/console doctrine:schema:update --dump-sql
+sudo php ezpublish/console doctrine:schema:update
+
+- import sylius_product class to eZ Publish using provided package in Resources/packages folder
