@@ -2,11 +2,13 @@ parameters:
     netgen_ez_sylius.cart_item_resolver.class: Netgen\EzSyliusBundle\Cart\ItemResolver
     netgen_ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
 
+
 services:
      netgen_ez_sylius.cart_item_resolver:
          class: %netgen_ez_sylius.cart_item_resolver.class%
          arguments:
              - @ezpublish.api.repository
+             - "ezsylius_product"
 
      netgen_ez_sylius.configuration_factory:
          class: %netgen_ez_sylius.configuration_factory.class%
