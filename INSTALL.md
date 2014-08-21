@@ -2,15 +2,16 @@
 
 - add to main composer.json
 
-        "sylius/money-bundle": "0.10.*@dev",
-        "sylius/cart-bundle": "0.10.*@dev",
-        "sylius/order-bundle": "0.10.*@dev",
-        "sylius/resource-bundle": "0.10.*@dev",
-        "sylius/flow-bundle": "0.10.*@dev",
-        "sylius/product": "0.10.*@dev",
-        "sylius/order": "0.10.*@dev",
         "doctrine/orm": "~2.3",
-        "friendsofsymfony/rest-bundle": "1.4.*@dev"
+        "sylius/core-bundle": "0.10.*@dev",
+        "friendsofsymfony/rest-bundle": "1.4.*@dev",
+        "friendsofsymfony/user-bundle": "2.0.*@dev",
+        "knplabs/gaufrette": "0.2.*@dev",
+        "knplabs/knp-gaufrette-bundle": "0.2.*@dev",
+        "doctrine/phpcr-bundle": "1.1.*",
+        "jackalope/jackalope": "1.1.3",
+        "jackalope/jackalope-doctrine-dbal": "1.1.2",
+        "symfony-cmf/routing": "1.1.0 as 1.2.0"
 
 - do
 php composer.phar update
