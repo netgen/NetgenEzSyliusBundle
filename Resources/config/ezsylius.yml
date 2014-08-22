@@ -1,0 +1,14 @@
+ezpublish:
+    system:
+        eng:
+            location_view:
+                full:
+                    ezsylius_product:
+                        template: "NetgenEzSyliusBundle:full:ezsylius_product.html.twig"
+                        match:
+                            Identifier\ContentType: [ezsylius_product]
+                block_item:
+                    ezyslius_product:
+                        template: "NetgenEzSyliusBundle:block_item:ezsylius_product.html.twig"
+                        match:
+                            Identifier\ContentType: [ezsylius_product]
