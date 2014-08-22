@@ -1,0 +1,77 @@
+{#
+    Sylius product - full view
+#}
+
+{% extends "eZDemoBundle::pagelayout.html.twig" %}
+
+{% block content %}
+
+    <section class="content-view-full">
+        <div class="class-ezsylius-product row">
+            <div class="span8">
+                <div class="attribute-header">
+                    <h1>{{ ez_render_field( content, 'name' ) }}</h1>
+                </div>
+
+                <div class="attribute-byline">
+                <span class="date">
+                    {{ ez_render_field( content,'available_from' ) }}
+                </span>
+                </div>
+
+                {% if not ez_is_field_empty( content, 'image' ) %}
+                    <div class="attribute-image full-head">
+                        {{ ez_render_field(
+                        content,
+                        'image',
+                        {
+                        'template': 'eZDemoBundle:fields:ezimage_simple.html.twig',
+                        'parameters': {'alias': 'small'}
+                        }
+                        ) }}
+                    </div>
+                {% endif %}
+
+                {% if not ez_is_field_empty( content, 'price' ) %}
+                    <div class="attribute-price">
+                        {{ 'Price'|trans~": " }}{{  ez_render_field( content, 'price' )}}
+                    </div>
+                {% endif %}
+
+                <div class="add-to-cart">
+                    <a href="{{ path('sylius_cart_item_add')~"?id="~content.contentInfo.id }}" class="btn btn-success btn-lg"><i class="icon-shopping-cart"></i> {{ 'Add to cart'|trans }}</a>
+                </div>
+
+                {% if not ez_is_field_empty( content, 'description' ) %}
+                    <div class="attribute-long">
+                        {{ ez_render_field( content, 'description' ) }}
+                    </div>
+                {% endif %}
+
+                <div class="attribute-tags">
+                    {{ ez_render_field(
+                    content,
+                    'tags',
+                    {
+                    'attr': {'class' : 'tags-wrapper'}
+                    }
+                    ) }}
+                </div>
+
+                <div class="attribute-star-rating">
+                    {{ render( controller( 'eZDemoBundle:Demo:viewStarRating', {'location': location} ) ) }}
+                </div>
+
+                <div class="attribute-socialize">
+                    {% include 'eZDemoBundle:parts:social_buttons.html.twig' %}
+                </div>
+
+                <div class="attribute-comments">
+                    {{ ez_comments_render_content( content.contentInfo ) }}
+                </div>
+
+                {{ render( controller( 'eZDemoBundle:Demo:viewTipAFriend', {'location': location} ) ) }}
+            </div>
+        </div>
+    </section>
+{% endblock %}
