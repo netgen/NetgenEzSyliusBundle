@@ -31,6 +31,10 @@ git clone git@bitbucket.org:netgen/ezsyliusbundle.git
             new JMS\SerializerBundle\JMSSerializerBundle($this),
 
 
+- add to ezpublih/config/ezpublish.yml
+imports:
+    - { resource: "@NetgenEzSyliusBundle/Resources/config/ezsylius.yml" }
+
 - add to ezpublish/config/routing.yml
 
 sylius_cart:

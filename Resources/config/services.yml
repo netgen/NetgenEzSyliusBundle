@@ -10,6 +10,12 @@ services:
              - @ezpublish.api.repository
              - "ezsylius_product"
 
+     sylius.cart_item_resolver.default:
+         class: %netgen_ez_sylius.cart_item_resolver.class%
+         arguments:
+             - @ezpublish.api.repository
+             - "ezsylius_product"
+
      netgen_ez_sylius.configuration_factory:
          class: %netgen_ez_sylius.configuration_factory.class%
          factory_service: sylius.controller.configuration_factory
@@ -33,4 +39,6 @@ services:
          calls:
              - [ setAnnotationReader, [ @annotation_reader ] ]
 
+     sylius.order_processing.inventory_handler:
+          class: Netgen\EzSyliusBundle\OrderProcessing\DummyInventoryHandler
 
