@@ -166,7 +166,7 @@ class EzProduct implements ProductInterface
     }
 
     public function getPrice (){
-        return $this->productContent->getFieldValue('price')->value*100; // (*100) sylius specific
+        return $this->productContent->getFieldValue('sylius_price')->price*100; // (*100) sylius specific
     }
     /**
      * {@inheritdoc}

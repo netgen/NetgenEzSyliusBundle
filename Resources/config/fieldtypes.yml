@@ -1,0 +1,9 @@
+parameters:
+    ezpublish.fieldType.sylius_price.class: Netgen\EzSyliusBundle\Core\FieldType\SyliusPrice\Type
+
+services:
+    ezpublish.fieldType.sylius_price:
+        class: %ezpublish.fieldType.sylius_price.class%
+        parent: ezpublish.fieldType
+        tags:
+            - {name: ezpublish.fieldType, alias: syliusprice}

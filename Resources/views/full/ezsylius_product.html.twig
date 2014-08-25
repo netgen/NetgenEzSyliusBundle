@@ -38,6 +38,12 @@
                     </div>
                 {% endif %}
 
+                {% if not ez_is_field_empty( content, 'sylius_price') %}
+                    <div class="attribute-price">
+                        {{ 'Sylius Price'|trans~": " }}{{  ez_render_field( content, 'sylius_price' )}}
+                    </div>
+                {% endif %}
+
                 <div class="add-to-cart">
                     <a href="{{ path('sylius_cart_item_add')~"?id="~content.contentInfo.id }}" class="btn btn-success btn-lg"><i class="icon-shopping-cart"></i> {{ 'Add to cart'|trans }}</a>
                 </div>

@@ -1,0 +1,8 @@
+parameters:
+    ezpublish.fieldType.sylius_price.converter.class: Netgen\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusPriceConverter
+
+services:
+    ezpublish.fieldType.sylius_price.converter:
+        class: %ezpublish.fieldType.sylius_price.converter.class%
+        tags:
+            - {name: ezpublish.storageEngine.legacy.converter, alias: syliusprice, lazy: true, callback: "::create"}

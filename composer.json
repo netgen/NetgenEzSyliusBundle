@@ -5,7 +5,8 @@
     "authors": [
         {
             "name": "Netgen",
-            "homepage": "http://www.netgenlabs.com"
+            "homepage": "http://www.netgenlabs.com",
+            "email": "info@netgen.hr"
         }
     ],
     "require": {
@@ -18,8 +19,15 @@
         "sylius/money-bundle": "0.10.*@dev",
         "sylius/product": "0.10.*@dev",
         "sylius/order": "0.10.*@dev",
-        "friendsofsymfony/rest-bundle": "1.4.*@dev"
+        "friendsofsymfony/rest-bundle": "1.4.*@dev",
+        "netgen/ngsyliusprice": "0.1"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@bitbucket.org:netgen/ngsyliusprice.git"
+        }
+    ],
     "minimum-stability": "dev",
     "target-dir": "Netgen/EzSyliusBundle",
     "autoload": {

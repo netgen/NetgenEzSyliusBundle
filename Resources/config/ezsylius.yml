@@ -12,3 +12,5 @@ ezpublish:
                         template: "NetgenEzSyliusBundle:block_item:ezsylius_product.html.twig"
                         match:
                             Identifier\ContentType: [ezsylius_product]
+            field_templates:
+                - {template: "NetgenEzSyliusBundle:fields:syliusprice.html.twig"}
