@@ -20,7 +20,7 @@
         "sylius/product": "0.10.*@dev",
         "sylius/order": "0.10.*@dev",
         "friendsofsymfony/rest-bundle": "1.4.*@dev",
-        "netgen/ngsyliusprice": "0.1"
+        "netgen/ngsyliusprice": "dev-master"
     },
     "repositories": [
         {
