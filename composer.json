@@ -22,12 +22,6 @@
         "friendsofsymfony/rest-bundle": "1.4.*@dev",
         "netgen/ngsyliusprice": "dev-master"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@bitbucket.org:netgen/ngsyliusprice.git"
-        }
-    ],
     "minimum-stability": "dev",
     "target-dir": "Netgen/EzSyliusBundle",
     "autoload": {
