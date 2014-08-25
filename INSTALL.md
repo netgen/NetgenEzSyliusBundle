@@ -14,13 +14,18 @@
         "jackalope/jackalope-doctrine-dbal": "1.1.2",
         "symfony-cmf/routing": "1.1.0 as 1.2.0",
         "winzou/state-machine-bundle": "~0.1",
-        "netgen/metadata-bundle": "0.1"
+        "netgen/metadata-bundle": "0.1",
+        "netgen/ngsyliusprice": "dev-master"
 
 
     "repositories": [
         {
             "type": "vcs",
             "url": "git@bitbucket.org:netgen/netgenmetadatabundle.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@bitbucket.org:netgen/ngsyliusprice.git"
         }
     ]
 
@@ -30,7 +35,7 @@ php composer.phar update
 - in src/Netgen
 git clone git@bitbucket.org:netgen/ezsyliusbundle.git
 
-- enable in ezpublish/EzPublishKernel.php (DoctrineBundle must be enabled AFTER Sylius):
+- enable in ezpublish/EzPublishKernel.php (existing DoctrineBundle must be enabled AFTER Sylius):
             new Sylius\Bundle\ResourceBundle\SyliusResourceBundle(),
             new Sylius\Bundle\MoneyBundle\SyliusMoneyBundle(),
             new Sylius\Bundle\OrderBundle\SyliusOrderBundle(),
@@ -49,7 +54,6 @@ git clone git@bitbucket.org:netgen/ezsyliusbundle.git
             new Sylius\Bundle\VariationBundle\SyliusVariationBundle(),
             new Sylius\Bundle\CoreBundle\SyliusCoreBundle(),
             new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
-            new DoctrineBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new winzou\Bundle\StateMachineBundle\winzouStateMachineBundle(),
             new Symfony\Cmf\Bundle\RoutingBundle\CmfRoutingBundle(),
