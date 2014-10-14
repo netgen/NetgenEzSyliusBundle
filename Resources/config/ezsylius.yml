@@ -6,11 +6,11 @@ ezpublish:
                     ezsylius_product:
                         template: "NetgenEzSyliusBundle:full:ezsylius_product.html.twig"
                         match:
-                            Identifier\ContentType: [ezsylius_product]
+                            Identifier\ContentType: [my_product]
                 block_item:
                     ezyslius_product:
                         template: "NetgenEzSyliusBundle:block_item:ezsylius_product.html.twig"
                         match:
                             Identifier\ContentType: [ezsylius_product]
             field_templates:
-                - {template: "NetgenEzSyliusBundle:fields:syliusprice.html.twig"}
+                - {template: "NetgenEzSyliusBundle:fields:syliusproduct.html.twig"}
