@@ -10,8 +10,6 @@ use eZ\Publish\SPI\FieldType\FieldStorage as BaseStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
-use eZ\Publish\API\Repository\LocationService;
-use eZ\Publish\API\Repository\URLAliasService;
 
 class SyliusStorage implements BaseStorage
 {
@@ -19,22 +17,16 @@ class SyliusStorage implements BaseStorage
     protected $manager;
     protected $sluggable_listener;
     protected $contentService;
-    protected $locationService;
-    protected $urlAliasService;
 
     public function __construct(RepositoryInterface $repository,
                                 EntityManager $manager,
                                 SluggableListener $listener,
-                                ContentService $contentService,
-                                LocationService $locationService,
-                                URLAliasService $urlAliasService)
+                                ContentService $contentService)
     {
         $this->repository = $repository;
         $this->manager = $manager;
         $this->sluggable_listener = $listener;
         $this->contentService = $contentService;
-        $this->locationService = $locationService;
-        $this->urlAliasService = $urlAliasService;
     }
 
     /**
@@ -55,6 +47,9 @@ class SyliusStorage implements BaseStorage
         $desc = $data['description'];
         $slug = $data['slug'];
         $available_on = $data['available_on'];
+        $weight = $data['weight'];
+        $height = $data['height'];
+        $width = $data['width'];
 
         //check if sylius product already exists
         $product = $this->repository->find($field->value->data['sylius_id']);
@@ -73,6 +68,13 @@ class SyliusStorage implements BaseStorage
             ->setPrice( $price )
             ->setSlug( $slug )
             ->setAvailableOn($available_on);
+
+        // set additional info
+        /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
+        $master_variant = $product->getMasterVariant();
+        $master_variant->setWeight($weight);
+        $master_variant->setHeight($height);
+        $master_variant->setHeight($width);
 
         // custom transliterator
         $this->sluggable_listener->setTransliterator(array('Netgen\EzSyliusBundle\Util\Urlizer', 'transliterate'));
@@ -109,12 +111,21 @@ class SyliusStorage implements BaseStorage
             $slug = $product->getSlug();
             $available_on = $product->getAvailableOn();
 
+            /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
+            $master_variant = $product->getMasterVariant();
+            $weight = $master_variant->getWeight();
+            $height = $master_variant->getHeight();
+            $width = $master_variant->getWidth();
+
             $field->value->externalData = array(
                 'name' => $name,
                 'price' => $price,
                 'description' => $description,
                 'slug' => $slug,
-                'available_on' => $available_on
+                'available_on' => $available_on,
+                'weight' => $weight,
+                'height' => $height,
+                'width' => $width,
             );
         }
     }

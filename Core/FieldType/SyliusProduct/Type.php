@@ -69,31 +69,46 @@ class Type extends FieldType
      */
     protected function createValueFromInput( $inputValue )
     {
-        if (is_array($inputValue))
+        if ( is_array($inputValue) )
         {
             if ( empty($inputValue['price']) || empty($inputValue['name']) )
                 return $inputValue;
 
             $inputValue = new Value($inputValue['price'], $inputValue['name'], null);
 
-            if (!empty($inputValue['description']))
+            if ( !empty($inputValue['description']) )
             {
                 $inputValue->description = $inputValue['description'];
             }
 
-            if (!empty($inputValue['sylius_id']))
+            if ( !empty($inputValue['sylius_id']) )
             {
                 $inputValue->syliusId = $inputValue['sylius_id'];
             }
 
-            if (!empty($inputValue['slug']))
+            if ( !empty($inputValue['slug']) )
             {
                 $inputValue->slug = $inputValue['slug'];
             }
 
-            if (!empty($inputValue['available_on']) && $inputValue['available_on'] instanceof \DateTime )
+            if ( !empty($inputValue['available_on']) && $inputValue['available_on'] instanceof \DateTime )
             {
                 $inputValue->available_on = $inputValue['available_on'];
+            }
+
+            if ( !empty($inputValue['weight']) )
+            {
+                $inputValue->weight = $inputValue['weight'];
+            }
+
+            if ( !empty($inputValue['height']) )
+            {
+                $inputValue->height = $inputValue['height'];
+            }
+
+            if ( !empty($inputValue['width']) )
+            {
+                $inputValue->width = $inputValue['width'];
             }
         }
 
@@ -154,6 +169,15 @@ class Type extends FieldType
         if (!empty($hash['available_on']))
             $value->available_on = $hash['available_on'];
 
+        if (!empty($hash['weight']))
+            $value->weight = $hash['weight'];
+
+        if (!empty($hash['height']))
+            $value->height = $hash['height'];
+
+        if (!empty($hash['width']))
+            $value->width = $hash['width'];
+
         return $value;
     }
 
@@ -174,7 +198,10 @@ class Type extends FieldType
                       'sylius_id' => $value->syliusId,
                       'description' => $value->description,
                       'slug' => $value->slug,
-                      'available_on' => $value->available_on);
+                      'available_on' => $value->available_on,
+                      'weight' => $value->weight,
+                      'height' => $value->height,
+                      'width' => $value->width);
     }
 
     /**
@@ -209,6 +236,9 @@ class Type extends FieldType
         $value->slug = $fieldValue->externalData['slug'];
         $value->syliusId = $fieldValue->data['sylius_id'];
         $value->available_on = $fieldValue->externalData['available_on'];
+        $value->weight = $fieldValue->externalData['weight'];
+        $value->height = $fieldValue->externalData['height'];
+        $value->width = $fieldValue->externalData['width'];
 
         return $value;
     }
@@ -239,7 +269,10 @@ class Type extends FieldType
             'price' => $value->price,
             'description' => $value->description,
             'slug' => $value->slug,
-            'available_on' => $value->available_on
+            'available_on' => $value->available_on,
+            'weight' => $value->weight,
+            'height' => $value->height,
+            'width' => $value->width
         );
     }
 

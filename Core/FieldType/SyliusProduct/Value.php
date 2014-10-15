@@ -12,6 +12,9 @@ class Value extends BaseValue
     public $slug="";
     public $description="";
     public $available_on=null;
+    public $weight = null;
+    public $height = null;
+    public $width = null;
 
     public function __construct($price = null, $name = null, $syliusId = null)
     {
@@ -36,7 +39,13 @@ class Value extends BaseValue
      */
     public function __toString()
     {
-        return (string)$this->price . '|#' . $this->name . '|#' . $this->syliusId;
+        return $this->name .'|#'.
+                $this->description .'|#'.
+                $this->price .'|#'.
+                $this->availableOn .'|#'.
+                $this->weight .'|#'.
+                $this->height .'|#'.
+                $this->width;
     }
 }
 
