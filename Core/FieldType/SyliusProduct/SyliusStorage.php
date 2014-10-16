@@ -50,6 +50,7 @@ class SyliusStorage implements BaseStorage
         $weight = $data['weight'];
         $height = $data['height'];
         $width = $data['width'];
+        $sku = $data['sku'];
 
         //check if sylius product already exists
         $product = $this->repository->find($field->value->data['sylius_id']);
@@ -72,9 +73,10 @@ class SyliusStorage implements BaseStorage
         // set additional info
         /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
         $master_variant = $product->getMasterVariant();
-        $master_variant->setWeight($weight);
-        $master_variant->setHeight($height);
-        $master_variant->setHeight($width);
+        $master_variant->setWeight($weight)
+                        ->setHeight($height)
+                        ->setWidth($width)
+                        ->setSku($sku);
 
         // custom transliterator
         $this->sluggable_listener->setTransliterator(array('Netgen\EzSyliusBundle\Util\Urlizer', 'transliterate'));
@@ -116,6 +118,7 @@ class SyliusStorage implements BaseStorage
             $weight = $master_variant->getWeight();
             $height = $master_variant->getHeight();
             $width = $master_variant->getWidth();
+            $sku = $master_variant->getSku();
 
             $field->value->externalData = array(
                 'name' => $name,
@@ -126,6 +129,7 @@ class SyliusStorage implements BaseStorage
                 'weight' => $weight,
                 'height' => $height,
                 'width' => $width,
+                'sku' => $sku
             );
         }
     }

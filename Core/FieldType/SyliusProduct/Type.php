@@ -110,6 +110,11 @@ class Type extends FieldType
             {
                 $inputValue->width = $inputValue['width'];
             }
+
+            if ( !empty($inputValue['sku']) )
+            {
+                $inputValue->sku = $inputValue['sku'];
+            }
         }
 
         return $inputValue;
@@ -178,6 +183,9 @@ class Type extends FieldType
         if (!empty($hash['width']))
             $value->width = $hash['width'];
 
+        if (!empty($hash['sku']))
+            $value->sku = $hash['sku'];
+
         return $value;
     }
 
@@ -201,7 +209,8 @@ class Type extends FieldType
                       'available_on' => $value->available_on,
                       'weight' => $value->weight,
                       'height' => $value->height,
-                      'width' => $value->width);
+                      'width' => $value->width,
+                      'sku' => $value->sku);
     }
 
     /**
@@ -239,6 +248,7 @@ class Type extends FieldType
         $value->weight = $fieldValue->externalData['weight'];
         $value->height = $fieldValue->externalData['height'];
         $value->width = $fieldValue->externalData['width'];
+        $value->sku = $fieldValue->externalData['sku'];
 
         return $value;
     }
@@ -272,7 +282,8 @@ class Type extends FieldType
             'available_on' => $value->available_on,
             'weight' => $value->weight,
             'height' => $value->height,
-            'width' => $value->width
+            'width' => $value->width,
+            'sku' => $value->sku
         );
     }
 

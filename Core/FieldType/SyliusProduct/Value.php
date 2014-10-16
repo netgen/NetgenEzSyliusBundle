@@ -15,6 +15,7 @@ class Value extends BaseValue
     public $weight = null;
     public $height = null;
     public $width = null;
+    public $sku = null;
 
     public function __construct($price = null, $name = null, $syliusId = null)
     {
@@ -45,7 +46,8 @@ class Value extends BaseValue
                 $this->availableOn .'|#'.
                 $this->weight .'|#'.
                 $this->height .'|#'.
-                $this->width;
+                $this->width .'|#'.
+                $this->sku;
     }
 }
 
