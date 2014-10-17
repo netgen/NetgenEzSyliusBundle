@@ -9,9 +9,11 @@ use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
+use eZ\Publish\SPI\FieldType\EventListener;
+use eZ\Publish\SPI\FieldType\Event;
 
 
-class Type extends FieldType
+class Type extends FieldType implements EventListener
 {
 
     /**
@@ -74,50 +76,58 @@ class Type extends FieldType
             if ( empty($inputValue['price']) || empty($inputValue['name']) )
                 return $inputValue;
 
-            $inputValue = new Value($inputValue['price'], $inputValue['name'], null);
+            //$newValue = new Value($inputValue['price'], $inputValue['name'], null);
+            $newValue = new Value();
+            $newValue->price = $inputValue['price'];
+            $newValue->name = $inputValue['name'];
 
             if ( !empty($inputValue['description']) )
             {
-                $inputValue->description = $inputValue['description'];
+                $newValue->description = $inputValue['description'];
             }
 
             if ( !empty($inputValue['sylius_id']) )
             {
-                $inputValue->syliusId = $inputValue['sylius_id'];
+                $newValue->syliusId = $inputValue['sylius_id'];
             }
 
             if ( !empty($inputValue['slug']) )
             {
-                $inputValue->slug = $inputValue['slug'];
+                $newValue->slug = $inputValue['slug'];
             }
 
             if ( !empty($inputValue['available_on']) && $inputValue['available_on'] instanceof \DateTime )
             {
-                $inputValue->available_on = $inputValue['available_on'];
+                $newValue->available_on = $inputValue['available_on'];
             }
 
             if ( !empty($inputValue['weight']) )
             {
-                $inputValue->weight = $inputValue['weight'];
+                $newValue->weight = $inputValue['weight'];
             }
 
             if ( !empty($inputValue['height']) )
             {
-                $inputValue->height = $inputValue['height'];
+                $newValue->height = $inputValue['height'];
             }
 
             if ( !empty($inputValue['width']) )
             {
-                $inputValue->width = $inputValue['width'];
+                $newValue->width = $inputValue['width'];
             }
 
             if ( !empty($inputValue['sku']) )
             {
-                $inputValue->sku = $inputValue['sku'];
+                $newValue->sku = $inputValue['sku'];
+            }
+
+            if ( !empty($inputValue['tax_category']) )
+            {
+                $newValue->tax_category = $inputValue['tax_category'];
             }
         }
 
-        return $inputValue;
+        return $newValue;
     }
 
     /**
@@ -186,7 +196,22 @@ class Type extends FieldType
         if (!empty($hash['sku']))
             $value->sku = $hash['sku'];
 
+        if (!empty($hash['tax_category']))
+            $value->tax_category = $hash['tax_category'];
+
         return $value;
+    }
+
+    /**
+     * This method is called on occurring events. Implementations can perform corresponding actions
+     *
+     * @TODO: this does not work??? we were supposed to add proper urlalias as slug here...
+     *
+     * @param \eZ\Publish\SPI\FieldType\Event $event
+     */
+    public function handleEvent(Event $event)
+    {
+        die(var_dump($event));
     }
 
     /**
@@ -210,7 +235,8 @@ class Type extends FieldType
                       'weight' => $value->weight,
                       'height' => $value->height,
                       'width' => $value->width,
-                      'sku' => $value->sku);
+                      'sku' => $value->sku,
+                      'tax_category' => $value->tax_category);
     }
 
     /**
@@ -249,6 +275,7 @@ class Type extends FieldType
         $value->height = $fieldValue->externalData['height'];
         $value->width = $fieldValue->externalData['width'];
         $value->sku = $fieldValue->externalData['sku'];
+        $value->tax_category = $fieldValue->externalData['tax_category'];
 
         return $value;
     }
@@ -283,7 +310,8 @@ class Type extends FieldType
             'weight' => $value->weight,
             'height' => $value->height,
             'width' => $value->width,
-            'sku' => $value->sku
+            'sku' => $value->sku,
+            'tax_category' => $value->tax_category
         );
     }
 

@@ -11,6 +11,6 @@ services:
 
     ezpublish.fieldType.sylius_product.externalStorage:
         class: %ezpublish.fieldType.sylius_product.externalStorage.class%
-        arguments: [ @sylius.repository.product, @sylius.manager.product, @sluggable.listener, @ezpublish.api.service.content ]
+        arguments: [ @sylius.repository.product, @sylius.manager.product, @sluggable.listener, @ezpublish.api.service.content, @sylius.repository.tax_category ]
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}

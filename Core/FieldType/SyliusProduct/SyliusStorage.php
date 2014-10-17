@@ -17,16 +17,19 @@ class SyliusStorage implements BaseStorage
     protected $manager;
     protected $sluggable_listener;
     protected $contentService;
+    protected $taxRepository;
 
     public function __construct(RepositoryInterface $repository,
                                 EntityManager $manager,
                                 SluggableListener $listener,
-                                ContentService $contentService)
+                                ContentService $contentService,
+                                RepositoryInterface $taxRepository)
     {
         $this->repository = $repository;
         $this->manager = $manager;
         $this->sluggable_listener = $listener;
         $this->contentService = $contentService;
+        $this->taxRepository = $taxRepository;
     }
 
     /**
@@ -51,11 +54,19 @@ class SyliusStorage implements BaseStorage
         $height = $data['height'];
         $width = $data['width'];
         $sku = $data['sku'];
+        $tax_category = $data['tax_category'];
+
+        if ($slug === "")
+        {
+            $slug = \Netgen\EzSyliusBundle\Util\Urlizer::urlize($name);
+        }
 
         //check if sylius product already exists
         $product = $this->repository->find($field->value->data['sylius_id']);
-        if(!$product)
-            $product = $this->repository->findOneBy( array('slug' => $slug) );
+
+        /*if(!$product) {
+            $product = $this->repository->findOneBy(array('slug' => $slug));
+        }*/
 
         if (!$product)
         {
@@ -69,6 +80,13 @@ class SyliusStorage implements BaseStorage
             ->setPrice( $price )
             ->setSlug( $slug )
             ->setAvailableOn($available_on);
+
+        // set tax category
+        if ($tax_category != '0' && !empty($tax_category))
+        {
+            $tax_category = $this->taxRepository->findOneBy(array('name' => $tax_category));
+            $product->setTaxCategory($tax_category);
+        }
 
         // set additional info
         /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
@@ -113,6 +131,10 @@ class SyliusStorage implements BaseStorage
             $slug = $product->getSlug();
             $available_on = $product->getAvailableOn();
 
+            $tax_category = "";
+            if ($product->getTaxCategory())
+                $tax_category = $product->getTaxCategory()->getName();
+
             /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
             $master_variant = $product->getMasterVariant();
             $weight = $master_variant->getWeight();
@@ -129,7 +151,8 @@ class SyliusStorage implements BaseStorage
                 'weight' => $weight,
                 'height' => $height,
                 'width' => $width,
-                'sku' => $sku
+                'sku' => $sku,
+                'tax_category' => $tax_category
             );
         }
     }
