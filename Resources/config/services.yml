@@ -1,6 +1,6 @@
 parameters:
     netgen_ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
-
+    netgen_ez_sylius.onpublish_slot.class: Netgen\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
 
 services:
 
@@ -32,4 +32,10 @@ services:
 
      sluggable.listener:
           alias: stof_doctrine_extensions.listener.sluggable
+
+     netgen_ez_sylius.onpublish_slot:
+        class: %netgen_ez_sylius.onpublish_slot.class%
+        arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product, %netgen_ez_sylius_class_identifier% ]
+        tags:
+            - { name: ezpublish.api.slot, signal: ContentService\PublishVersionSignal }
 

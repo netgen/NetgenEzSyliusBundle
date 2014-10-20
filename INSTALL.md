@@ -500,3 +500,8 @@ winzou_state_machine:
 
 - run:
 sudo php ezpublish/console doctrine:schema:update
+
+Add to parameters.yml
+netgen_ez_sylius_class_identifier: [ x ]
+
+with x being the content type id of the class with sylius_product field type
