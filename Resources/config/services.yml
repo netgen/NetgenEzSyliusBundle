@@ -1,6 +1,6 @@
 parameters:
     netgen_ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
-    netgen_ez_sylius.onpublish_slot.class: Netgen\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
+    netgen_ez_sylius.onpublish_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
 
 services:
 
@@ -28,7 +28,7 @@ services:
              - [ setAnnotationReader, [ @annotation_reader ] ]
 
      sylius.order_processing.inventory_handler:
-          class: Netgen\EzSyliusBundle\OrderProcessing\DummyInventoryHandler
+          class: Netgen\Bundle\EzSyliusBundle\OrderProcessing\DummyInventoryHandler
 
      sluggable.listener:
           alias: stof_doctrine_extensions.listener.sluggable

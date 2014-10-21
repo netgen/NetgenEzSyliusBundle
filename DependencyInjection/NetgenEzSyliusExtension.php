@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\DependencyInjection;
+namespace Netgen\Bundle\EzSyliusBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

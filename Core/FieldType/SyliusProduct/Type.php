@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct;
+namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
@@ -35,7 +35,7 @@ class Type extends FieldType
      * It will be used to generate content name and url alias if current field
      * is designated to be used in the content name/urlAlias pattern.
      *
-     * @param \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      *
      * @return integer
      */
@@ -47,7 +47,7 @@ class Type extends FieldType
     /**
      * Returns the empty value for this field type.
      *
-     * @return \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
+     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
      */
     public function getEmptyValue()
     {
@@ -57,7 +57,7 @@ class Type extends FieldType
     /**
      * Returns information for FieldValue->$sortKey relevant to the field type.
      *
-     * @param \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      *
      * @return bool
      */
@@ -71,7 +71,7 @@ class Type extends FieldType
      *
      * @param mixed $inputValue
      *
-     * @return \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value The potentially converted input value.
+     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value The potentially converted input value.
      */
     protected function createValueFromInput( $inputValue )
     {
@@ -113,7 +113,7 @@ class Type extends FieldType
      *
      * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException If the value does not match the expected structure.
      *
-     * @param \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      */
     protected function checkValueStructure( BaseValue $value )
     {
@@ -133,7 +133,7 @@ class Type extends FieldType
      *
      * @throws \Exception
      *
-     * @return \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
+     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
      */
     public function fromHash( $hash )
     {
@@ -183,7 +183,7 @@ class Type extends FieldType
     /**
      * Converts the given $value into a plain hash format
      *
-     * @param \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      *
      * @return array
      */
@@ -206,7 +206,7 @@ class Type extends FieldType
     }
 
     /**
-     * @param \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      * @return \eZ\Publish\SPI\Persistence\Content\FieldValue
      */
     public function toPersistenceValue( SPIValue $value )
@@ -222,7 +222,7 @@ class Type extends FieldType
 
     /**
      * @param \eZ\Publish\SPI\Persistence\Content\FieldValue $fieldValue
-     * @return \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
+     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
      */
     public function fromPersistenceValue( FieldValue $fieldValue )
     {
@@ -249,7 +249,7 @@ class Type extends FieldType
     /**
      * Returns hash of values to be stored in eZ database
      *
-     * @param \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      * @return array
      */
     private function ezToHash($value)
@@ -262,7 +262,7 @@ class Type extends FieldType
     /**
      * Returns hash of values to be stored in sylius database
      *
-     * @param \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      * @return array
      */
     private function syliusToHash($value)

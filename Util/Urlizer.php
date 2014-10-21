@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\Util;
+namespace Netgen\Bundle\EzSyliusBundle\Util;
 
 use Gedmo\Sluggable\Util\Urlizer as BaseUrlizer;
 

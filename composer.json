@@ -12,8 +12,8 @@
     "require": {
         "ezsystems/ezpublish-kernel": "*"
     },
-    "target-dir": "Netgen/EzSyliusBundle",
+    "target-dir": "Netgen/Bundle/EzSyliusBundle",
     "autoload": {
-        "psr-0": { "Netgen\\EzSyliusBundle": "" }
+        "psr-0": { "Netgen\\Bundle\\EzSyliusBundle": "" }
     }
 }

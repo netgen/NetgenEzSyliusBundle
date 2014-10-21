@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Netgen\EzSyliusBundle\OrderProcessing;
+namespace Netgen\Bundle\EzSyliusBundle\OrderProcessing;
 
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\OrderItemInterface;

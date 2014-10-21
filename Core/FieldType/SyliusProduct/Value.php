@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct;
+namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 

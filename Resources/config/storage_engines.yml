@@ -1,5 +1,5 @@
 parameters:
-    ezpublish.fieldType.sylius_product.converter.class: Netgen\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
+    ezpublish.fieldType.sylius_product.converter.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
 
 services:
     ezpublish.fieldType.sylius_product.converter:

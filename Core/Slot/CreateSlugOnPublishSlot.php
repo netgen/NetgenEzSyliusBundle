@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\Core\Slot;
+namespace Netgen\Bundle\EzSyliusBundle\Core\Slot;
 
 use eZ\Publish\Core\Base\ServiceContainer;
 use eZ\Publish\Core\SignalSlot\Slot as BaseSlot;

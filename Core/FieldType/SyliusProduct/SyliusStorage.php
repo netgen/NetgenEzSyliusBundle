@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct;
+namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\ORM\EntityManager;
 use Mapping\Fixture\Xml\Sluggable;
@@ -59,7 +59,7 @@ class SyliusStorage implements BaseStorage
         if ($slug === "")
         {
             $temp_name = "#tempname#" . rand(1, 1000);
-            $slug = \Netgen\EzSyliusBundle\Util\Urlizer::urlize($temp_name);
+            $slug = \Netgen\Bundle\EzSyliusBundle\Util\Urlizer::urlize($temp_name);
         }
 
         //check if sylius product already exists
@@ -98,8 +98,8 @@ class SyliusStorage implements BaseStorage
                         ->setSku($sku);
 
         // custom transliterator
-        $this->sluggable_listener->setTransliterator(array('Netgen\EzSyliusBundle\Util\Urlizer', 'transliterate'));
-        $this->sluggable_listener->setUrlizer(array('Netgen\EzSyliusBundle\Util\Urlizer', 'urlize'));
+        $this->sluggable_listener->setTransliterator(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate'));
+        $this->sluggable_listener->setUrlizer(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize'));
 
         $this->manager->persist($product);
         $this->manager->flush();
@@ -175,7 +175,7 @@ class SyliusStorage implements BaseStorage
         {
             if (in_array($field->id, $fieldIds))
             {
-                /**@var \Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value */
+                /**@var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value */
                 $value = $field->value;
                 $syliusId = $value->syliusId;
 

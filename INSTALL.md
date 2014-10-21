@@ -63,7 +63,7 @@ git clone git@bitbucket.org:netgen/ezsyliusbundle.git
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new winzou\Bundle\StateMachineBundle\winzouStateMachineBundle(),
             new Symfony\Cmf\Bundle\RoutingBundle\CmfRoutingBundle(),
-            new Netgen\EzSyliusBundle\NetgenEzSyliusBundle(),
+            new Netgen\Bundle\EzSyliusBundle\NetgenEzSyliusBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle($this),

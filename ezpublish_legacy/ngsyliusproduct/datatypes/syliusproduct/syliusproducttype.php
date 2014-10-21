@@ -288,8 +288,8 @@ class SyliusProductType extends eZDataType
 
             // custom transliterator
             $listener = $serviceContainer->get('sluggable.listener');
-            $listener->setTransliterator(array('Netgen\EzSyliusBundle\Util\Urlizer', 'transliterate'));
-            $listener->setUrlizer(array('Netgen\EzSyliusBundle\Util\Urlizer', 'urlize'));
+            $listener->setTransliterator(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate'));
+            $listener->setUrlizer(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize'));
 
             $syliusManager->persist($product);
             $syliusManager->flush();

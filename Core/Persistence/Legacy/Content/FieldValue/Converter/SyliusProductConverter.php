@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter;
+namespace Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter;
 
 use eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter;
 use eZ\Publish\Core\Persistence\Legacy\Content\StorageFieldValue;
@@ -19,7 +19,7 @@ class SyliusProductConverter implements Converter
      *
      * @note Class should instead be configured as service if it gains dependencies.
      *
-     * @return \Netgen\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
+     * @return \Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
      */
     public static function create()
     {

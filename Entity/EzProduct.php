@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\EzSyliusBundle\Entity;
+namespace Netgen\Bundle\EzSyliusBundle\Entity;
 
 use Sylius\Component\Product\Model\ProductInterface;
 use Doctrine\Common\Collections\ArrayCollection;

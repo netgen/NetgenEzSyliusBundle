@@ -1,6 +1,6 @@
 parameters:
-    ezpublish.fieldType.sylius_product.class: Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
-    ezpublish.fieldType.sylius_product.externalStorage.class: Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusStorage
+    ezpublish.fieldType.sylius_product.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
+    ezpublish.fieldType.sylius_product.externalStorage.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusStorage
 
 services:
     ezpublish.fieldType.sylius_product:
