@@ -65,10 +65,6 @@ class SyliusStorage implements BaseStorage
         //check if sylius product already exists
         $product = $this->repository->find($field->value->data['sylius_id']);
 
-        /*if(!$product) {
-            $product = $this->repository->findOneBy(array('slug' => $slug));
-        }*/
-
         if (!$product)
         {
             $product = $this->repository->createNew();

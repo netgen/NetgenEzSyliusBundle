@@ -98,6 +98,7 @@ class Type extends FieldType
                 $product->getSku(),
                 null
             );
+            $newValue->syliusId = $inputValue;
             if ($product->getTaxCategory())
                 $newValue->tax_category = $product->getTaxCategory();
 
