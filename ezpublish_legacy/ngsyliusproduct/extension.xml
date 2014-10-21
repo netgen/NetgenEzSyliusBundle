@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<software>
+    <metadata>
+        <name>eZ Sylius</name>
+        <version>//autogentag//</version>
+        <copyright>Copyright (C) 2010-2014 Netgen d.o.o. All rights reserved.</copyright>
+        <license>//EZP_LICENSE//</license>
+        <info_url>http://www.netgenlabs.com</info_url>
+    </metadata>
+</software>
