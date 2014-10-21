@@ -24,15 +24,20 @@ class CreateSlugOnPublishSlot extends BaseSlot
     /** @var  array $contentTypes */
     private $contentTypes;
 
+    /** @var  array $fieldTypeMappings */
+    private $fieldIdentifierMappings;
+
     public function __construct( Repository $repository,
                                  RepositoryInterface $syliusRepository,
                                  EntityManager $syliusManager,
-                                 $contentTypes)
+                                 $contentTypes,
+                                 $fieldIdentifierMappings)
     {
         $this->repository = $repository;
         $this->syliusRepository = $syliusRepository;
         $this->syliusManager = $syliusManager;
         $this->contentTypes = $contentTypes;
+        $this->fieldIdentifierMappings = $fieldIdentifierMappings;
     }
 
     public function receive( Signal $signal )
@@ -54,10 +59,33 @@ class CreateSlugOnPublishSlot extends BaseSlot
 
             // load sylius product from sylius id in content field type and update it's slug
             $sylius_id = $content->getFieldValue('sylius_product')->syliusId;
-            $product = $this->syliusRepository->find($sylius_id);
 
             /** @var \Sylius\Component\Core\Model\Product $product */
+            $product = $this->syliusRepository->find($sylius_id);
             $product->setSlug($locationURLAliases->path);
+            $content->getFieldValue('sylius_product')->slug = $product->getSlug();
+
+            // if name and description are empty, we will copy them from eZ content
+            $contentTypeId = $contentInfo->contentTypeId;
+            $contentTypeIdentifier = $this->repository->getContentTypeService()->loadContentType($contentTypeId)->identifier;
+
+            if (array_key_exists($contentTypeIdentifier, $this->fieldIdentifierMappings))
+            {
+                $mapping = $this->fieldIdentifierMappings[$contentTypeIdentifier];
+
+                if (!$product->getName() && array_key_exists('name', $mapping ))
+                {
+                    $contentName = $content->getFieldValue($mapping['name']);
+                    $product->setName( $contentName );
+                    $content->getFieldValue('sylius_product')->name = $product->getName();
+                }
+                if (!$product->getDescription() && array_key_exists('description', $mapping ))
+                {
+                    $contentDesc = $content->getFieldValue($mapping['description']);
+                    $product->setDescription( $contentDesc );
+                    $content->getFieldValue('sylius_product')->description = $product->getDescription();
+                }
+            }
 
             $this->syliusManager->persist($product);
             $this->syliusManager->flush();
