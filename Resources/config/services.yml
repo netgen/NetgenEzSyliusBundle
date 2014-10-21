@@ -35,7 +35,7 @@ services:
 
      netgen_ez_sylius.onpublish_slot:
         class: %netgen_ez_sylius.onpublish_slot.class%
-        arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product, %netgen_ez_sylius_class_identifier%, %netgen_ez_sylius.field_definition_identifier_mappings% ]
+        arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product, %netgen_ez_sylius_class_identifier%, %netgen_ez_sylius.field_definition_identifier_mappings%, @ezpublish.cache_pool.spi.cache.decorator ]
         tags:
             - { name: ezpublish.api.slot, signal: ContentService\PublishVersionSignal }
 

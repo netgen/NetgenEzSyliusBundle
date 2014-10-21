@@ -9,6 +9,7 @@ use eZ\Publish\Core\SignalSlot\Signal;
 use eZ\Publish\Core\SignalSlot\Signal\ContentService\PublishVersionSignal;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Doctrine\ORM\EntityManager;
+use eZ\Publish\Core\Persistence\Cache\CacheServiceDecorator;
 
 class CreateSlugOnPublishSlot extends BaseSlot
 {
@@ -27,17 +28,22 @@ class CreateSlugOnPublishSlot extends BaseSlot
     /** @var  array $fieldTypeMappings */
     private $fieldIdentifierMappings;
 
+    /** @var \eZ\Publish\Core\Persistence\Cache\CacheServiceDecorator  */
+    private $cacheClearer;
+
     public function __construct( Repository $repository,
                                  RepositoryInterface $syliusRepository,
                                  EntityManager $syliusManager,
                                  $contentTypes,
-                                 $fieldIdentifierMappings)
+                                 $fieldIdentifierMappings,
+                                 CacheServiceDecorator $cacheClearer)
     {
         $this->repository = $repository;
         $this->syliusRepository = $syliusRepository;
         $this->syliusManager = $syliusManager;
         $this->contentTypes = $contentTypes;
         $this->fieldIdentifierMappings = $fieldIdentifierMappings;
+        $this->cacheClearer = $cacheClearer;
     }
 
     public function receive( Signal $signal )
@@ -89,6 +95,8 @@ class CreateSlugOnPublishSlot extends BaseSlot
 
             $this->syliusManager->persist($product);
             $this->syliusManager->flush();
+
+            $this->cacheClearer->clear( 'content', $signal->contentId, $signal->versionNo);
         }
     }
 
