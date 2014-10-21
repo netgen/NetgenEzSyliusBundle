@@ -6,6 +6,7 @@ services:
     ezpublish.fieldType.sylius_product:
         class: %ezpublish.fieldType.sylius_product.class%
         parent: ezpublish.fieldType
+        arguments: [ @sylius.repository.product ]
         tags:
             - {name: ezpublish.fieldType, alias: syliusproduct}
 

@@ -18,7 +18,15 @@ class Value extends BaseValue
     public $sku = null;
     public $tax_category = null;
 
-    public function __construct($price = null, $name = null, $syliusId = null)
+    public function __construct($price = null,
+                                $name = null,
+                                $description = null,
+                                $availableOn = null,
+                                $weight = null,
+                                $height = null,
+                                $width = null,
+                                $sku = null,
+                                $taxCategory = null)
     {
         if($price)
         {
@@ -26,11 +34,35 @@ class Value extends BaseValue
         }
         if($name)
         {
-            $this->price = $name;
+            $this->name = $name;
         }
-        if($syliusId)
+        if($description)
         {
-            $this->price = $syliusId;
+            $this->description = $description;
+        }
+        if($availableOn)
+        {
+            $this->available_on = $availableOn;
+        }
+        if($weight)
+        {
+            $this->weight = $weight;
+        }
+        if($height)
+        {
+            $this->height = $height;
+        }
+        if($width)
+        {
+            $this->width = $width;
+        }
+        if($sku)
+        {
+            $this->sku = $sku;
+        }
+        if($taxCategory)
+        {
+            $this->tax_category = $taxCategory;
         }
     }
 

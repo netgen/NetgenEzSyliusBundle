@@ -4,17 +4,21 @@ namespace Netgen\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
-
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
-use eZ\Publish\SPI\FieldType\EventListener;
-use eZ\Publish\SPI\FieldType\Event;
 
 
-class Type extends FieldType implements EventListener
+class Type extends FieldType
 {
+    protected $syliusRepository;
+
+    public function __construct( RepositoryInterface $syliusRepository )
+    {
+        $this->syliusRepository = $syliusRepository;
+    }
 
     /**
      * Returns the field type identifier for this field type
@@ -71,63 +75,36 @@ class Type extends FieldType implements EventListener
      */
     protected function createValueFromInput( $inputValue )
     {
-        if ( is_array($inputValue) )
+        if ( $inputValue instanceof Value ){
+            return $inputValue;
+        }
+        elseif ( is_array($inputValue) )
         {
-            if ( empty($inputValue['price']) || empty($inputValue['name']) )
-                return $inputValue;
+            $newValue = $this->fromHash($inputValue);
+            return $newValue;
+        }
+        elseif ( is_int($inputValue) )
+        {
+            /** @var \Sylius\Component\Core\Model\Product $product */
+            $product = $this->syliusRepository->find($inputValue);
+            $newValue = new Value(
+                $product->getPrice(),
+                $product->getName(),
+                $product->getDescription(),
+                $product->getAvailableOn(),
+                $product->getMasterVariant()->getWeight(),
+                $product->getMasterVariant()->getHeight(),
+                $product->getMasterVariant()->getWidth(),
+                $product->getSku(),
+                null
+            );
+            if ($product->getTaxCategory())
+                $newValue->tax_category = $product->getTaxCategory();
 
-            //$newValue = new Value($inputValue['price'], $inputValue['name'], null);
-            $newValue = new Value();
-            $newValue->price = $inputValue['price'];
-            $newValue->name = $inputValue['name'];
-
-            if ( !empty($inputValue['description']) )
-            {
-                $newValue->description = $inputValue['description'];
-            }
-
-            if ( !empty($inputValue['sylius_id']) )
-            {
-                $newValue->syliusId = $inputValue['sylius_id'];
-            }
-
-            if ( !empty($inputValue['slug']) )
-            {
-                $newValue->slug = $inputValue['slug'];
-            }
-
-            if ( !empty($inputValue['available_on']) && $inputValue['available_on'] instanceof \DateTime )
-            {
-                $newValue->available_on = $inputValue['available_on'];
-            }
-
-            if ( !empty($inputValue['weight']) )
-            {
-                $newValue->weight = $inputValue['weight'];
-            }
-
-            if ( !empty($inputValue['height']) )
-            {
-                $newValue->height = $inputValue['height'];
-            }
-
-            if ( !empty($inputValue['width']) )
-            {
-                $newValue->width = $inputValue['width'];
-            }
-
-            if ( !empty($inputValue['sku']) )
-            {
-                $newValue->sku = $inputValue['sku'];
-            }
-
-            if ( !empty($inputValue['tax_category']) )
-            {
-                $newValue->tax_category = $inputValue['tax_category'];
-            }
+            return $newValue;
         }
 
-        return $newValue;
+        return $inputValue;
     }
 
     /**
@@ -159,7 +136,7 @@ class Type extends FieldType implements EventListener
      */
     public function fromHash( $hash )
     {
-        if ( !is_array( $hash ) && !empty($hash['name']) )
+        if ( !is_array( $hash ) && !empty($hash['price']) )
         {
             return new Value();
         }
@@ -200,18 +177,6 @@ class Type extends FieldType implements EventListener
             $value->tax_category = $hash['tax_category'];
 
         return $value;
-    }
-
-    /**
-     * This method is called on occurring events. Implementations can perform corresponding actions
-     *
-     * @TODO: this does not work??? we were supposed to add proper urlalias as slug here...
-     *
-     * @param \eZ\Publish\SPI\FieldType\Event $event
-     */
-    public function handleEvent(Event $event)
-    {
-        die(var_dump($event));
     }
 
     /**

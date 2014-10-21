@@ -58,7 +58,8 @@ class SyliusStorage implements BaseStorage
 
         if ($slug === "")
         {
-            $slug = \Netgen\EzSyliusBundle\Util\Urlizer::urlize($name);
+            $temp_name = "#tempname#" . rand(1, 1000);
+            $slug = \Netgen\EzSyliusBundle\Util\Urlizer::urlize($temp_name);
         }
 
         //check if sylius product already exists
@@ -77,9 +78,13 @@ class SyliusStorage implements BaseStorage
         $product
             ->setName( $name )
             ->setDescription( $desc )
-            ->setPrice( $price )
-            ->setSlug( $slug )
-            ->setAvailableOn($available_on);
+            ->setPrice( $price );
+
+        if ($slug)
+            $product->setSlug($slug);
+
+        if ($available_on)
+            $product->setAvailableOn($available_on);
 
         // set tax category
         if ($tax_category != '0' && !empty($tax_category))
