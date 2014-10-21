@@ -20,13 +20,6 @@ services:
          calls:
              - [setContainer, [@service_container]]
 
-     gedmo.listener.softdeleteable:
-         class: Gedmo\SoftDeleteable\SoftDeleteableListener
-         tags:
-             - { name: doctrine.event_subscriber, connection: eng_repository_connection }
-         calls:
-             - [ setAnnotationReader, [ @annotation_reader ] ]
-
      sylius.order_processing.inventory_handler:
           class: Netgen\Bundle\EzSyliusBundle\OrderProcessing\DummyInventoryHandler
 
