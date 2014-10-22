@@ -108,7 +108,7 @@ class SyliusProductType extends eZDataType
         // We have to delete product from sylius database
         $syliusId = $contentObjectAttribute->content()->sylius_id();
 
-        if (!empty($syliusId) && !($version))
+        if ( !empty($syliusId) )
         {
             $serviceContainer = ezpKernel::instance()->getServiceContainer();
             $syliusRepository = $serviceContainer->get('sylius.repository.product');
@@ -119,6 +119,46 @@ class SyliusProductType extends eZDataType
                  $syliusManager->remove($product);
                  $syliusManager->flush();
              }
+        }
+    }
+
+    /**
+     * The object is being moved to trash, do any necessary changes to the attribute.
+     * Set sylius product to deleted
+     *
+     * @param eZContentObjectAttribute $contentObjectAttribute
+     * @param eZContentObjectVersion $version
+     */
+    function trashStoredObjectAttribute( $contentObjectAttribute, $version = null )
+    {
+        $this->deleteStoredObjectAttribute( $contentObjectAttribute );
+    }
+
+    /**
+     * Restores $contentObjectAttribute
+     *
+     * @param eZContentObjectAttribute $contentObjectAttribute
+     */
+    public function restoreTrashedObjectAttribute( $contentObjectAttribute )
+    {
+        $syliusId = $contentObjectAttribute->content()->sylius_id();
+
+        if ( !empty($syliusId) )
+        {
+            $serviceContainer = ezpKernel::instance()->getServiceContainer();
+            /** @var \Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductRepository $syliusRepository */
+            $syliusRepository = $serviceContainer->get('sylius.repository.product');
+            $syliusManager = $serviceContainer->get('sylius.manager.product');
+
+            /** @var \Sylius\Component\Core\Model\Product $product */
+            $product = $syliusRepository->findForDetailsPage($syliusId); // to get deleted product
+
+            if($product) {
+                $product->setDeletedAt(null);
+                $product->getMasterVariant()->setDeletedAt(null);
+                $syliusManager->persist($product);
+                $syliusManager->flush();
+            }
         }
     }
 
