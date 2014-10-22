@@ -118,12 +118,60 @@ class Type extends FieldType
      */
     protected function checkValueStructure( BaseValue $value )
     {
-        if (!is_int($value->price) && $value->price < 0)
+        if ( !is_int($value->price) && $value->price < 0 )
         {
             throw new InvalidArgumentType(
                 '$value->price',
                 'integer',
                 $value->price);
+        }
+        elseif( !is_string($value->name) )
+        {
+            throw new InvalidArgumentType(
+                '$value->name',
+                'string',
+                $value->name
+            );
+        }
+        elseif( !is_string($value->description) )
+        {
+            throw new InvalidArgumentType(
+                '$value->description',
+                'string',
+                $value->description
+            );
+        }
+        elseif( !is_numeric($value->height) && $value->height !== null )
+        {
+            throw new InvalidArgumentType(
+                '$value->height',
+                'integer',
+                $value->height
+            );
+        }
+        elseif( !is_numeric($value->weight) && $value->weight !== null )
+        {
+            throw new InvalidArgumentType(
+                '$value->weight',
+                'integer',
+                $value->weight
+            );
+        }
+        elseif( !is_numeric($value->width) && $value->width !== null )
+        {
+            throw new InvalidArgumentType(
+                '$value->width',
+                'integer',
+                $value->width
+            );
+        }
+        elseif( !is_numeric($value->depth) && $value->depth !== null )
+        {
+            throw new InvalidArgumentType(
+                '$value->depth',
+                'integer',
+                $value->depth
+            );
         }
     }
 
