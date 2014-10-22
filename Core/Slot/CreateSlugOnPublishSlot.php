@@ -57,8 +57,10 @@ class CreateSlugOnPublishSlot extends BaseSlot
         $content = $this->repository->getContentService()->loadContent( $signal->contentId, null, $signal->versionNo );
 
         $contentInfo = $this->repository->getContentService()->loadContentInfo( $signal->contentId );
+        $contentTypeId = $contentInfo->contentTypeId;
+        $contentTypeIdentifier = $this->repository->getContentTypeService()->loadContentType($contentTypeId)->identifier;
 
-        if (in_array($contentInfo->contentTypeId, $this->contentTypes)) {
+        if (in_array($contentTypeIdentifier, $this->contentTypes)) {
             $location = $this->repository->getLocationService()->loadLocation($contentInfo->mainLocationId);
 
             $locationURLAliases = $this->repository->getURLAliasService()->reverseLookup($location);

@@ -19,6 +19,18 @@ class Value extends BaseValue
     public $sku = null;
     public $tax_category = null;
 
+    /**
+     * @param integer|null $price
+     * @param string|null $name
+     * @param string|null $description
+     * @param \DateTime|null $availableOn
+     * @param integer|null $weight
+     * @param integer|null $height
+     * @param integer|null $width
+     * @param integer|null $depth
+     * @param string|null $sku
+     * @param integer|null $taxCategory
+     */
     public function __construct($price = null,
                                 $name = null,
                                 $description = null,

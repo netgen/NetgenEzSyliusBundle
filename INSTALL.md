@@ -502,8 +502,8 @@ winzou_state_machine:
 sudo php ezpublish/console doctrine:schema:update
 
 Add to parameters.yml:
-    netgen_ez_sylius_class_identifier: [ contentTypeId ]
-with contentTypeId being the content type id of the class with sylius_product field type
+    netgen_ez_sylius_class_identifier: [ contentTypeIdentifier1, contentTypeIdentifier2 ]
+with contentTypeId being the content type identifier of the class with sylius_product field type
 
     netgen_ez_sylius.field_definition_identifier_mappings:
         [name of the class]:
