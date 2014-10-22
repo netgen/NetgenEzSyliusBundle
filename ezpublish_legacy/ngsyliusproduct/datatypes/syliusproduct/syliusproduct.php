@@ -23,6 +23,8 @@ class SyliusProduct
 
     private $width = null;
 
+    private $depth = null;
+
     private $sku = null;
 
     private $tax_category = null;
@@ -51,6 +53,7 @@ class SyliusProduct
                       'weight',
                       'height',
                       'width',
+                      'depth',
                       'sku',
                       'tax_category');
     }
@@ -111,6 +114,7 @@ class SyliusProduct
                $this->weight() .'|#'.
                $this->height() .'|#'.
                $this->width() .'|#'.
+               $this->depth() .'|#'.
                $this->sku() .'|#'.
                $this->tax_category();
     }
@@ -204,6 +208,11 @@ class SyliusProduct
             case 'width' :
             {
                 return $this->width();
+            } break;
+
+            case 'depth' :
+            {
+                return $this->depth();
             } break;
 
             case 'sku' :
@@ -366,6 +375,16 @@ class SyliusProduct
     function setWidth($width)
     {
         $this->width = $width;
+    }
+
+    function depth()
+    {
+        return $this->depth;
+    }
+
+    function setDepth($depth)
+    {
+        $this->depth = $depth;
     }
 
     function sku()

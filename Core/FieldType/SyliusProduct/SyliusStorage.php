@@ -53,6 +53,7 @@ class SyliusStorage implements BaseStorage
         $weight = $data['weight'];
         $height = $data['height'];
         $width = $data['width'];
+        $depth = $data['depth'];
         $sku = $data['sku'];
         $tax_category = $data['tax_category'];
 
@@ -95,6 +96,7 @@ class SyliusStorage implements BaseStorage
         $master_variant->setWeight($weight)
                         ->setHeight($height)
                         ->setWidth($width)
+                        ->setDepth($depth)
                         ->setSku($sku);
 
         // custom transliterator
@@ -141,6 +143,7 @@ class SyliusStorage implements BaseStorage
             $weight = $master_variant->getWeight();
             $height = $master_variant->getHeight();
             $width = $master_variant->getWidth();
+            $depth = $master_variant->getDepth();
             $sku = $master_variant->getSku();
 
             $field->value->externalData = array(
@@ -152,6 +155,7 @@ class SyliusStorage implements BaseStorage
                 'weight' => $weight,
                 'height' => $height,
                 'width' => $width,
+                'depth' => $depth,
                 'sku' => $sku,
                 'tax_category' => $tax_category
             );

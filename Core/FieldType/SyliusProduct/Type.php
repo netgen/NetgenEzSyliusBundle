@@ -95,6 +95,7 @@ class Type extends FieldType
                 $product->getMasterVariant()->getWeight(),
                 $product->getMasterVariant()->getHeight(),
                 $product->getMasterVariant()->getWidth(),
+                $product->getMasterVariant()->getDepth(),
                 $product->getSku(),
                 null
             );
@@ -171,6 +172,9 @@ class Type extends FieldType
         if (!empty($hash['width']))
             $value->width = $hash['width'];
 
+        if (!empty($hash['depth']))
+            $value->depth = $hash['depth'];
+
         if (!empty($hash['sku']))
             $value->sku = $hash['sku'];
 
@@ -201,6 +205,7 @@ class Type extends FieldType
                       'weight' => $value->weight,
                       'height' => $value->height,
                       'width' => $value->width,
+                      'depth' => $value->depth,
                       'sku' => $value->sku,
                       'tax_category' => $value->tax_category);
     }
@@ -240,6 +245,7 @@ class Type extends FieldType
         $value->weight = $fieldValue->externalData['weight'];
         $value->height = $fieldValue->externalData['height'];
         $value->width = $fieldValue->externalData['width'];
+        $value->depth = $fieldValue->externalData['depth'];
         $value->sku = $fieldValue->externalData['sku'];
         $value->tax_category = $fieldValue->externalData['tax_category'];
 
@@ -276,6 +282,7 @@ class Type extends FieldType
             'weight' => $value->weight,
             'height' => $value->height,
             'width' => $value->width,
+            'depth' => $value->depth,
             'sku' => $value->sku,
             'tax_category' => $value->tax_category
         );

@@ -185,6 +185,16 @@
                    value="{$attribute.content.width}" />
         </td>
     </tr>
+    <tr>
+        <td>
+            <label for="input_depth-{$attribute.id}">{'Depth'|i18n( 'design/standard/content/datatype/syliusproduct' )}:</label>
+            <input name="{$attribute_base}_data_depth_{$attribute.id}"
+                   class="input_depth"
+                   id="input_depth-{$attribute.id}"
+                   type="text"
+                   value="{$attribute.content.depth}" />
+        </td>
+    </tr>
     </tbody>
 
 </table>

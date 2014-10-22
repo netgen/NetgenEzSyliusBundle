@@ -19,6 +19,17 @@ class SyliusProductType extends eZDataType
     */
     function initializeObjectAttribute( $contentObjectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
+        /*$serviceContainer = ezpKernel::instance()->getServiceContainer();
+        $syliusRepository = $serviceContainer->get('sylius.repository.product');
+        $syliusManager = $serviceContainer->get('sylius.manager.product');
+
+        /** @var \Sylius\Component\Core\Model\Product $product */
+        /*$product = $syliusRepository->find(126);
+        $product->setVariants($product->getMasterVariant());
+        die(var_dump($product->getAvailableVariants()));
+        if($product) {
+        }
+        die();*/
     }
 
     /**
@@ -108,7 +119,7 @@ class SyliusProductType extends eZDataType
         // We have to delete product from sylius database
         $syliusId = $contentObjectAttribute->content()->sylius_id();
 
-        if ( !empty($syliusId) )
+        if ( !empty($syliusId) && !$version )
         {
             $serviceContainer = ezpKernel::instance()->getServiceContainer();
             $syliusRepository = $serviceContainer->get('sylius.repository.product');
@@ -261,6 +272,14 @@ class SyliusProductType extends eZDataType
                 $width = $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id"));
             }
 
+            // depth
+            $depth = null;
+            if ($http->hasPostVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) &&
+                $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) != ""
+            ) {
+                $depth = $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id"));
+            }
+
             // sku
             $sku = null;
             if ($http->hasPostVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) &&
@@ -314,6 +333,7 @@ class SyliusProductType extends eZDataType
             $master_variant->setWeight($weight)
                 ->setHeight($height)
                 ->setWidth($width)
+                ->setDepth($depth)
                 ->setSku($sku);
 
             // custom transliterator
@@ -333,7 +353,7 @@ class SyliusProductType extends eZDataType
             }
             $contentObjectAttribute->store();
         }
-        elseif ($http->hasPostVariable($base . "_data_unlink_" . $contentObjectAttribute->attribute("id")) &&
+        /*elseif ($http->hasPostVariable($base . "_data_unlink_" . $contentObjectAttribute->attribute("id")) &&
                 $http->postVariable($base . "_data_unlink_" . $contentObjectAttribute->attribute("id")) == 'on')
         {
            // delete sylius_id
@@ -353,7 +373,7 @@ class SyliusProductType extends eZDataType
                 $syliusManager->remove($product);
                 $syliusManager->flush();
             }
-        }
+        }*/
     }
 
     /**
@@ -386,6 +406,7 @@ class SyliusProductType extends eZDataType
         $sylius_product->setWeight( $product->getMasterVariant()->getWeight() );
         $sylius_product->setHeight( $product->getMasterVariant()->getHeight() );
         $sylius_product->setWidth( $product->getMasterVariant()->getWidth() );
+        $sylius_product->setDepth( $product->getMasterVariant()->getDepth() );
         $sylius_product->setSku( $product->getMasterVariant()->getSku() );
 
         return $sylius_product;

@@ -15,6 +15,7 @@ class Value extends BaseValue
     public $weight = null;
     public $height = null;
     public $width = null;
+    public $depth = null;
     public $sku = null;
     public $tax_category = null;
 
@@ -25,6 +26,7 @@ class Value extends BaseValue
                                 $weight = null,
                                 $height = null,
                                 $width = null,
+                                $depth = null,
                                 $sku = null,
                                 $taxCategory = null)
     {
@@ -56,6 +58,10 @@ class Value extends BaseValue
         {
             $this->width = $width;
         }
+        if($depth)
+        {
+            $this->depth = $depth;
+        }
         if($sku)
         {
             $this->sku = $sku;
@@ -80,6 +86,7 @@ class Value extends BaseValue
                 $this->weight .'|#'.
                 $this->height .'|#'.
                 $this->width .'|#'.
+                $this->depth .'|#'.
                 $this->sku .'|#'.
                 $this->tax_category;
     }
