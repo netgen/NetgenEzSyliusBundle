@@ -142,10 +142,7 @@ class SyliusProduct
             return;
         }
 
-        if ($attribute->content()->sylius_id())
-        {
-            $attribute->setAttribute('data_int', $attribute->content()->sylius_id());
-        }
+        $attribute->setAttribute('data_int', $attribute->content()->sylius_id());
     }
 
     /**

@@ -3,7 +3,14 @@
 {def $taxes = fetch('sylius', 'tax_categories')}
 {def $products = fetch('sylius', 'products')}
 
+{if $attribute.has_content}
+    <input type="hidden"
+           name="{$attribute_base}_data_sylius_id_{$attribute.id}"
+            value="{$attribute.content.sylius_id}" />
+{/if}
+
 <table class="list" width="100%" cellspacing="0" cellpadding="0" border="0">
+    {* disabled for now - no need for this in current use-case
     <tbody id="existing_product-{$attribute_id}">
     <tr>
         <td>
@@ -26,7 +33,26 @@
         </td>
     </tr>
     </tbody>
-    <tbody id="main_data-{$attribute.id}" style="display: none">
+    *}
+    <tr>
+        <th>
+            {'Sylius id'|i18n( 'design/standard/content/datatype/syliusproduct' )}:
+            {if $attribute.has_content}
+                {$attribute.content.sylius_id}
+            {else}
+                {'This object is not linked to any Sylius products'|i18n( 'design/standard/content/datatype/syliusproduct' )}.
+            {/if}
+            {*
+            {'Remove'|i18n( 'design/standard/content/datatype/syliusproduct' )}
+            <input name="{$attribute_base}_data_unlink_{$attribute.id}"
+                   class="checkbox_unlink"
+                   id="checkbox_unlink-{$attribute.id}"
+                   type="checkbox"
+                    {if $attribute.has_content|eq(false())}disabled{/if} />
+            *}
+        </th>
+    </tr>
+    <tbody id="main_data-{$attribute.id}">
     <tr>
         <td>
             <label for="input_name-{$attribute.id}">{'Name'|i18n( 'design/standard/content/datatype/syliusproduct' )}:</label>
@@ -39,7 +65,7 @@
             <input name="{$attribute_base}_data_ez_name_{$attribute.id}"
                    class="checkbox_name"
                    id="checkbox_name-{$attribute.id}"
-                   type="checkbox"/>({'Use eZ data'|i18n( 'design/standard/content/datatype/syliusproduct' )})
+                   type="checkbox"/>{'Use eZ data'|i18n( 'design/standard/content/datatype/syliusproduct' )}
         </td>
     </tr>
     <tr>
@@ -54,7 +80,7 @@
             <input name="{$attribute_base}_data_ez_desc_{$attribute.id}"
                    class="checkbox_desc"
                    id="checkbox_desc-{$attribute.id}"
-                   type="checkbox"/>({'Use eZ data'|i18n( 'design/standard/content/datatype/syliusproduct' )})
+                   type="checkbox"/>{'Use eZ data'|i18n( 'design/standard/content/datatype/syliusproduct' )}
         </td>
     </tr>
     <tr>
@@ -113,13 +139,13 @@
                    type="checkbox"/>({'Use current time'|i18n( 'design/standard/content/datatype/syliusproduct' )})
         </td>
     </tr>
-    <tr>
+    {*<tr>
         <td>
             <a class="additional-info" id="additionalinfo-{$attribute.id}">Additional info</a>
         </td>
-    </tr>
+    </tr>*}
     </tbody>
-    <tbody id="additional_data-{$attribute.id}" style="display: none">
+    <tbody id="additional_data-{$attribute.id}" >
     <tr>
         <td>
             <label for="{$attribute_base}_data_sku_{$attribute.id}">{'SKU'|i18n( 'design/standard/content/datatype/syliusproduct' )}:</label>
@@ -171,8 +197,8 @@
             var attribute_id = {/literal}"{$attribute.id}"{literal};
             var datetime = {/literal}"{$attribute.content.available_on}"{literal};
 
-            $("#main_data-"+attribute_id+" input").prop("disabled", true);
-            $("#input_desc-"+attribute_id).prop("disabled", true);
+            //$("#main_data-"+attribute_id+" input").prop("disabled", true);
+            //$("#input_desc-"+attribute_id).prop("disabled", true);
 
             if (datetime) {
                 datetime = datetime.split(' ');
@@ -192,9 +218,9 @@
                 attr_id = attr_id.split('-')[1];
 
                 if (this.checked) {
-                    $("#input_name-" + attr_id).attr('disabled', true);
+                    $("#input_name-" + attr_id).attr('disabled', true).hide();
                 }else {
-                    $("#input_name-" + attr_id).attr('disabled', false);
+                    $("#input_name-" + attr_id).attr('disabled', false).show();
                 }
             });
 
@@ -203,9 +229,9 @@
                 attr_id = attr_id.split('-')[1];
 
                 if (this.checked) {
-                    $("#input_desc-" + attr_id).attr('disabled', true);
+                    $("#input_desc-" + attr_id).attr('disabled', true).hide();
                 }else {
-                    $("#input_desc-" + attr_id).attr('disabled', false);
+                    $("#input_desc-" + attr_id).attr('disabled', false).show();
                 }
             });
 
@@ -235,6 +261,24 @@
                 }
             });
 
+            $(".checkbox_unlink").click(function() {
+                var attr_id = $(this).attr('id');
+                attr_id = attr_id.split('-')[1];
+
+                if (this.checked) {
+                    $("#main_data-"+attribute_id+" input").prop("disabled", true);
+                    $("#main_data-"+attribute_id+" select").prop("disabled", true);
+                    $("#additional_data-"+attribute_id+" input").prop("disabled", true);
+                    $("#input_desc-"+attribute_id).prop("disabled", true);
+                }
+                else{
+                    $("#main_data-"+attribute_id+" input").prop("disabled", false);
+                    $("#main_data-"+attribute_id+" select").prop("disabled", false);
+                    $("#additional_data-"+attribute_id+" input").prop("disabled", false);
+                    $("#input_desc-"+attribute_id).prop("disabled", false);
+                }
+            });
+
             $('#additionalinfo-'+attribute_id).click(function(event) {
                 event.preventDefault();
                 var id = $(this).attr('id');
@@ -242,7 +286,7 @@
                 $('#additional_data-'+id).toggle();
             });
 
-            $('.new-product').click(function(event) {
+            /*$('.new-product').click(function(event) {
                 event.preventDefault();
                 var id = $(this).attr('id');
                 id = id.split('-')[1];
@@ -262,7 +306,7 @@
                 $("#additional_data-"+attribute_id+" input").prop("disabled", true);
                 $("#input_desc-"+attribute_id).prop("disabled", true);
                 //$('#main_data-'+id).toggle();
-            });
+            });*/
         })
     </script>
 {/literal}

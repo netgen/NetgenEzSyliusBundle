@@ -19,22 +19,6 @@ class SyliusProductType extends eZDataType
     */
     function initializeObjectAttribute( $contentObjectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
-        /*if ( $currentVersion != false )
-        {
-            $dataPrice = $originalContentObjectAttribute->attribute( "sort_key_int" );
-            $dataName = $originalContentObjectAttribute->attribute( "sort_key_string" );
-            $dataId = $originalContentObjectAttribute->attribute( "data_int" );
-
-            // store attribute values
-            $contentObjectAttribute->setAttribute( "sort_key_int", $dataPrice );
-            $contentObjectAttribute->setAttribute( "sort_key_string", $dataName );
-            $contentObjectAttribute->setAttribute( "data_int", $dataId );
-        }
-        else
-        {
-            // default values
-            $contentObjectAttribute->setAttribute( "data_int", 0 );
-        }*/
     }
 
     /**
@@ -48,6 +32,7 @@ class SyliusProductType extends eZDataType
     function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
         //if existing product is set
+        /* removed because not needed by current use-case
         if ( $http->hasPostVariable($base . "_data_product_" . $contentObjectAttribute->attribute("id")))
         {
             $product_id = $http->postVariable($base . "_data_product_" . $contentObjectAttribute->attribute("id"));
@@ -56,7 +41,7 @@ class SyliusProductType extends eZDataType
             $serviceContainer = ezpKernel::instance()->getServiceContainer();
             $syliusRepository = $serviceContainer->get('sylius.repository.product');
             /** @var \Sylius\Component\Core\Model\Product $product */
-            $product = $syliusRepository->find($product_id);
+            /*$product = $syliusRepository->find($product_id);
 
             $sylius_product = new SyliusProduct();
             $sylius_product->setSyliusId($product_id);
@@ -73,7 +58,9 @@ class SyliusProductType extends eZDataType
             $contentObjectAttribute->setContent($sylius_product);
 
             return true;
-        }
+        }*/
+
+        $sylius_product = new SyliusProduct();
 
         if ( $http->hasPostVariable( $base . "_data_integer_" . $contentObjectAttribute->attribute( "id" )) )
         {
@@ -81,14 +68,18 @@ class SyliusProductType extends eZDataType
             $dataPrice = trim( $dataPrice ) != '' ? $dataPrice : null;
             $dataPrice = str_replace(" ", "", $dataPrice);
 
-            $sylius_product = new SyliusProduct();
             $sylius_product->createFromStrings( $dataPrice );
             $contentObjectAttribute->setContent($sylius_product);
+        }
+        if ( $http->hasPostVariable( $base . "_data_sylius_id_" . $contentObjectAttribute->attribute( "id" )) )
+        {
+            $dataId = $http->postVariable( $base . "_data_sylius_id_" . $contentObjectAttribute->attribute( "id" ) );
 
-            return true;
+            $sylius_product->setSyliusId($dataId);
+            $contentObjectAttribute->setContent($sylius_product);
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -130,6 +121,7 @@ class SyliusProductType extends eZDataType
              }
         }
     }
+
 
     /**
      * Stores additional data on publish and creates sylius product
@@ -199,7 +191,6 @@ class SyliusProductType extends eZDataType
                 $minute = $http->postVariable($base . "_data_available_min_" . $contentObjectAttribute->attribute("id"));
 
                 $availableDate = DateTime::createFromFormat('d-m-Y-H-i', $day . '-' . $month . '-' . $year . '-' . $hour . '-' . $minute);
-                //$availableDateTS = $availableDate->getTimestamp();
             }
 
             // price
@@ -253,7 +244,6 @@ class SyliusProductType extends eZDataType
 
             // check if sylius product already exists
             $sylius_id = $contentObjectAttribute->content()->sylius_id();
-            //$product = $syliusRepository->findOneBy(array('slug' => $url_alias ));
             if ($sylius_id) {
                 $product = $syliusRepository->find($sylius_id);
             } else {
@@ -295,11 +285,34 @@ class SyliusProductType extends eZDataType
             $syliusManager->flush();
 
             // fetch product again to get id
-            $product = $syliusRepository->findOneBy(array('slug' => $url_alias));
-            $productId = $product->getId();
-            $contentObjectAttribute->content()->setSyliusId($productId);
-
+            if (!$sylius_id)
+            {
+                $product = $syliusRepository->findOneBy(array('slug' => $url_alias));
+                $productId = $product->getId();
+                $contentObjectAttribute->content()->setSyliusId($productId);
+            }
             $contentObjectAttribute->store();
+        }
+        elseif ($http->hasPostVariable($base . "_data_unlink_" . $contentObjectAttribute->attribute("id")) &&
+                $http->postVariable($base . "_data_unlink_" . $contentObjectAttribute->attribute("id")) == 'on')
+        {
+           // delete sylius_id
+            $oldId = $contentObjectAttribute->content()->sylius_id();
+            $contentObjectAttribute->content()->setSyliusId(null);
+
+            $contentObjectAttribute->store($contentObjectAttribute);
+
+            // delete sylius product
+            $serviceContainer = ezpKernel::instance()->getServiceContainer();
+            $syliusRepository = $serviceContainer->get('sylius.repository.product');
+            $syliusManager = $serviceContainer->get('sylius.manager.product');
+
+            $product = $syliusRepository->find($oldId);
+
+            if($product) {
+                $syliusManager->remove($product);
+                $syliusManager->flush();
+            }
         }
     }
 
