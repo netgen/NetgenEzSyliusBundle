@@ -415,7 +415,7 @@ class SyliusProductType extends eZDataType
     /**
      * Validates the input and returns true if the input was valid for this datatype
      *
-     * TODO: validate weight, height, width, tax category
+     * TODO: validate tax category
      *
      * @param eZHTTPTool $http
      * @param string $base
@@ -427,12 +427,13 @@ class SyliusProductType extends eZDataType
         if ( $http->hasPostVariable( $base . '_data_integer_' . $contentObjectAttribute->attribute( 'id' )) )
         {
             // validate name
-            $dataName = $http->postVariable( $base . "_data_string_" . $contentObjectAttribute->attribute( "id" ) );
-            $useEZ = $http->postVariable( $base."_data_ez_name_". $contentObjectAttribute->attribute( "id" ) );
-            if ( !$useEZ && strlen( $dataName ) == 0 )
-            {
-                $contentObjectAttribute->setValidationError( ezpI18n::tr( 'kernel/classes/datatypes', 'Name required.' ) );
-                return eZInputValidator::STATE_INVALID;
+            if ($http->hasPostVariable( $base . '_data_string_' . $contentObjectAttribute->attribute( 'id' ))) {
+                $dataName = $http->postVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"));
+                $useEZ = $http->postVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id"));
+                if (!$useEZ && strlen($dataName) == 0) {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Name required.'));
+                    return eZInputValidator::STATE_INVALID;
+                }
             }
 
             // validate price
@@ -443,12 +444,13 @@ class SyliusProductType extends eZDataType
             }
 
             // validate description
-            $dataDesc = $http->postVariable( $base . "_data_desc_" . $contentObjectAttribute->attribute( "id" ) );
-            $useEZDesc = $http->postVariable( $base."_data_ez_desc_". $contentObjectAttribute->attribute( "id" ) );
-            if ( !$useEZDesc && strlen( $dataDesc ) == 0 )
-            {
-                $contentObjectAttribute->setValidationError( ezpI18n::tr( 'kernel/classes/datatypes', 'Description required.' ) );
-                return eZInputValidator::STATE_INVALID;
+            if ( $http->hasPostVariable( $base . '_data_desc_' . $contentObjectAttribute->attribute( 'id' )) ) {
+                $dataDesc = $http->postVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"));
+                $useEZDesc = $http->postVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id"));
+                if (!$useEZDesc && strlen($dataDesc) == 0) {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Description required.'));
+                    return eZInputValidator::STATE_INVALID;
+                }
             }
 
             // validate date
@@ -474,16 +476,43 @@ class SyliusProductType extends eZDataType
                     $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Invalid date.'));
                     return eZInputValidator::STATE_INVALID;
                 }
-
-                return eZInputValidator::STATE_ACCEPTED;
-
-            }
-            else
-            {
-                $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Input required.'));
-                return eZInputValidator::STATE_INVALID;
             }
 
+            // validate weight
+            if ( $http->hasPostVariable( $base . '_data_weight_' . $contentObjectAttribute->attribute( 'id' )) ) {
+                $dataWeight = $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id"));
+                if (!is_numeric($dataWeight) || intval($dataWeight) < 0) {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Weight must be positive.'));
+                    return eZInputValidator::STATE_INVALID;
+                }
+            }
+
+            // validate height
+            if ( $http->hasPostVariable( $base . '_data_height_' . $contentObjectAttribute->attribute( 'id' )) ) {
+                $dataHeight = $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id"));
+                if (!is_numeric($dataHeight) || intval($dataHeight) < 0) {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Height must be positive.'));
+                    return eZInputValidator::STATE_INVALID;
+                }
+            }
+
+            // validate width
+            if ( $http->hasPostVariable( $base . '_data_width_' . $contentObjectAttribute->attribute( 'id' )) ) {
+                $dataWidth = $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id"));
+                if (!is_numeric($dataWidth) || intval($dataWidth) < 0) {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Width must be positive.'));
+                    return eZInputValidator::STATE_INVALID;
+                }
+            }
+
+            // validate depth
+            if ( $http->hasPostVariable( $base . '_data_depth_' . $contentObjectAttribute->attribute( 'id' )) ) {
+                $dataDepth = $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id"));
+                if (!is_numeric($dataDepth) || intval($dataDepth) < 0) {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Depth must be positive.'));
+                    return eZInputValidator::STATE_INVALID;
+                }
+            }
         }
         else if ( $contentObjectAttribute->validateIsRequired() )
         {
