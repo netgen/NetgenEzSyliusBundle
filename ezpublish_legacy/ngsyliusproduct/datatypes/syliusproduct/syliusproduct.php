@@ -109,7 +109,9 @@ class SyliusProduct
     {
         $this->setName( $product->getName() );
         $this->setSyliusId( $product->getId() );
-        $this->setPrice( $product->getPrice() );
+        $price = $product->getPrice();
+        $price = $price / 100; // sylius feature
+        $this->setPrice( $price );
         $this->setDescription( $product->getDescription() );
         $this->setAvailableOn( $product->getAvailableOn() );
         if ( $product->getTaxCategory() )

@@ -229,6 +229,7 @@ class SyliusProductType extends eZDataType
                 $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id")) > 0 )
             {
                 $price = $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id"));
+                $price = $price*100; // sylius feature
             }
             // weight
             $weight = null;
