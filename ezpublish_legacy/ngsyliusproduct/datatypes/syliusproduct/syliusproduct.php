@@ -101,6 +101,27 @@ class SyliusProduct
     }
 
     /**
+     * Creates from sylius product
+     *
+     * @param Sylius\Component\Core\Model\Product $product
+     */
+    function createFromSylius($product)
+    {
+        $this->setName( $product->getName() );
+        $this->setSyliusId( $product->getId() );
+        $this->setPrice( $product->getPrice() );
+        $this->setDescription( $product->getDescription() );
+        $this->setAvailableOn( $product->getAvailableOn() );
+        if ( $product->getTaxCategory() )
+            $this->setTaxCategory( $product->getTaxCategory()->getName() );
+        $this->setWeight( $product->getMasterVariant()->getWeight() );
+        $this->setHeight( $product->getMasterVariant()->getHeight() );
+        $this->setWidth( $product->getMasterVariant()->getWidth() );
+        $this->setDepth( $product->getMasterVariant()->getDepth() );
+        $this->setSku( $product->getMasterVariant()->getSku() );
+    }
+
+    /**
      * Method returns string interpretation of sylius product datatype
      *
      * @return string
@@ -117,36 +138,6 @@ class SyliusProduct
                $this->depth() .'|#'.
                $this->sku() .'|#'.
                $this->tax_category();
-    }
-
-    /**
-     * Fetches the sylius product for the given attribute
-     *
-     * @param eZContentObjectAttribute $attribute
-     */
-    function createFromAttribute( $attribute )
-    {
-        if (!($attribute instanceof eZContentObjectAttribute && is_numeric($attribute->attribute('id')))) {
-            return;
-        }
-        $this->sylius_id = $attribute->attribute('data_int');
-
-        // TODO: should I populate all values here??
-    }
-
-    /**
-     * Stores the data to ez database
-     *
-     * @param eZContentObjectAttribute $attribute
-     */
-    function store( $attribute )
-    {
-        if ( !( $attribute instanceof eZContentObjectAttribute && is_numeric( $attribute->attribute( 'id' ) ) ) )
-        {
-            return;
-        }
-
-        $attribute->setAttribute('data_int', $attribute->content()->sylius_id());
     }
 
     /**

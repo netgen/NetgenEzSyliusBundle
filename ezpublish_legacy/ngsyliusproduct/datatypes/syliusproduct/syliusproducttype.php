@@ -70,27 +70,6 @@ class SyliusProductType extends eZDataType
 
             return true;
         }*/
-
-        $sylius_product = new SyliusProduct();
-
-        if ( $http->hasPostVariable( $base . "_data_integer_" . $contentObjectAttribute->attribute( "id" )) )
-        {
-            $dataPrice = $http->postVariable( $base . "_data_integer_" . $contentObjectAttribute->attribute( "id" ) );
-            $dataPrice = trim( $dataPrice ) != '' ? $dataPrice : null;
-            $dataPrice = str_replace(" ", "", $dataPrice);
-
-            $sylius_product->createFromStrings( $dataPrice );
-            $contentObjectAttribute->setContent($sylius_product);
-        }
-        if ( $http->hasPostVariable( $base . "_data_sylius_id_" . $contentObjectAttribute->attribute( "id" )) )
-        {
-            $dataId = $http->postVariable( $base . "_data_sylius_id_" . $contentObjectAttribute->attribute( "id" ) );
-
-            $sylius_product->setSyliusId($dataId);
-            $contentObjectAttribute->setContent($sylius_product);
-        }
-
-        return true;
     }
 
     /**
@@ -104,7 +83,7 @@ class SyliusProductType extends eZDataType
 
         if ( $sylius_product instanceof SyliusProduct )
         {
-            $sylius_product->store( $attribute );
+            $attribute->setAttribute('data_int', $attribute->content()->sylius_id());
         }
     }
 
@@ -197,12 +176,12 @@ class SyliusProductType extends eZDataType
 
 
             // if checkbox for ez name checked
-            if ($http->hasPostVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id")) == 'on'
-            ) {
+            if ($http->hasPostVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id")) )
+            {
                 if (in_array($node->classIdentifier(), $syliusProductINI->variable('Mapping', 'MappedClasses'))) {
                     $mappedNameIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Name');
-                    $name = $node->dataMap()[$mappedNameIdentifier]->toString();
+                    $dataMap = $node->dataMap();
+                    $name = $dataMap[$mappedNameIdentifier]->content();
                     //$contentObjectAttribute->content()->setName($name);
                 }
             } elseif ($http->hasPostVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"))) {
@@ -211,11 +190,11 @@ class SyliusProductType extends eZDataType
             }
 
             // if checkbox for ez description checked
-            if ($http->hasPostVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id")) == 'on'
-            ) {
+            if ($http->hasPostVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id")) )
+            {
                 $mappedDescIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Description');
-                $desc = $node->dataMap()[$mappedDescIdentifier]->toString();
+                $dataMap = $node->dataMap();
+                $desc = $dataMap[$mappedDescIdentifier]->content()->attribute('output')->attribute('output_text');
                 $desc = strip_tags($desc);
             } elseif ($http->hasPostVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"))) {
                 $desc = $http->postVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"));
@@ -246,53 +225,51 @@ class SyliusProductType extends eZDataType
 
             // price
             $price = 0;
-            if ($http->hasPostVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id"))) {
+            if ($http->hasPostVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id")) &&
+                $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id")) > 0 )
+            {
                 $price = $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id"));
             }
-
             // weight
             $weight = null;
             if ($http->hasPostVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id")) != ""
-            ) {
-                $weight = $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id"));
+                $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id")) != "" )
+            {
+                $weight = (float) $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id"));
             }
             // height
             $height = null;
             if ($http->hasPostVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id")) != ""
-            ) {
-                $height = $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id"));
+                $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id")) != "" )
+            {
+                $height = (float) $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id"));
             }
             // width
             $width = null;
             if ($http->hasPostVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id")) != ""
-            ) {
-                $width = $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id"));
+                $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id")) != "" )
+            {
+                $width = (float) $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id"));
             }
-
             // depth
             $depth = null;
             if ($http->hasPostVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) != ""
-            ) {
-                $depth = $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id"));
+                $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) != "" )
+            {
+                $depth = (float) $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id"));
             }
-
             // sku
             $sku = null;
             if ($http->hasPostVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) != ""
-            ) {
+                $http->postVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) != "")
+            {
                 $sku = $http->postVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id"));
             }
-
             // tax category
             $tax_category = null;
             if ($http->hasPostVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id")) != ""
-            ) {
+                $http->postVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id")) != "")
+            {
                 $tax_category_name = $http->postVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id"));
             }
 
@@ -303,7 +280,7 @@ class SyliusProductType extends eZDataType
 
             // check if sylius product already exists
             $sylius_id = $contentObjectAttribute->content()->sylius_id();
-            if ($sylius_id) {
+            if ( $sylius_id ) {
                 $product = $syliusRepository->find($sylius_id);
             } else {
                 $product = $syliusRepository->createNew();
@@ -317,13 +294,15 @@ class SyliusProductType extends eZDataType
                 ->setSlug($url_alias);
 
             // set tax category
-            if ($tax_category_name != '0') {
+            if ( isset($tax_category_name) && $tax_category_name != '0' )
+            {
                 $taxRepository = $serviceContainer->get('sylius.repository.tax_category');
                 $tax_category = $taxRepository->findOneBy(array('name' => $tax_category_name));
                 $product->setTaxCategory($tax_category);
             }
 
-            if ($availableDate) {
+            if ( $availableDate )
+            {
                 $product->setAvailableOn($availableDate);
             }
 
@@ -347,12 +326,11 @@ class SyliusProductType extends eZDataType
             // fetch product again to get id
             if (!$sylius_id)
             {
-                $product = $syliusRepository->findOneBy(array('slug' => $url_alias));
-                $productId = $product->getId();
-                $contentObjectAttribute->content()->setSyliusId($productId);
+                $contentObjectAttribute->content()->setSyliusId($product->getId());
             }
             $contentObjectAttribute->store();
         }
+        // uncomment this if there is need to unlink sylius product from eZ object
         /*elseif ($http->hasPostVariable($base . "_data_unlink_" . $contentObjectAttribute->attribute("id")) &&
                 $http->postVariable($base . "_data_unlink_" . $contentObjectAttribute->attribute("id")) == 'on')
         {
@@ -385,7 +363,6 @@ class SyliusProductType extends eZDataType
     function objectAttributeContent( $attribute )
     {
         $sylius_product = new SyliusProduct();
-        $sylius_product->createFromAttribute( $attribute );
 
         // fill content with sylius information
         $serviceContainer = ezpKernel::instance()->getServiceContainer();
@@ -393,21 +370,8 @@ class SyliusProductType extends eZDataType
 
         /** @var Sylius\Component\Core\Model\Product $product */
         $product = $syliusRepository->find($attribute->attribute('data_int'));
-        if (!$product)
-        {
-            return $sylius_product;
-        }
-        $sylius_product->setName($product->getName());
-        $sylius_product->setPrice($product->getPrice());
-        $sylius_product->setDescription( $product->getDescription() );
-        $sylius_product->setAvailableOn( $product->getAvailableOn() );
-        if ($product->getTaxCategory())
-            $sylius_product->setTaxCategory( $product->getTaxCategory()->getName() );
-        $sylius_product->setWeight( $product->getMasterVariant()->getWeight() );
-        $sylius_product->setHeight( $product->getMasterVariant()->getHeight() );
-        $sylius_product->setWidth( $product->getMasterVariant()->getWidth() );
-        $sylius_product->setDepth( $product->getMasterVariant()->getDepth() );
-        $sylius_product->setSku( $product->getMasterVariant()->getSku() );
+        if ($product)
+            $sylius_product->createFromSylius($product);
 
         return $sylius_product;
     }
@@ -427,10 +391,12 @@ class SyliusProductType extends eZDataType
         if ( $http->hasPostVariable( $base . '_data_integer_' . $contentObjectAttribute->attribute( 'id' )) )
         {
             // validate name
-            if ($http->hasPostVariable( $base . '_data_string_' . $contentObjectAttribute->attribute( 'id' ))) {
+            if ($http->hasPostVariable( $base . '_data_string_' . $contentObjectAttribute->attribute( 'id' )))
+            {
                 $dataName = $http->postVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"));
                 $useEZ = $http->postVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id"));
-                if (!$useEZ && strlen($dataName) == 0) {
+                if (!$useEZ && strlen($dataName) == 0)
+                {
                     $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Name required.'));
                     return eZInputValidator::STATE_INVALID;
                 }
@@ -438,16 +404,19 @@ class SyliusProductType extends eZDataType
 
             // validate price
             $dataPrice = $http->postVariable( $base . "_data_integer_" . $contentObjectAttribute->attribute( "id" ) );
-            if (intval($dataPrice) < 0) {
-                $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Price must be positive.'));
+            if (intval($dataPrice) < 0)
+            {
+                $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Price must be positive or zero.'));
                 return eZInputValidator::STATE_INVALID;
             }
 
             // validate description
-            if ( $http->hasPostVariable( $base . '_data_desc_' . $contentObjectAttribute->attribute( 'id' )) ) {
+            if ( $http->hasPostVariable( $base . '_data_desc_' . $contentObjectAttribute->attribute( 'id' )) )
+            {
                 $dataDesc = $http->postVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"));
                 $useEZDesc = $http->postVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id"));
-                if (!$useEZDesc && strlen($dataDesc) == 0) {
+                if (!$useEZDesc && strlen($dataDesc) == 0)
+                {
                     $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Description required.'));
                     return eZInputValidator::STATE_INVALID;
                 }
@@ -471,9 +440,9 @@ class SyliusProductType extends eZDataType
                     $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Invalid date.'));
                     return eZInputValidator::STATE_INVALID;
                 }
-                if ($hour < 0 || $hour > 24 || $minute < 0 || $minute > 59)
+                if ($hour < 0 || $hour >= 24 || $minute < 0 || $minute > 59)
                 {
-                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Invalid date.'));
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Invalid time.'));
                     return eZInputValidator::STATE_INVALID;
                 }
             }
@@ -481,8 +450,9 @@ class SyliusProductType extends eZDataType
             // validate weight
             if ( $http->hasPostVariable( $base . '_data_weight_' . $contentObjectAttribute->attribute( 'id' )) ) {
                 $dataWeight = $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id"));
-                if (!is_numeric($dataWeight) || intval($dataWeight) < 0) {
-                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Weight must be positive.'));
+                if (!is_numeric($dataWeight) || intval($dataWeight) < 0)
+                {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Weight must be positive or zero.'));
                     return eZInputValidator::STATE_INVALID;
                 }
             }
@@ -490,8 +460,9 @@ class SyliusProductType extends eZDataType
             // validate height
             if ( $http->hasPostVariable( $base . '_data_height_' . $contentObjectAttribute->attribute( 'id' )) ) {
                 $dataHeight = $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id"));
-                if (!is_numeric($dataHeight) || intval($dataHeight) < 0) {
-                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Height must be positive.'));
+                if (!is_numeric($dataHeight) || intval($dataHeight) < 0)
+                {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Height must be positive or zero.'));
                     return eZInputValidator::STATE_INVALID;
                 }
             }
@@ -499,8 +470,9 @@ class SyliusProductType extends eZDataType
             // validate width
             if ( $http->hasPostVariable( $base . '_data_width_' . $contentObjectAttribute->attribute( 'id' )) ) {
                 $dataWidth = $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id"));
-                if (!is_numeric($dataWidth) || intval($dataWidth) < 0) {
-                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Width must be positive.'));
+                if (!is_numeric($dataWidth) || intval($dataWidth) < 0)
+                {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Width must be positive or zero.'));
                     return eZInputValidator::STATE_INVALID;
                 }
             }
@@ -508,8 +480,9 @@ class SyliusProductType extends eZDataType
             // validate depth
             if ( $http->hasPostVariable( $base . '_data_depth_' . $contentObjectAttribute->attribute( 'id' )) ) {
                 $dataDepth = $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id"));
-                if (!is_numeric($dataDepth) || intval($dataDepth) < 0) {
-                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Depth must be positive.'));
+                if (!is_numeric($dataDepth) || intval($dataDepth) < 0)
+                {
+                    $contentObjectAttribute->setValidationError(ezpI18n::tr('kernel/classes/datatypes', 'Depth must be positive or zero.'));
                     return eZInputValidator::STATE_INVALID;
                 }
             }
@@ -531,10 +504,16 @@ class SyliusProductType extends eZDataType
      */
     function toString( $contentObjectAttribute )
     {
-        $syliusProduct = new SyliusProduct();
-        $syliusProduct->createFromAttribute( $contentObjectAttribute  );
+        $sylius_product = new SyliusProduct();
 
-        return $syliusProduct->toString();
+        $serviceContainer = ezpKernel::instance()->getServiceContainer();
+        $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
+        /** @var Sylius\Component\Core\Model\Product $product */
+        $product = $syliusRepository->find($contentObjectAttribute->attribute('data_int'));
+        if ($product)
+            $sylius_product->createFromSylius($product);
+
+        return $sylius_product->toString();
     }
 
     /**
@@ -583,11 +562,16 @@ class SyliusProductType extends eZDataType
      */
     function hasObjectAttributeContent( $contentObjectAttribute )
     {
-        $syliusProduct = new SyliusProduct();
-        $syliusProduct->createFromAttribute( $contentObjectAttribute );
+        $syliusProduct = $contentObjectAttribute->content();
         $syliusId = $syliusProduct->sylius_id();
 
-        return !empty( $syliusId );
+        $serviceContainer = ezpKernel::instance()->getServiceContainer();
+        $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
+
+        /** @var Sylius\Component\Core\Model\Product $product */
+        $product = $syliusRepository->find($syliusId);
+
+        return !empty( $product );
     }
 
     /**

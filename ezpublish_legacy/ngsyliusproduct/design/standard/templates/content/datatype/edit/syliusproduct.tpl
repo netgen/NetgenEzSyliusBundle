@@ -98,7 +98,7 @@
                 {foreach $taxes as $tax}
                     <option value="{$tax}" {if $attribute.content.tax_category|eq($tax)}selected="selected"{/if}>
                         {$tax}
-                    </option>>
+                    </option>
                 {/foreach}
             </select>
         </td>
@@ -162,7 +162,7 @@
                    class="input_weight"
                    id="input_weight-{$attribute.id}"
                    type="text"
-                   value="{$attribute.content.weight}" />
+                   value="{if $attribute.content.weight}{$attribute.content.weight}{else}0{/if}" />
         </td>
     </tr>
     <tr>
@@ -172,7 +172,7 @@
                    class="input_height"
                    id="input_height-{$attribute.id}"
                    type="text"
-                   value="{$attribute.content.height}" />
+                   value="{if $attribute.content.height}{$attribute.content.height}{else}0{/if}" />
         </td>
     </tr>
     <tr>
@@ -182,7 +182,7 @@
                    class="input_width"
                    id="input_width-{$attribute.id}"
                    type="text"
-                   value="{$attribute.content.width}" />
+                   value="{if $attribute.content.width}{$attribute.content.width}{else}0{/if}" />
         </td>
     </tr>
     <tr>
@@ -192,7 +192,7 @@
                    class="input_depth"
                    id="input_depth-{$attribute.id}"
                    type="text"
-                   value="{$attribute.content.depth}" />
+                   value="{if $attribute.content.width}{$attribute.content.depth}{else}0{/if}" />
         </td>
     </tr>
     </tbody>
