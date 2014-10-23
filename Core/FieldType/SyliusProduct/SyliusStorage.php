@@ -19,15 +19,15 @@ class SyliusStorage implements BaseStorage
     protected $contentService;
     protected $taxRepository;
 
-    public function __construct(RepositoryInterface $repository,
-                                EntityManager $manager,
-                                SluggableListener $listener,
+    public function __construct(RepositoryInterface $syliusProductRepository,
+                                EntityManager $syliusManager,
+                                SluggableListener $sluggableListener,
                                 ContentService $contentService,
                                 RepositoryInterface $taxRepository)
     {
-        $this->repository = $repository;
-        $this->manager = $manager;
-        $this->sluggable_listener = $listener;
+        $this->repository = $syliusProductRepository;
+        $this->manager = $syliusManager;
+        $this->sluggable_listener = $sluggableListener;
         $this->contentService = $contentService;
         $this->taxRepository = $taxRepository;
     }
@@ -39,7 +39,7 @@ class SyliusStorage implements BaseStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
      * @param array $context
      *
-     * @return mixed null|true
+     * @return true Indicating internal value data has changed
      */
     public function storeFieldData( VersionInfo $versionInfo, Field $field, array $context )
     {
@@ -56,12 +56,6 @@ class SyliusStorage implements BaseStorage
         $depth = $data['depth'];
         $sku = $data['sku'];
         $tax_category = $data['tax_category'];
-
-        if ($slug === "")
-        {
-            $temp_name = "#tempname#" . rand(1, 1000);
-            $slug = \Netgen\Bundle\EzSyliusBundle\Util\Urlizer::urlize($temp_name);
-        }
 
         //check if sylius product already exists
         $product = $this->repository->find($field->value->data['sylius_id']);
@@ -107,7 +101,6 @@ class SyliusStorage implements BaseStorage
         $this->manager->flush();
 
         // fetch product again to get id
-        $product = $this->repository->findOneBy(array('slug' => $slug ));
         $productId = $product->getId();
         $field->value->data['sylius_id'] = $productId;
 

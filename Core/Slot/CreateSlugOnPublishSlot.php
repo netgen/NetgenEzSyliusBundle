@@ -85,20 +85,16 @@ class CreateSlugOnPublishSlot extends BaseSlot
                 {
                     $contentName = $content->getFieldValue($mapping['name']);
                     $product->setName( $contentName );
-                    $content->getFieldValue('sylius_product')->name = $product->getName();
                 }
                 if (!$product->getDescription() && array_key_exists('description', $mapping ))
                 {
                     $contentDesc = $content->getFieldValue($mapping['description']);
                     $product->setDescription( $contentDesc );
-                    $content->getFieldValue('sylius_product')->description = $product->getDescription();
                 }
             }
 
             $this->syliusManager->persist($product);
             $this->syliusManager->flush();
-
-            $this->cacheClearer->clear( 'content', $signal->contentId, $signal->versionNo);
         }
     }
 

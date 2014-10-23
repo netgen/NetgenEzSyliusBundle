@@ -87,20 +87,22 @@ class Type extends FieldType
         {
             /** @var \Sylius\Component\Core\Model\Product $product */
             $product = $this->syliusRepository->find($inputValue);
-            $newValue = new Value(
-                $product->getPrice(),
-                $product->getName(),
-                $product->getDescription(),
-                $product->getAvailableOn(),
-                $product->getMasterVariant()->getWeight(),
-                $product->getMasterVariant()->getHeight(),
-                $product->getMasterVariant()->getWidth(),
-                $product->getMasterVariant()->getDepth(),
-                $product->getSku(),
-                null
+            $newValue = new Value( array(
+                    'price' =>  $product->getPrice(),
+                    'sylius_id' => $product->getId(),
+                    'name' =>   $product->getName(),
+                    'description' =>    $product->getDescription(),
+                    'available_on' =>   $product->getAvailableOn(),
+                    'weight' => $product->getMasterVariant()->getWeight(),
+                    'height' => $product->getMasterVariant()->getHeight(),
+                    'width' => $product->getMasterVariant()->getWidth(),
+                    'depth' => $product->getMasterVariant()->getDepth(),
+                    'sku' => $product->getSku(),
+                    'tax_category' => null
+                )
             );
-            $newValue->syliusId = $inputValue;
-            if ($product->getTaxCategory())
+
+            if ( $product->getTaxCategory() )
                 $newValue->tax_category = $product->getTaxCategory();
 
             return $newValue;
@@ -125,7 +127,7 @@ class Type extends FieldType
                 'integer',
                 $value->price);
         }
-        elseif( !is_string($value->name) )
+        if( !is_string($value->name) )
         {
             throw new InvalidArgumentType(
                 '$value->name',
@@ -133,7 +135,7 @@ class Type extends FieldType
                 $value->name
             );
         }
-        elseif( !is_string($value->description) )
+        if( !is_string($value->description) )
         {
             throw new InvalidArgumentType(
                 '$value->description',
@@ -141,7 +143,7 @@ class Type extends FieldType
                 $value->description
             );
         }
-        elseif( !is_numeric($value->height) && $value->height !== null )
+        if( !is_numeric($value->height) && $value->height !== null )
         {
             throw new InvalidArgumentType(
                 '$value->height',
@@ -149,7 +151,7 @@ class Type extends FieldType
                 $value->height
             );
         }
-        elseif( !is_numeric($value->weight) && $value->weight !== null )
+        if( !is_numeric($value->weight) && $value->weight !== null )
         {
             throw new InvalidArgumentType(
                 '$value->weight',
@@ -157,7 +159,7 @@ class Type extends FieldType
                 $value->weight
             );
         }
-        elseif( !is_numeric($value->width) && $value->width !== null )
+        if( !is_numeric($value->width) && $value->width !== null )
         {
             throw new InvalidArgumentType(
                 '$value->width',
@@ -165,7 +167,7 @@ class Type extends FieldType
                 $value->width
             );
         }
-        elseif( !is_numeric($value->depth) && $value->depth !== null )
+        if( !is_numeric($value->depth) && $value->depth !== null )
         {
             throw new InvalidArgumentType(
                 '$value->depth',
@@ -186,7 +188,7 @@ class Type extends FieldType
      */
     public function fromHash( $hash )
     {
-        if ( !is_array( $hash ) && !empty($hash['price']) )
+        if ( !is_array( $hash ) || empty($hash['price']) )
         {
             return new Value();
         }
@@ -242,7 +244,7 @@ class Type extends FieldType
     public function toHash( SPIValue $value )
     {
         if (empty($value->price) || empty($value->name) || empty($value->syliusId) )
-            return null;
+            return array();
 
         return array( 'price' => $value->price,
                       'name' => $value->name,
@@ -283,19 +285,22 @@ class Type extends FieldType
         {
             return $this->getEmptyValue();
         }
-        $value = new Value();
-        $value->name = $fieldValue->externalData['name'];
-        $value->price = $fieldValue->externalData['price'];
-        $value->description = $fieldValue->externalData['description'];
-        $value->slug = $fieldValue->externalData['slug'];
-        $value->syliusId = $fieldValue->data['sylius_id'];
-        $value->available_on = $fieldValue->externalData['available_on'];
-        $value->weight = $fieldValue->externalData['weight'];
-        $value->height = $fieldValue->externalData['height'];
-        $value->width = $fieldValue->externalData['width'];
-        $value->depth = $fieldValue->externalData['depth'];
-        $value->sku = $fieldValue->externalData['sku'];
-        $value->tax_category = $fieldValue->externalData['tax_category'];
+        $value = new Value(
+            array(
+                'name' => $fieldValue->externalData['name'],
+                'price' => $fieldValue->externalData['price'],
+                'description' => $fieldValue->externalData['description'],
+                'slug' => $fieldValue->externalData['slug'],
+                'syliusId' => $fieldValue->data['sylius_id'],
+                'available_on' => $fieldValue->externalData['available_on'],
+                'weight' => $fieldValue->externalData['weight'],
+                'height' => $fieldValue->externalData['height'],
+                'width' => $fieldValue->externalData['width'],
+                'depth' => $fieldValue->externalData['depth'],
+                'sku' => $fieldValue->externalData['sku'],
+                'tax_category' => $fieldValue->externalData['tax_category']
+            )
+        );
 
         return $value;
     }
@@ -306,7 +311,7 @@ class Type extends FieldType
      * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      * @return array
      */
-    private function ezToHash($value)
+    protected function ezToHash($value)
     {
         return array(
             'sylius_id' => $value->syliusId
@@ -319,7 +324,7 @@ class Type extends FieldType
      * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      * @return array
      */
-    private function syliusToHash($value)
+    protected function syliusToHash($value)
     {
         return array(
             'name' => $value->name,
@@ -343,6 +348,6 @@ class Type extends FieldType
      */
     public function isSearchable()
     {
-        return true;
+        return false;
     }
 }
