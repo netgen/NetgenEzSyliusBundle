@@ -47,6 +47,7 @@ class SyliusStorage implements BaseStorage
 
         $name = $data['name'];
         $price = $data['price'];
+        $price *= 100; // sylius feature
         $desc = $data['description'];
         $slug = $data['slug'];
         $available_on = $data['available_on'];
@@ -123,6 +124,7 @@ class SyliusStorage implements BaseStorage
         if (!empty($product)) {
             $name = $product->getName();
             $price = $product->getPrice();
+            $price /= 100; // sylius feature
             $description = $product->getDescription();
             $slug = $product->getSlug();
             $available_on = $product->getAvailableOn();

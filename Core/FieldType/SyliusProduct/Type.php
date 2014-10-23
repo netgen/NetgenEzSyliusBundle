@@ -87,8 +87,10 @@ class Type extends FieldType
         {
             /** @var \Sylius\Component\Core\Model\Product $product */
             $product = $this->syliusRepository->find($inputValue);
+            $price = $product->getPrice();
+            $price /= 100; // sylius feature
             $newValue = new Value( array(
-                    'price' =>  $product->getPrice(),
+                    'price' =>  $price,
                     'sylius_id' => $product->getId(),
                     'name' =>   $product->getName(),
                     'description' =>    $product->getDescription(),
