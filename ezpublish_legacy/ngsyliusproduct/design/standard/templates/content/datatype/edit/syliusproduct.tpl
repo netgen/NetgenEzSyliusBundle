@@ -107,20 +107,20 @@
         <td>
             <label>{'Available on'|i18n( 'design/standard/content/datatype/syliusproduct' )}:</label>
             {'Date'|i18n( 'design/standard/content/datatype/syliusproduct' )}:
-            <input name="{$attribute_base}_data_available_d_{$attribute.id}"
-                   id="{$attribute_base}_data_available_d_{$attribute.id}"
+            <input name="{$attribute_base}_data_available_y_{$attribute.id}"
+                   id="{$attribute_base}_data_available_y_{$attribute.id}"
                    type="text"
-                   placeholder="dd"
+                   placeholder="yyyy"
                    size=2 />
             <input name="{$attribute_base}_data_available_m_{$attribute.id}"
                    id="{$attribute_base}_data_available_m_{$attribute.id}"
                    type="text"
                    placeholder="mm"
                    size=2 />
-            <input name="{$attribute_base}_data_available_y_{$attribute.id}"
-                   id="{$attribute_base}_data_available_y_{$attribute.id}"
+            <input name="{$attribute_base}_data_available_d_{$attribute.id}"
+                   id="{$attribute_base}_data_available_d_{$attribute.id}"
                    type="text"
-                   placeholder="yyyy"
+                   placeholder="dd"
                    size=2 />
             {'Time'|i18n( 'design/standard/content/datatype/syliusproduct' )}:
             <input name="{$attribute_base}_data_available_h_{$attribute.id}"
@@ -216,9 +216,9 @@
                 var time = datetime[1];
                 date = date.split('-');
                 time = time.split(':');
-                $("#" + base + "_data_available_d_" + attribute_id).val(date[0]);
+                $("#" + base + "_data_available_d_" + attribute_id).val(date[2]);
                 $("#" + base + "_data_available_m_" + attribute_id).val(date[1]);
-                $("#" + base + "_data_available_y_" + attribute_id).val(date[2]);
+                $("#" + base + "_data_available_y_" + attribute_id).val(date[0]);
                 $("#" + base + "_data_available_h_" + attribute_id).val(time[0]);
                 $("#" + base + "_data_available_min_" + attribute_id).val(time[1]);
             }

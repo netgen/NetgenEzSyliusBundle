@@ -127,7 +127,10 @@ class SyliusStorage implements BaseStorage
             $price /= 100; // sylius feature
             $description = $product->getDescription();
             $slug = $product->getSlug();
+
+            /** @var \DateTime $available_on */
             $available_on = $product->getAvailableOn();
+            $available_on = $available_on->format('Y-m-d H:i');
 
             $tax_category = "";
             if ($product->getTaxCategory())

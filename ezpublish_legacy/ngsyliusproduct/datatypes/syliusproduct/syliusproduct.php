@@ -113,9 +113,15 @@ class SyliusProduct
         $price = $price / 100; // sylius feature
         $this->setPrice( $price );
         $this->setDescription( $product->getDescription() );
-        $this->setAvailableOn( $product->getAvailableOn() );
+
+        /** @var \DateTime $available_on */
+        $available_on = $product->getAvailableOn();
+        $available_on = $available_on->format('Y-m-d H:i');
+        $this->setAvailableOn( $available_on );
+
         if ( $product->getTaxCategory() )
             $this->setTaxCategory( $product->getTaxCategory()->getName() );
+
         $this->setWeight( $product->getMasterVariant()->getWeight() );
         $this->setHeight( $product->getMasterVariant()->getHeight() );
         $this->setWidth( $product->getMasterVariant()->getWidth() );
@@ -316,7 +322,7 @@ class SyliusProduct
     function availableOn()
     {
         if ($this->available_on)
-            return $this->available_on->format('d-m-Y H:i');
+            return $this->available_on;
         return null;
     }
 

@@ -4,7 +4,7 @@
     <div>{{ 'Description'|trans~": " }}{{ field.value.description }}</div>
     <div>{{ 'Price'|trans~": " }}{{ field.value.price }}</div>
     {% if field.value.available_on %}
-    <div>{{ 'Available on'|trans~": " }}{{ field.value.available_on.date }}</div>
+    <div>{{ 'Available on'|trans~": " }}{{ field.value.available_on }}</div>
     {% endif %}
     {% if field.value.weight %}
         <div>{{ 'Weight'|trans~": " }}{{ field.value.weight }}</div>

@@ -89,12 +89,17 @@ class Type extends FieldType
             $product = $this->syliusRepository->find($inputValue);
             $price = $product->getPrice();
             $price /= 100; // sylius feature
+
+            // format date
+            /** @var \DateTime $available_on */
+            $available_on = $product->getAvailableOn();
+            $available_on = $available_on->format('Y-m-d H:i');
             $newValue = new Value( array(
                     'price' =>  $price,
                     'sylius_id' => $product->getId(),
                     'name' =>   $product->getName(),
                     'description' =>    $product->getDescription(),
-                    'available_on' =>   $product->getAvailableOn(),
+                    'available_on' =>   $available_on,
                     'weight' => $product->getMasterVariant()->getWeight(),
                     'height' => $product->getMasterVariant()->getHeight(),
                     'width' => $product->getMasterVariant()->getWidth(),
