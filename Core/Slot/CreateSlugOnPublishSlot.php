@@ -63,14 +63,16 @@ class CreateSlugOnPublishSlot extends BaseSlot
         if (in_array($contentTypeIdentifier, $this->contentTypes)) {
             $location = $this->repository->getLocationService()->loadLocation($contentInfo->mainLocationId);
 
-            $locationURLAliases = $this->repository->getURLAliasService()->reverseLookup($location);
+            $locationURLAlias = $this->repository->getURLAliasService()->reverseLookup($location);
+            $urlAlias = $locationURLAlias->path;
+            $urlAlias = ltrim($urlAlias, '/');
 
             // load sylius product from sylius id in content field type and update it's slug
             $sylius_id = $content->getFieldValue('sylius_product')->syliusId;
 
             /** @var \Sylius\Component\Core\Model\Product $product */
             $product = $this->syliusRepository->find($sylius_id);
-            $product->setSlug($locationURLAliases->path);
+            $product->setSlug($urlAlias);
             $content->getFieldValue('sylius_product')->slug = $product->getSlug();
 
             // if name and description are empty, we will copy them from eZ content
