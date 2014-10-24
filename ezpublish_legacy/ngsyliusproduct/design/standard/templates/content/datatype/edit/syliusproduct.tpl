@@ -192,7 +192,7 @@
                    class="input_depth"
                    id="input_depth-{$attribute.id}"
                    type="text"
-                   value="{if $attribute.content.width}{$attribute.content.depth}{else}0{/if}" />
+                   value="{if $attribute.content.depth}{$attribute.content.depth}{else}0{/if}" />
         </td>
     </tr>
     </tbody>
