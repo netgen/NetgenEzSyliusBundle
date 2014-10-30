@@ -501,6 +501,9 @@ winzou_state_machine:
 - run:
 sudo php ezpublish/console doctrine:schema:update
 
+-----------------------------------------------------
+new
+-----------------------------------------------------
 Add to parameters.yml:
     netgen_ez_sylius_content_type_identifiers: [ contentTypeIdentifier1, contentTypeIdentifier2 ]
 with contentTypeId being the content type identifier of the class with sylius_product field type
@@ -512,3 +515,7 @@ with contentTypeId being the content type identifier of the class with sylius_pr
         product:
             name: name
             description: description
+
+Add to config.yml
+imports:
+    - { resource: "@NetgenEzSyliusBundle/Resources/config/ezsylius.yml" }

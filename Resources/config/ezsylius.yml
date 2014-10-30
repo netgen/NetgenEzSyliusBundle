@@ -1,16 +1,16 @@
 ezpublish:
     system:
         eng:
-            location_view:
-                full:
-                    ezsylius_product:
-                        template: "NetgenEzSyliusBundle:full:ezsylius_product.html.twig"
-                        match:
-                            Identifier\ContentType: [my_product]
-                block_item:
-                    ezyslius_product:
-                        template: "NetgenEzSyliusBundle:block_item:ezsylius_product.html.twig"
-                        match:
-                            Identifier\ContentType: [ezsylius_product]
             field_templates:
                 - {template: "NetgenEzSyliusBundle:fields:syliusproduct.html.twig"}
+
+sylius_core:
+    routing:
+        %sylius.model.product.class%:
+            field: slug
+            prefix: /
+            defaults:
+                controller: sylius.controller.product:showAction
+                sylius:
+                    template: SyliusWebBundle:Frontend/Product:show.html.twig
+                    criteria: {slug: $slug}
