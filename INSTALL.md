@@ -519,3 +519,8 @@ with contentTypeId being the content type identifier of the class with sylius_pr
 Add to config.yml
 imports:
     - { resource: "@NetgenEzSyliusBundle/Resources/config/ezsylius.yml" }
+
+Enable twig template in your override yml (ezpublish.yml):
+your_group:
+    field_templates:
+        - {template: "NetgenEzSyliusBundle:fields:syliusproduct.html.twig"}

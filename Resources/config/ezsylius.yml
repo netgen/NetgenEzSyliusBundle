@@ -1,9 +1,3 @@
-ezpublish:
-    system:
-        eng:
-            field_templates:
-                - {template: "NetgenEzSyliusBundle:fields:syliusproduct.html.twig"}
-
 sylius_core:
     routing:
         %sylius.model.product.class%:
