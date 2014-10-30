@@ -20,9 +20,6 @@ services:
          calls:
              - [setContainer, [@service_container]]
 
-     sylius.order_processing.inventory_handler:
-          class: Netgen\Bundle\EzSyliusBundle\OrderProcessing\DummyInventoryHandler
-
      sluggable.listener:
           alias: stof_doctrine_extensions.listener.sluggable
 
