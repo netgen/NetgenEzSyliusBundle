@@ -1,6 +1,8 @@
 parameters:
     netgen_ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
     netgen_ez_sylius.onpublish_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
+    netgen_ez_sylius.trash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
+    netgen_ez_sylius.untrash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
 
 services:
 
@@ -28,4 +30,16 @@ services:
         arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product, %netgen_ez_sylius_content_type_identifiers%, %netgen_ez_sylius.field_definition_identifier_mappings%, @ezpublish.cache_pool.spi.cache.decorator ]
         tags:
             - { name: ezpublish.api.slot, signal: ContentService\PublishVersionSignal }
+
+    netgen_ez_sylius.trash_slot:
+        class: %netgen_ez_sylius.trash_slot.class%
+        arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product ]
+        tags:
+            - { name: ezpublish.api.slot, signal: TrashService\TrashSignal }
+
+    netgen_ez_sylius.untrash_slot:
+        class: %netgen_ez_sylius.untrash_slot.class%
+        arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product ]
+        tags:
+            - { name: ezpublish.api.slot, signal: TrashService\RecoverSignal }
 
