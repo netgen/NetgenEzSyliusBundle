@@ -76,7 +76,13 @@ class SyliusStorage implements BaseStorage
             $product->setSlug($slug);
 
         if ($available_on)
+        {
+            //die(var_dump($available_on));
+            if ( ! $available_on instanceof \DateTime)
+                $available_on = new \DateTime($available_on);
+            //die(var_dump($available_on_dt));
             $product->setAvailableOn($available_on);
+        }
 
         // set tax category
         if ($tax_category != '0' && !empty($tax_category))
