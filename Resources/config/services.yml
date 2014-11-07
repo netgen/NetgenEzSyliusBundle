@@ -3,6 +3,8 @@ parameters:
     netgen_ez_sylius.onpublish_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
     netgen_ez_sylius.trash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
     netgen_ez_sylius.untrash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
+    netgen_ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler\ProductNumber
+
 
 services:
 
@@ -42,4 +44,11 @@ services:
         arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product ]
         tags:
             - { name: ezpublish.api.slot, signal: TrashService\RecoverSignal }
+
+     netgen_ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number:
+        class: %netgen_ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class%
+        parent: ezpublish.persistence.legacy.search.gateway.sort_clause_handler.common.field
+        tags:
+            - {name: ezpublish.persistence.legacy.search.gateway.sort_clause_handler.content}
+            - {name: ezpublish.persistence.legacy.search.gateway.sort_clause_handler.location}
 
