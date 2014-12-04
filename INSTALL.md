@@ -524,3 +524,15 @@ Enable twig template in your override yml (ezpublish.yml):
 your_group:
     field_templates:
         - {template: "NetgenEzSyliusBundle:fields:syliusproduct.html.twig"}
+
+SyliusProduct data type comes with event that updates slug in sylius database when the object has been moved or swaped.
+To enable this feature, you have to do the following
+1) In your extension settings, you have to edit (or add if it isn't already there) workflow.ini.append.php:
+- in it, enable content move trigger:
+[OperationSettings]
+AvailableOperationList[]=content_move
+
+2) Set up a workflow for content move AFTER trigger. In that workflow, choose "Update Sylius slug" event.
+3) Set up a workflow for content swap AFTER trigger. In that workflow, choose "Update Sylius slug" event.
+
+That's it! The event will make sure the slug is properly updated after certain actions in the eZ administration.
