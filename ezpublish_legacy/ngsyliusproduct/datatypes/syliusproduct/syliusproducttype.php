@@ -278,7 +278,7 @@ class SyliusProductType extends eZDataType
                     $product = $syliusRepository->find($sylius_id);
                 } else {
                     $product = $syliusRepository->createNew();
-                    eZLog::write('copy - created new product in onPublish');
+                    eZLog::write('COPY - created new product in onPublish');
                 }
 
 
@@ -328,7 +328,6 @@ class SyliusProductType extends eZDataType
         {
             // ON COPY
             //@todo: fix available on copy
-            eZLog::write( 'COPY - onPublish' );
 
             $serviceContainer = ezpKernel::instance()->getServiceContainer();
             $syliusRepository = $serviceContainer->get('sylius.repository.product');
@@ -345,6 +344,7 @@ class SyliusProductType extends eZDataType
 
             /** @var \Sylius\Component\Core\Model\Product $copiedProduct */
             $copiedProduct = $syliusRepository->createNew();
+            eZLog::write('COPY - created new product in onPublish (else)');
             $copiedProduct
                 ->setName( $product->getName() )
                 ->setDescription( $product->getDescription() )
