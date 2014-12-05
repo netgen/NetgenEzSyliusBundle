@@ -19,17 +19,12 @@ class SyliusProductType extends eZDataType
     */
     function initializeObjectAttribute( $contentObjectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
-        /*$serviceContainer = ezpKernel::instance()->getServiceContainer();
-        $syliusRepository = $serviceContainer->get('sylius.repository.product');
-        $syliusManager = $serviceContainer->get('sylius.manager.product');
-
-        /** @var \Sylius\Component\Core\Model\Product $product */
-        /*$product = $syliusRepository->find(126);
-        $product->setVariants($product->getMasterVariant());
-        die(var_dump($product->getAvailableVariants()));
-        if($product) {
+        if( $originalContentObjectAttribute->attribute( 'contentobject_id' ) !== $contentObjectAttribute->attribute( 'contentobject_id' ) )
+        {
+            eZLog::write( 'COPY - writing to data_text' );
+            $contentObjectAttribute->setAttribute( 'data_text', 1 );
+            $contentObjectAttribute->store();
         }
-        die();*/
     }
 
     /**
@@ -165,170 +160,213 @@ class SyliusProductType extends eZDataType
         $http = eZHTTPTool::instance();
         $base = "ContentObjectAttribute"; //default base
 
-        if ( $http->hasPostVariable( $base . "_data_integer_" . $contentObjectAttribute->attribute( "id" )) )
+        $nodeID = $publishedNodes[0]->MainNodeID;
+        $node = eZContentObjectTreeNode::fetch($nodeID);
+        $url_alias = $node->urlAlias();
+
+        if ( $contentObjectAttribute->attribute( 'data_text' ) != 1 )
         {
-            $nodeID = $publishedNodes[0]->MainNodeID;
-            $node = eZContentObjectTreeNode::fetch($nodeID);
-            $url_alias = $node->urlAlias();
+            if ($http->hasPostVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id"))) {
+                // get ini settings
+                $syliusProductINI = eZINI::instance('ngsyliusproduct.ini');
 
-            // get ini settings
-            $syliusProductINI = eZINI::instance('ngsyliusproduct.ini');
-
-
-            // if checkbox for ez name checked
-            if ($http->hasPostVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id")) )
-            {
-                if (in_array($node->classIdentifier(), $syliusProductINI->variable('Mapping', 'MappedClasses'))) {
-                    $mappedNameIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Name');
-                    $dataMap = $node->dataMap();
-                    $name = $dataMap[$mappedNameIdentifier]->content();
-                    //$contentObjectAttribute->content()->setName($name);
+                // if checkbox for ez name checked
+                if ($http->hasPostVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id"))) {
+                    if (in_array($node->classIdentifier(), $syliusProductINI->variable('Mapping', 'MappedClasses'))) {
+                        $mappedNameIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Name');
+                        $dataMap = $node->dataMap();
+                        $name = $dataMap[$mappedNameIdentifier]->content();
+                        //$contentObjectAttribute->content()->setName($name);
+                    }
+                } elseif ($http->hasPostVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"))) {
+                    $name = $http->postVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"));
+                    $name = trim($name) != '' ? $name : null;
                 }
-            } elseif ($http->hasPostVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"))) {
-                $name = $http->postVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"));
-                $name = trim($name) != '' ? $name : null;
-            }
 
-            // if checkbox for ez description checked
-            if ($http->hasPostVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id")) )
-            {
-                $mappedDescIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Description');
-                $dataMap = $node->dataMap();
-                $desc = $dataMap[$mappedDescIdentifier]->content()->attribute('output')->attribute('output_text');
-                $desc = strip_tags($desc);
-            } elseif ($http->hasPostVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"))) {
-                $desc = $http->postVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"));
-            } else
-                $desc = 'eZ Product';
+                // if checkbox for ez description checked
+                if ($http->hasPostVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id"))) {
+                    $mappedDescIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Description');
+                    $dataMap = $node->dataMap();
+                    $desc = $dataMap[$mappedDescIdentifier]->content()->attribute('output')->attribute('output_text');
+                    $desc = strip_tags($desc);
+                } elseif ($http->hasPostVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"))) {
+                    $desc = $http->postVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"));
+                } else
+                    $desc = 'eZ Product';
 
-            //check for "available on" information
-            $availableDate = false;
-            if ($http->hasPostVariable($base . "_data_available_d_" . $contentObjectAttribute->attribute("id")) &&
-                is_numeric($http->postVariable($base . "_data_available_d_" . $contentObjectAttribute->attribute("id"))) &&
-                $http->hasPostVariable($base . "_data_available_m_" . $contentObjectAttribute->attribute("id")) &&
-                is_numeric($http->postVariable($base . "_data_available_m_" . $contentObjectAttribute->attribute("id"))) &&
-                $http->hasPostVariable($base . "_data_available_y_" . $contentObjectAttribute->attribute("id")) &&
-                is_numeric($http->postVariable($base . "_data_available_y_" . $contentObjectAttribute->attribute("id"))) &&
-                $http->hasPostVariable($base . "_data_available_h_" . $contentObjectAttribute->attribute("id")) &&
-                is_numeric($http->postVariable($base . "_data_available_h_" . $contentObjectAttribute->attribute("id"))) &&
-                $http->hasPostVariable($base . "_data_available_min_" . $contentObjectAttribute->attribute("id")) &&
-                is_numeric($http->postVariable($base . "_data_available_min_" . $contentObjectAttribute->attribute("id")))
-            ) {
-                $day = $http->postVariable($base . "_data_available_d_" . $contentObjectAttribute->attribute("id"));
-                $month = $http->postVariable($base . "_data_available_m_" . $contentObjectAttribute->attribute("id"));
-                $year = $http->postVariable($base . "_data_available_y_" . $contentObjectAttribute->attribute("id"));
-                $hour = $http->postVariable($base . "_data_available_h_" . $contentObjectAttribute->attribute("id"));
-                $minute = $http->postVariable($base . "_data_available_min_" . $contentObjectAttribute->attribute("id"));
+                //check for "available on" information
+                $availableDate = false;
+                if ($http->hasPostVariable($base . "_data_available_d_" . $contentObjectAttribute->attribute("id")) &&
+                    is_numeric($http->postVariable($base . "_data_available_d_" . $contentObjectAttribute->attribute("id"))) &&
+                    $http->hasPostVariable($base . "_data_available_m_" . $contentObjectAttribute->attribute("id")) &&
+                    is_numeric($http->postVariable($base . "_data_available_m_" . $contentObjectAttribute->attribute("id"))) &&
+                    $http->hasPostVariable($base . "_data_available_y_" . $contentObjectAttribute->attribute("id")) &&
+                    is_numeric($http->postVariable($base . "_data_available_y_" . $contentObjectAttribute->attribute("id"))) &&
+                    $http->hasPostVariable($base . "_data_available_h_" . $contentObjectAttribute->attribute("id")) &&
+                    is_numeric($http->postVariable($base . "_data_available_h_" . $contentObjectAttribute->attribute("id"))) &&
+                    $http->hasPostVariable($base . "_data_available_min_" . $contentObjectAttribute->attribute("id")) &&
+                    is_numeric($http->postVariable($base . "_data_available_min_" . $contentObjectAttribute->attribute("id")))
+                ) {
+                    $day = $http->postVariable($base . "_data_available_d_" . $contentObjectAttribute->attribute("id"));
+                    $month = $http->postVariable($base . "_data_available_m_" . $contentObjectAttribute->attribute("id"));
+                    $year = $http->postVariable($base . "_data_available_y_" . $contentObjectAttribute->attribute("id"));
+                    $hour = $http->postVariable($base . "_data_available_h_" . $contentObjectAttribute->attribute("id"));
+                    $minute = $http->postVariable($base . "_data_available_min_" . $contentObjectAttribute->attribute("id"));
 
-                $availableDate = DateTime::createFromFormat('d-m-Y-H-i', $day . '-' . $month . '-' . $year . '-' . $hour . '-' . $minute);
-            }
+                    $availableDate = DateTime::createFromFormat('d-m-Y-H-i', $day . '-' . $month . '-' . $year . '-' . $hour . '-' . $minute);
+                }
 
-            // price
-            $price = 0;
-            if ($http->hasPostVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id")) > 0 )
-            {
-                $price = $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id"));
-                $price = $price*100; // sylius feature
-            }
-            // weight
-            $weight = null;
-            if ($http->hasPostVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id")) != "" )
-            {
-                $weight = (float) $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id"));
-            }
-            // height
-            $height = null;
-            if ($http->hasPostVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id")) != "" )
-            {
-                $height = (float) $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id"));
-            }
-            // width
-            $width = null;
-            if ($http->hasPostVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id")) != "" )
-            {
-                $width = (float) $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id"));
-            }
-            // depth
-            $depth = null;
-            if ($http->hasPostVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) != "" )
-            {
-                $depth = (float) $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id"));
-            }
-            // sku
-            $sku = null;
-            if ($http->hasPostVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) != "")
-            {
-                $sku = $http->postVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id"));
-            }
-            // tax category
-            $tax_category = null;
-            if ($http->hasPostVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id")) &&
-                $http->postVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id")) != "")
-            {
-                $tax_category_name = $http->postVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id"));
-            }
+                // price
+                $price = 0;
+                if ($http->hasPostVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id")) &&
+                    $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id")) > 0
+                ) {
+                    $price = $http->postVariable($base . "_data_integer_" . $contentObjectAttribute->attribute("id"));
+                    $price = $price * 100; // sylius feature
+                }
+                // weight
+                $weight = null;
+                if ($http->hasPostVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id")) &&
+                    $http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id")) != ""
+                ) {
+                    $weight = (float)$http->postVariable($base . "_data_weight_" . $contentObjectAttribute->attribute("id"));
+                }
+                // height
+                $height = null;
+                if ($http->hasPostVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id")) &&
+                    $http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id")) != ""
+                ) {
+                    $height = (float)$http->postVariable($base . "_data_height_" . $contentObjectAttribute->attribute("id"));
+                }
+                // width
+                $width = null;
+                if ($http->hasPostVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id")) &&
+                    $http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id")) != ""
+                ) {
+                    $width = (float)$http->postVariable($base . "_data_width_" . $contentObjectAttribute->attribute("id"));
+                }
+                // depth
+                $depth = null;
+                if ($http->hasPostVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) &&
+                    $http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id")) != ""
+                ) {
+                    $depth = (float)$http->postVariable($base . "_data_depth_" . $contentObjectAttribute->attribute("id"));
+                }
+                // sku
+                $sku = null;
+                if ($http->hasPostVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) &&
+                    $http->postVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id")) != ""
+                ) {
+                    $sku = $http->postVariable($base . "_data_sku_" . $contentObjectAttribute->attribute("id"));
+                }
+                // tax category
+                $tax_category = null;
+                if ($http->hasPostVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id")) &&
+                    $http->postVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id")) != ""
+                ) {
+                    $tax_category_name = $http->postVariable($base . "_data_tax_category_" . $contentObjectAttribute->attribute("id"));
+                }
 
-            // let's save sylius product
+                // let's save sylius product
+                $serviceContainer = ezpKernel::instance()->getServiceContainer();
+                $syliusRepository = $serviceContainer->get('sylius.repository.product');
+                $syliusManager = $serviceContainer->get('sylius.manager.product');
+
+                // check if sylius product already exists
+                $sylius_id = $contentObjectAttribute->content()->sylius_id();
+                if ($sylius_id) {
+                    $product = $syliusRepository->find($sylius_id);
+                } else {
+                    $product = $syliusRepository->createNew();
+                    eZLog::write('copy - created new product in onPublish');
+                }
+
+
+                /** @var \Sylius\Component\Core\Model\Product $product */
+                $product
+                    ->setName($name)
+                    ->setDescription($desc)
+                    ->setPrice($price)
+                    ->setSlug($url_alias);
+
+                // set tax category
+                if (isset($tax_category_name) && $tax_category_name != '0') {
+                    $taxRepository = $serviceContainer->get('sylius.repository.tax_category');
+                    $tax_category = $taxRepository->findOneBy(array('name' => $tax_category_name));
+                    $product->setTaxCategory($tax_category);
+                }
+
+                if ($availableDate) {
+                    $product->setAvailableOn($availableDate);
+                }
+
+                // set additional data (weight, height, width, sku)
+                /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
+                $master_variant = $product->getMasterVariant();
+                $master_variant->setWeight($weight)
+                    ->setHeight($height)
+                    ->setWidth($width)
+                    ->setDepth($depth)
+                    ->setSku($sku);
+
+                // custom transliterator
+                $listener = $serviceContainer->get('sluggable.listener');
+                $listener->setTransliterator(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate'));
+                $listener->setUrlizer(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize'));
+
+                $syliusManager->persist($product);
+                $syliusManager->flush();
+
+                // fetch product again to get id
+                if (!$sylius_id) {
+                    $contentObjectAttribute->content()->setSyliusId($product->getId());
+                }
+                $contentObjectAttribute->store();
+            }
+        }
+        else
+        {
+            // ON COPY
+            //@todo: fix available on copy
+            eZLog::write( 'COPY - onPublish' );
+
             $serviceContainer = ezpKernel::instance()->getServiceContainer();
             $syliusRepository = $serviceContainer->get('sylius.repository.product');
             $syliusManager = $serviceContainer->get('sylius.manager.product');
 
             // check if sylius product already exists
-            $sylius_id = $contentObjectAttribute->content()->sylius_id();
+            $sylius_id = $contentObjectAttribute->attribute( 'data_int' );
             if ( $sylius_id ) {
+                /** @var \Sylius\Component\Core\Model\Product $product */
                 $product = $syliusRepository->find($sylius_id);
             } else {
-                $product = $syliusRepository->createNew();
+                eZLog::write( 'COPY - something went wrong' );
             }
 
-            /** @var \Sylius\Component\Core\Model\Product $product */
-            $product
-                ->setName($name)
-                ->setDescription($desc)
-                ->setPrice($price)
-                ->setSlug($url_alias);
+            /** @var \Sylius\Component\Core\Model\Product $copiedProduct */
+            $copiedProduct = $syliusRepository->createNew();
+            $copiedProduct
+                ->setName( $product->getName() )
+                ->setDescription( $product->getDescription() )
+                ->setPrice( $product->getPrice() )
+                ->setSlug( $url_alias );
+            /** @var \Sylius\Component\Core\Model\ProductVariant $copiedProductMVariant */
+            $copiedProductMVariant = $copiedProduct->getMasterVariant();
+            $copiedProductMVariant
+                ->setWeight( $product->getMasterVariant()->getWeight() )
+                ->setWidth( $product->getMasterVariant()->getWidth() )
+                ->setHeight( $product->getMasterVariant()->getHeight() )
+                ->setDepth( $product->getMasterVariant()->getDepth() );
 
-            // set tax category
-            if ( isset($tax_category_name) && $tax_category_name != '0' )
-            {
-                $taxRepository = $serviceContainer->get('sylius.repository.tax_category');
-                $tax_category = $taxRepository->findOneBy(array('name' => $tax_category_name));
-                $product->setTaxCategory($tax_category);
-            }
-
-            if ( $availableDate )
-            {
-                $product->setAvailableOn($availableDate);
-            }
-
-            // set additional data (weight, height, width, sku)
-            /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
-            $master_variant = $product->getMasterVariant();
-            $master_variant->setWeight($weight)
-                ->setHeight($height)
-                ->setWidth($width)
-                ->setDepth($depth)
-                ->setSku($sku);
-
-            // custom transliterator
             $listener = $serviceContainer->get('sluggable.listener');
             $listener->setTransliterator(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate'));
             $listener->setUrlizer(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize'));
 
-            $syliusManager->persist($product);
+            $syliusManager->persist( $copiedProduct );
             $syliusManager->flush();
 
-            // fetch product again to get id
-            if (!$sylius_id)
-            {
-                $contentObjectAttribute->content()->setSyliusId($product->getId());
-            }
+            $contentObjectAttribute->content()->setSyliusId($copiedProduct->getId());
+            $contentObjectAttribute->setAttribute( 'data_text', 0 );
             $contentObjectAttribute->store();
         }
         // uncomment this if there is need to unlink sylius product from eZ object
