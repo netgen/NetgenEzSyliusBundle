@@ -205,7 +205,7 @@ class Type extends FieldType
      */
     public function fromHash( $hash )
     {
-        if ( !is_array( $hash ) || empty( $hash['price'] ) )
+        if ( !is_array( $hash ) || ( empty( $hash['price'] ) && intval( $hash['price'] ) !== 0 ) )
         {
             return new Value();
         }
