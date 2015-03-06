@@ -290,7 +290,7 @@ class SyliusProductType extends eZDataType
                 $product
                     ->setName($name)
                     ->setDescription($desc)
-                    ->setPrice($price)
+                    ->setPrice((int)$price)
                     ->setSlug($url_alias);
 
                 // set tax category
@@ -352,8 +352,9 @@ class SyliusProductType extends eZDataType
             $copiedProduct
                 ->setName( $product->getName() )
                 ->setDescription( $product->getDescription() )
-                ->setPrice( $product->getPrice() )
+                ->setPrice( (int)$product->getPrice() )
                 ->setSlug( $url_alias );
+
             /** @var \Sylius\Component\Core\Model\ProductVariant $copiedProductMVariant */
             $copiedProductMVariant = $copiedProduct->getMasterVariant();
             $copiedProductMVariant

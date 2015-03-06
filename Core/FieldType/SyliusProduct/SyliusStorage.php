@@ -71,7 +71,7 @@ class SyliusProductStorage implements BaseStorage
         $product
             ->setName( $name )
             ->setDescription( $desc )
-            ->setPrice( $price );
+            ->setPrice( (int)$price );
 
         if ( $slug )
         {
