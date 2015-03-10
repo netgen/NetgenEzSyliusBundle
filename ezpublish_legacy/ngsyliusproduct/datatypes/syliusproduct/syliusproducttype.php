@@ -413,7 +413,7 @@ class SyliusProductType extends eZDataType
         $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
 
         /** @var Sylius\Component\Core\Model\Product $product */
-        $product = $syliusRepository->find($attribute->attribute('data_int'));
+        $product = $syliusRepository->findForDetailsPage($attribute->attribute('data_int'));
         if ($product)
             $sylius_product->createFromSylius($product);
 
