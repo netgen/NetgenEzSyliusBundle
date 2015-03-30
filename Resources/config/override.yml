@@ -1,0 +1,3 @@
+parameters:
+    ezpublish.security.login_listener.class: Netgen\Bundle\EzSyliusBundle\Security\EventListener\SecurityListener
+    cmf_routing.chain_router.class: eZ\Publish\Core\MVC\Symfony\Routing\ChainRouter

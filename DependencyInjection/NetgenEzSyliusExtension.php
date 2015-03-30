@@ -24,6 +24,7 @@ class NetgenEzSyliusExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+        $loader->load('override.yml');
         $loader->load('config.yml');
         $loader->load('fieldtypes.yml');
         $loader->load('storage_engines.yml');
