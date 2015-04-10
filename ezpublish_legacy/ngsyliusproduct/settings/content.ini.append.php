@@ -3,5 +3,4 @@
 [DataTypeSettings]
 ExtensionDirectories[]=ngsyliusproduct
 AvailableDataTypes[]=syliusproduct
-
 */?>

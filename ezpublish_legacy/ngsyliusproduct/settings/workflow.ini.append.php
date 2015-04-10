@@ -3,5 +3,4 @@
 [EventSettings]
 ExtensionDirectories[]=ngsyliusproduct
 AvailableEventTypes[]=event_syliusupdateslug
-
 */ ?>

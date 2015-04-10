@@ -1,7 +1,7 @@
 <?php
 
 $Module = array(
-    'name' => 'eZ Sylius',
+    'name' => 'Netgen Sylius Product',
     'variable_params' => true
 );
 

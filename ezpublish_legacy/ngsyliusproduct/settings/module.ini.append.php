@@ -3,5 +3,4 @@
 [ModuleSettings]
 ExtensionRepositories[]=ngsyliusproduct
 ModuleList[]=sylius
-
 */ ?>

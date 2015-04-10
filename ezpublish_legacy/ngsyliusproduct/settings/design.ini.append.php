@@ -2,5 +2,4 @@
 
 [ExtensionSettings]
 DesignExtensions[]=ngsyliusproduct
-
 */?>

@@ -2,7 +2,6 @@
 
 /**
  * eZSyliusFunctionCollection class implements fetch functions for sylius
- *
  */
 class eZSyliusFunctionCollection
 {
@@ -17,22 +16,24 @@ class eZSyliusFunctionCollection
     static public function fetchTaxCategories( )
     {
         $serviceContainer = ezpKernel::instance()->getServiceContainer();
-        $taxCategoryRepository = $serviceContainer->get('sylius.repository.tax_category');
+        $taxCategoryRepository = $serviceContainer->get( 'sylius.repository.tax_category' );
 
         $taxCategories = $taxCategoryRepository->findAll();
 
         $taxNames = array();
-        foreach($taxCategories as $taxCategory)
+        foreach ( $taxCategories as $taxCategory )
         {
-            array_push($taxNames, $taxCategory->getName());
+            array_push( $taxNames, $taxCategory->getName() );
         }
 
         $result = $taxNames;
 
-        if( is_array($result) && !empty($result) )
+        if ( is_array( $result ) && !empty( $result ) )
+        {
             return array( 'result' => $result );
-        else
-            return array( 'result' => false );
+        }
+
+        return array( 'result' => false );
     }
 
     /**
@@ -51,19 +52,20 @@ class eZSyliusFunctionCollection
         $products_array = array();
 
         /** @var \Sylius\Component\Core\Model\Product $product */
-        foreach( $products as $product )
+        foreach ( $products as $product )
         {
             $products_array[$product->getId()] = $product->getName();
         }
 
         $result = $products_array;
 
-        if( is_array($products_array) && !empty($result) )
+        if ( is_array( $products_array ) && !empty( $result ) )
+        {
             return array( 'result' => $result );
-        else
-            return array( 'result' => false );
-    }
+        }
 
+        return array( 'result' => false );
+    }
 }
 
 ?>
