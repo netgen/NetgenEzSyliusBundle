@@ -2,14 +2,12 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
-use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
-
 
 class Type extends FieldType
 {
@@ -75,31 +73,34 @@ class Type extends FieldType
      */
     protected function createValueFromInput( $inputValue )
     {
-        if ( $inputValue instanceof Value ){
+        if ( $inputValue instanceof Value )
+        {
             return $inputValue;
         }
-        elseif ( is_array($inputValue) )
+        else if ( is_array( $inputValue ) )
         {
-            $newValue = $this->fromHash($inputValue);
+            $newValue = $this->fromHash( $inputValue );
+
             return $newValue;
         }
-        elseif ( is_int($inputValue) )
+        else if ( is_int( $inputValue ) )
         {
             /** @var \Sylius\Component\Core\Model\Product $product */
-            $product = $this->syliusRepository->find($inputValue);
+            $product = $this->syliusRepository->find( $inputValue );
             $price = $product->getPrice();
             $price /= 100; // sylius feature
 
             // format date
             /** @var \DateTime $available_on */
             $available_on = $product->getAvailableOn();
-            $available_on = $available_on->format('Y-m-d H:i');
-            $newValue = new Value( array(
-                    'price' =>  $price,
+            $available_on = $available_on->format( 'Y-m-d H:i' );
+            $newValue = new Value(
+                array(
+                    'price' => $price,
                     'sylius_id' => $product->getId(),
-                    'name' =>   $product->getName(),
-                    'description' =>    $product->getDescription(),
-                    'available_on' =>   $available_on,
+                    'name' => $product->getName(),
+                    'description' => $product->getDescription(),
+                    'available_on' => $available_on,
                     'weight' => $product->getMasterVariant()->getWeight(),
                     'height' => $product->getMasterVariant()->getHeight(),
                     'width' => $product->getMasterVariant()->getWidth(),
@@ -110,7 +111,9 @@ class Type extends FieldType
             );
 
             if ( $product->getTaxCategory() )
+            {
                 $newValue->tax_category = $product->getTaxCategory();
+            }
 
             return $newValue;
         }
@@ -127,14 +130,16 @@ class Type extends FieldType
      */
     protected function checkValueStructure( BaseValue $value )
     {
-        if ( !is_int($value->price) && $value->price < 0 )
+        if ( !is_int( $value->price ) && $value->price < 0 )
         {
             throw new InvalidArgumentType(
                 '$value->price',
                 'integer',
-                $value->price);
+                $value->price
+            );
         }
-        if( !is_string($value->name) )
+
+        if ( !is_string( $value->name ) )
         {
             throw new InvalidArgumentType(
                 '$value->name',
@@ -142,7 +147,8 @@ class Type extends FieldType
                 $value->name
             );
         }
-        if( !is_string($value->description) )
+
+        if ( !is_string( $value->description ) )
         {
             throw new InvalidArgumentType(
                 '$value->description',
@@ -150,7 +156,8 @@ class Type extends FieldType
                 $value->description
             );
         }
-        if( !is_numeric($value->height) && $value->height !== null )
+
+        if ( !is_numeric( $value->height ) && $value->height !== null )
         {
             throw new InvalidArgumentType(
                 '$value->height',
@@ -158,7 +165,8 @@ class Type extends FieldType
                 $value->height
             );
         }
-        if( !is_numeric($value->weight) && $value->weight !== null )
+
+        if ( !is_numeric( $value->weight ) && $value->weight !== null )
         {
             throw new InvalidArgumentType(
                 '$value->weight',
@@ -166,7 +174,8 @@ class Type extends FieldType
                 $value->weight
             );
         }
-        if( !is_numeric($value->width) && $value->width !== null )
+
+        if ( !is_numeric( $value->width ) && $value->width !== null )
         {
             throw new InvalidArgumentType(
                 '$value->width',
@@ -174,7 +183,8 @@ class Type extends FieldType
                 $value->width
             );
         }
-        if( !is_numeric($value->depth) && $value->depth !== null )
+
+        if ( !is_numeric( $value->depth ) && $value->depth !== null )
         {
             throw new InvalidArgumentType(
                 '$value->depth',
@@ -195,48 +205,72 @@ class Type extends FieldType
      */
     public function fromHash( $hash )
     {
-        if ( !is_array( $hash ) || empty($hash['price']) )
+        if ( !is_array( $hash ) || empty( $hash['price'] ) )
         {
             return new Value();
         }
 
         $value = new Value();
 
-        if (!empty($hash['price']))
+        if ( !empty( $hash['price'] ) )
+        {
             $value->price = $hash['price'];
+        }
 
-        if (!empty($hash['name']))
+        if ( !empty( $hash['name'] ) )
+        {
             $value->name = $hash['name'];
+        }
 
-        if (!empty($hash['sylius_id']))
+        if ( !empty( $hash['sylius_id'] ) )
+        {
             $value->syliusId = $hash['sylius_id'];
+        }
 
-        if (!empty($hash['description']))
+        if ( !empty( $hash['description'] ) )
+        {
             $value->description = $hash['description'];
+        }
 
-        if (!empty($hash['slug']))
+        if ( !empty( $hash['slug'] ) )
+        {
             $value->slug = $hash['slug'];
+        }
 
-        if (!empty($hash['available_on']))
+        if ( !empty( $hash['available_on'] ) )
+        {
             $value->available_on = $hash['available_on'];
+        }
 
-        if (!empty($hash['weight']))
+        if ( !empty( $hash['weight'] ) )
+        {
             $value->weight = $hash['weight'];
+        }
 
-        if (!empty($hash['height']))
+        if ( !empty( $hash['height'] ) )
+        {
             $value->height = $hash['height'];
+        }
 
-        if (!empty($hash['width']))
+        if ( !empty( $hash['width'] ) )
+        {
             $value->width = $hash['width'];
+        }
 
-        if (!empty($hash['depth']))
+        if ( !empty( $hash['depth'] ) )
+        {
             $value->depth = $hash['depth'];
+        }
 
-        if (!empty($hash['sku']))
+        if ( !empty( $hash['sku'] ) )
+        {
             $value->sku = $hash['sku'];
+        }
 
-        if (!empty($hash['tax_category']))
+        if ( !empty( $hash['tax_category'] ) )
+        {
             $value->tax_category = $hash['tax_category'];
+        }
 
         return $value;
     }
@@ -250,21 +284,25 @@ class Type extends FieldType
      */
     public function toHash( SPIValue $value )
     {
-        if (empty($value->price) || empty($value->name) || empty($value->syliusId) )
+        if ( empty( $value->price ) || empty( $value->name ) || empty( $value->syliusId ) )
+        {
             return array();
+        }
 
-        return array( 'price' => $value->price,
-                      'name' => $value->name,
-                      'sylius_id' => $value->syliusId,
-                      'description' => $value->description,
-                      'slug' => $value->slug,
-                      'available_on' => $value->available_on,
-                      'weight' => $value->weight,
-                      'height' => $value->height,
-                      'width' => $value->width,
-                      'depth' => $value->depth,
-                      'sku' => $value->sku,
-                      'tax_category' => $value->tax_category);
+        return array(
+            'price' => $value->price,
+            'name' => $value->name,
+            'sylius_id' => $value->syliusId,
+            'description' => $value->description,
+            'slug' => $value->slug,
+            'available_on' => $value->available_on,
+            'weight' => $value->weight,
+            'height' => $value->height,
+            'width' => $value->width,
+            'depth' => $value->depth,
+            'sku' => $value->sku,
+            'tax_category' => $value->tax_category
+        );
     }
 
     /**
@@ -275,8 +313,8 @@ class Type extends FieldType
     {
         return new FieldValue(
             array(
-                "data" => $this->ezToHash($value),
-                "externalData" => $this->syliusToHash($value),
+                "data" => $this->ezToHash( $value ),
+                "externalData" => $this->syliusToHash( $value ),
                 "sortKey" => $this->getSortInfo( $value ),
             )
         );
@@ -292,6 +330,7 @@ class Type extends FieldType
         {
             return $this->getEmptyValue();
         }
+
         $value = new Value(
             array(
                 'name' => $fieldValue->externalData['name'],
@@ -318,7 +357,7 @@ class Type extends FieldType
      * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      * @return array
      */
-    protected function ezToHash($value)
+    protected function ezToHash( $value )
     {
         return array(
             'sylius_id' => $value->syliusId
@@ -331,7 +370,7 @@ class Type extends FieldType
      * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
      * @return array
      */
-    protected function syliusToHash($value)
+    protected function syliusToHash( $value )
     {
         return array(
             'name' => $value->name,

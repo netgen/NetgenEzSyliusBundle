@@ -3,7 +3,6 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\ORM\EntityManager;
-use Mapping\Fixture\Xml\Sluggable;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Gedmo\Sluggable\SluggableListener;
 use eZ\Publish\SPI\FieldType\FieldStorage as BaseStorage;
@@ -19,11 +18,13 @@ class SyliusProductStorage implements BaseStorage
     protected $contentService;
     protected $taxRepository;
 
-    public function __construct(RepositoryInterface $syliusProductRepository,
-                                EntityManager $syliusManager,
-                                SluggableListener $sluggableListener,
-                                ContentService $contentService,
-                                RepositoryInterface $taxRepository)
+    public function __construct(
+        RepositoryInterface $syliusProductRepository,
+        EntityManager $syliusManager,
+        SluggableListener $sluggableListener,
+        ContentService $contentService,
+        RepositoryInterface $taxRepository
+    )
     {
         $this->repository = $syliusProductRepository;
         $this->manager = $syliusManager;
@@ -59,9 +60,9 @@ class SyliusProductStorage implements BaseStorage
         $tax_category = $data['tax_category'];
 
         //check if sylius product already exists
-        $product = $this->repository->find($field->value->data['sylius_id']);
+        $product = $this->repository->find( $field->value->data['sylius_id'] );
 
-        if (!$product)
+        if ( !$product )
         {
             $product = $this->repository->createNew();
         }
@@ -72,39 +73,42 @@ class SyliusProductStorage implements BaseStorage
             ->setDescription( $desc )
             ->setPrice( $price );
 
-        if ($slug)
-            $product->setSlug($slug);
-
-        if ($available_on)
+        if ( $slug )
         {
-            //die(var_dump($available_on));
-            if ( ! $available_on instanceof \DateTime)
-                $available_on = new \DateTime($available_on);
-            //die(var_dump($available_on_dt));
-            $product->setAvailableOn($available_on);
+            $product->setSlug( $slug );
+        }
+
+        if ( $available_on )
+        {
+            if ( !$available_on instanceof \DateTime )
+            {
+                $available_on = new \DateTime( $available_on );
+            }
+
+            $product->setAvailableOn( $available_on );
         }
 
         // set tax category
-        if ($tax_category != '0' && !empty($tax_category))
+        if ( $tax_category != '0' && !empty( $tax_category ) )
         {
-            $tax_category = $this->taxRepository->findOneBy(array('name' => $tax_category));
-            $product->setTaxCategory($tax_category);
+            $tax_category = $this->taxRepository->findOneBy( array( 'name' => $tax_category ) );
+            $product->setTaxCategory( $tax_category );
         }
 
         // set additional info
         /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
         $master_variant = $product->getMasterVariant();
-        $master_variant->setWeight($weight)
-                        ->setHeight($height)
-                        ->setWidth($width)
-                        ->setDepth($depth)
-                        ->setSku($sku);
+        $master_variant->setWeight( $weight )
+                        ->setHeight( $height )
+                        ->setWidth( $width )
+                        ->setDepth( $depth )
+                        ->setSku( $sku );
 
         // custom transliterator
-        $this->sluggable_listener->setTransliterator(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate'));
-        $this->sluggable_listener->setUrlizer(array('Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize'));
+        $this->sluggable_listener->setTransliterator( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate' ) );
+        $this->sluggable_listener->setUrlizer( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize' ) );
 
-        $this->manager->persist($product);
+        $this->manager->persist( $product );
         $this->manager->flush();
 
         // fetch product again to get id
@@ -126,8 +130,9 @@ class SyliusProductStorage implements BaseStorage
     public function getFieldData( VersionInfo $versionInfo, Field $field, array $context )
     {
         /** @var \Sylius\Component\Core\Model\Product $product */
-        $product = $this->repository->find($field->value->data['sylius_id']);
-        if (!empty($product)) {
+        $product = $this->repository->find( $field->value->data['sylius_id'] );
+        if ( !empty( $product ) )
+        {
             $name = $product->getName();
             $price = $product->getPrice();
             $price /= 100; // sylius feature
@@ -136,11 +141,13 @@ class SyliusProductStorage implements BaseStorage
 
             /** @var \DateTime $available_on */
             $available_on = $product->getAvailableOn();
-            $available_on = $available_on->format('Y-m-d H:i');
+            $available_on = $available_on->format( 'Y-m-d H:i' );
 
             $tax_category = "";
-            if ($product->getTaxCategory())
+            if ( $product->getTaxCategory() )
+            {
                 $tax_category = $product->getTaxCategory()->getName();
+            }
 
             /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
             $master_variant = $product->getMasterVariant();
@@ -177,21 +184,21 @@ class SyliusProductStorage implements BaseStorage
      */
     public function deleteFieldData( VersionInfo $versionInfo, array $fieldIds, array $context )
     {
-        $fields = $this->contentService->loadContentByVersionInfo($versionInfo)->getFields();
+        $fields = $this->contentService->loadContentByVersionInfo( $versionInfo )->getFields();
 
-        foreach($fields as $field)
+        foreach( $fields as $field )
         {
-            if (in_array($field->id, $fieldIds))
+            if ( in_array( $field->id, $fieldIds ) )
             {
                 /**@var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value */
                 $value = $field->value;
                 $syliusId = $value->syliusId;
 
-                if (!empty ($syliusId))
+                if ( !empty ( $syliusId ) )
                 {
-                    $product = $this->repository->find($syliusId);
+                    $product = $this->repository->find( $syliusId );
 
-                    $this->manager->remove($product);
+                    $this->manager->remove( $product );
                     $this->manager->flush();
                 }
             }
@@ -215,7 +222,7 @@ class SyliusProductStorage implements BaseStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
      * @param array $context
      *
-     * @return \eZ\Publish\SPI\Persistence\Content\Search\Field[]
+     * @return \eZ\Publish\SPI\Search\Field[]
      */
     public function getIndexData( VersionInfo $versionInfo, Field $field, array $context )
     {

@@ -1,0 +1,5 @@
+ezpublish:
+    system:
+        default:
+            field_templates:
+                - { template: NetgenEzSyliusBundle::syliusproduct_content_field.html.twig, priority: 5000 }
