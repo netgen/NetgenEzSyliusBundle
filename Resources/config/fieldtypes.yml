@@ -1,17 +1,23 @@
 parameters:
-    ezpublish.fieldType.sylius_product.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
-    ezpublish.fieldType.sylius_product.externalStorage.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusStorage
+    ezpublish.fieldType.syliusproduct.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
+    ezpublish.fieldType.syliusproduct.externalStorage.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage
 
 services:
-    ezpublish.fieldType.sylius_product:
-        class: %ezpublish.fieldType.sylius_product.class%
+    ezpublish.fieldType.syliusproduct:
+        class: %ezpublish.fieldType.syliusproduct.class%
         parent: ezpublish.fieldType
-        arguments: [ @sylius.repository.product ]
+        arguments:
+            - @sylius.repository.product
         tags:
             - {name: ezpublish.fieldType, alias: syliusproduct}
 
-    ezpublish.fieldType.sylius_product.externalStorage:
-        class: %ezpublish.fieldType.sylius_product.externalStorage.class%
-        arguments: [ @sylius.repository.product, @sylius.manager.product, @sluggable.listener, @ezpublish.api.service.content, @sylius.repository.tax_category ]
+    ezpublish.fieldType.syliusproduct.externalStorage:
+        class: %ezpublish.fieldType.syliusproduct.externalStorage.class%
+        arguments:
+            - @sylius.repository.product
+            - @sylius.manager.product
+            - @sluggable.listener
+            - @ezpublish.api.service.content
+            - @sylius.repository.tax_category
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}

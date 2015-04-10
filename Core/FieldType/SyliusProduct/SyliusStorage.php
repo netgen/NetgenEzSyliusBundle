@@ -11,7 +11,7 @@ use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
 
-class SyliusStorage implements BaseStorage
+class SyliusProductStorage implements BaseStorage
 {
     protected $repository;
     protected $manager;
