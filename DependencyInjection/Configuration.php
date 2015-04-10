@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('netgen_ez_sylius');
+        $rootNode = $treeBuilder->root( 'netgen_ez_sylius' );
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

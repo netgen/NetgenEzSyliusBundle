@@ -20,9 +20,11 @@ class TrashSlot extends BaseSlot
 
     private $syliusManager;
 
-    public function __construct( Repository $repository,
-                                 RepositoryInterface $syliusRepository,
-                                 EntityManager $syliusManager )
+    public function __construct(
+        Repository $repository,
+        RepositoryInterface $syliusRepository,
+        EntityManager $syliusManager
+    )
     {
         $this->ezRepository = $repository;
         $this->syliusRepository = $syliusRepository;
@@ -47,16 +49,16 @@ class TrashSlot extends BaseSlot
 
         $content = $contentService->loadContent( $contentInfo->id );
 
-        $syliusId = $content->getFieldValue('sylius_product')->syliusId;
+        $syliusId = $content->getFieldValue( 'sylius_product' )->syliusId;
 
-        if ( !empty($syliusId) )
+        if ( !empty( $syliusId ) )
         {
-            $product = $this->syliusRepository->find($syliusId);
-            if($product) {
-                $this->syliusManager->remove($product);
+            $product = $this->syliusRepository->find( $syliusId );
+            if ( $product )
+            {
+                $this->syliusManager->remove( $product );
                 $this->syliusManager->flush();
             }
         }
-
     }
 }

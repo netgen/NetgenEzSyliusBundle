@@ -9,6 +9,6 @@ class NetgenEzSyliusBundle extends Bundle implements LegacyBundleInterface
 {
     public function getLegacyExtensionsNames()
     {
-        return array('ngsyliusproduct');
+        return array( 'ngsyliusproduct' );
     }
 }

@@ -7,7 +7,6 @@ use eZ\Publish\Core\Persistence\Legacy\Content\StorageFieldValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
 use eZ\Publish\SPI\Persistence\Content\Type\FieldDefinition;
 use eZ\Publish\Core\Persistence\Legacy\Content\StorageFieldDefinition;
-use eZ\Publish\Core\FieldType\FieldSettings;
 
 /**
  * Converter for Sylius Product field values in legacy storage
@@ -77,5 +76,4 @@ class SyliusProductConverter implements Converter
     {
         return 'data_int';
     }
-
 }

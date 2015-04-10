@@ -1,6 +1,6 @@
 {
     "name": "netgen/ez-sylius-bundle",
-    "description": "Bundle for eZ Publish which integrates some Sylius features like cart ",
+    "description": "eZ Publish & Sylius integration bundle",
     "license": "GPL-2.0",
     "authors": [
         {

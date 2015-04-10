@@ -20,9 +20,11 @@ class UntrashSlot extends BaseSlot
 
     private $syliusManager;
 
-    public function __construct( Repository $repository,
-                                 RepositoryInterface $syliusRepository,
-                                 EntityManager $syliusManager )
+    public function __construct(
+        Repository $repository,
+        RepositoryInterface $syliusRepository,
+        EntityManager $syliusManager
+    )
     {
         $this->ezRepository = $repository;
         $this->syliusRepository = $syliusRepository;
@@ -45,20 +47,20 @@ class UntrashSlot extends BaseSlot
         $contentId = $trashedItem->contentId;
         $content = $contentService->loadContent( $contentId );
 
-        $syliusId = $content->getFieldValue('sylius_product')->syliusId;
+        $syliusId = $content->getFieldValue( 'sylius_product' )->syliusId;
 
-        if ( !empty($syliusId) )
+        if ( !empty( $syliusId ) )
         {
             /** @var \Sylius\Component\Core\Model\Product $product */
-            $product = $this->syliusRepository->findForDetailsPage($syliusId); // to get deleted product
+            $product = $this->syliusRepository->findForDetailsPage( $syliusId ); // to get deleted product
 
-            if($product) {
-                $product->setDeletedAt(null);
-                $product->getMasterVariant()->setDeletedAt(null);
-                $this->syliusManager->persist($product);
+            if ( $product )
+            {
+                $product->setDeletedAt( null );
+                $product->getMasterVariant()->setDeletedAt( null );
+                $this->syliusManager->persist( $product );
                 $this->syliusManager->flush();
             }
         }
-
     }
 }

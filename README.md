@@ -1,1 +1,0 @@
-eZ Publish and Sylius glue :)
