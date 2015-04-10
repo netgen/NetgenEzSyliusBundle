@@ -172,7 +172,11 @@ class SyliusProductType extends eZDataType
 
                 // if checkbox for ez name checked
                 if ($http->hasPostVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id"))) {
-                    if (in_array($node->classIdentifier(), $syliusProductINI->variable('Mapping', 'MappedClasses'))) {
+                    $mappedClasses = $syliusProductINI->hasVariable('Mapping', 'MappedClasses') ?
+                        $syliusProductINI->variable('Mapping', 'MappedClasses') :
+                        array();
+
+                    if (in_array($node->classIdentifier(), $mappedClasses)) {
                         $mappedNameIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Name');
                         $dataMap = $node->dataMap();
                         $name = $dataMap[$mappedNameIdentifier]->content();
