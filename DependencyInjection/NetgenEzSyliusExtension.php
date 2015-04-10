@@ -27,7 +27,5 @@ class NetgenEzSyliusExtension extends Extension
         $loader->load('override.yml');
         $loader->load('fieldtypes.yml');
         $loader->load('storage_engines.yml');
-        $loader->load('ezsylius.yml');
-
     }
 }

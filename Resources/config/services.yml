@@ -7,7 +7,6 @@ parameters:
 
 
 services:
-
      netgen_ez_sylius.configuration_factory:
          class: %netgen_ez_sylius.configuration_factory.class%
          factory_service: sylius.controller.configuration_factory
