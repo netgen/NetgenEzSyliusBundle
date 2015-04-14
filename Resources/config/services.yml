@@ -1,14 +1,13 @@
 parameters:
-    netgen_ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
-    netgen_ez_sylius.onpublish_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
-    netgen_ez_sylius.trash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
-    netgen_ez_sylius.untrash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
-    netgen_ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler\ProductNumber
-
+    netgen.ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
+    netgen.ez_sylius.onpublish_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
+    netgen.ez_sylius.trash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
+    netgen.ez_sylius.untrash_slot.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
+    netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler\ProductNumber
 
 services:
-     netgen_ez_sylius.configuration_factory:
-         class: %netgen_ez_sylius.configuration_factory.class%
+     netgen.ez_sylius.configuration_factory:
+         class: %netgen.ez_sylius.configuration_factory.class%
          factory_service: sylius.controller.configuration_factory
          factory_method: createConfiguration
          arguments:
@@ -19,33 +18,33 @@ services:
      sylius.controller.cart:
          class: %sylius.controller.cart.class%
          arguments:
-             - @netgen_ez_sylius.configuration_factory
+             - @netgen.ez_sylius.configuration_factory
          calls:
              - [setContainer, [@service_container]]
 
      sluggable.listener:
           alias: stof_doctrine_extensions.listener.sluggable
 
-     netgen_ez_sylius.onpublish_slot:
-        class: %netgen_ez_sylius.onpublish_slot.class%
+     netgen.ez_sylius.onpublish_slot:
+        class: %netgen.ez_sylius.onpublish_slot.class%
         arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product, %netgen.ez_sylius.content_type_identifiers%, %netgen.ez_sylius.field_definition_identifier_mappings%, @ezpublish.cache_pool.spi.cache.decorator ]
         tags:
             - { name: ezpublish.api.slot, signal: ContentService\PublishVersionSignal }
 
-     netgen_ez_sylius.trash_slot:
-        class: %netgen_ez_sylius.trash_slot.class%
+     netgen.ez_sylius.trash_slot:
+        class: %netgen.ez_sylius.trash_slot.class%
         arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product ]
         tags:
             - { name: ezpublish.api.slot, signal: TrashService\TrashSignal }
 
-     netgen_ez_sylius.untrash_slot:
-        class: %netgen_ez_sylius.untrash_slot.class%
+     netgen.ez_sylius.untrash_slot:
+        class: %netgen.ez_sylius.untrash_slot.class%
         arguments: [ @ezpublish.api.repository, @sylius.repository.product, @sylius.manager.product ]
         tags:
             - { name: ezpublish.api.slot, signal: TrashService\RecoverSignal }
 
-     netgen_ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number:
-        class: %netgen_ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class%
+     netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number:
+        class: %netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class%
         parent: ezpublish.persistence.legacy.search.gateway.sort_clause_handler.common.field
         tags:
             - {name: ezpublish.persistence.legacy.search.gateway.sort_clause_handler.content}

@@ -1,20 +1,14 @@
 Add to parameters.yml:
-    netgen_ez_sylius_content_type_identifiers: [ contentTypeIdentifier1, contentTypeIdentifier2 ]
+    netgen.ez_sylius.content_type_identifiers: [ contentTypeIdentifier1, contentTypeIdentifier2 ]
 with contentTypeId being the content type identifier of the class with sylius_product field type
 
-    netgen_ez_sylius.field_definition_identifier_mappings:
+    netgen.ez_sylius.field_definition_identifier_mappings:
         [name of the class]:
             name: [field identifier which will be maped to name]
             description: [field identifier which will be maped to description]
         product:
             name: name
             description: description
-
-
-Enable twig template in your override yml (ezpublish.yml):
-your_group:
-    field_templates:
-        - {template: "NetgenEzSyliusBundle:fields:syliusproduct.html.twig"}
 
 SyliusProduct data type comes with event that updates slug in sylius database when the object has been moved or swaped.
 To enable this feature, you have to do the following
