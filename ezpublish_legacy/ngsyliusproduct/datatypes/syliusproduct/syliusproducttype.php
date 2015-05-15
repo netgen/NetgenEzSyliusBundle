@@ -171,32 +171,31 @@ class SyliusProductType extends eZDataType
                 $syliusProductINI = eZINI::instance('ngsyliusproduct.ini');
 
                 // if checkbox for ez name checked
-                if ($http->hasPostVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id"))) {
-                    $mappedClasses = $syliusProductINI->hasVariable('Mapping', 'MappedClasses') ?
-                        $syliusProductINI->variable('Mapping', 'MappedClasses') :
-                        array();
-
-                    if (in_array($node->classIdentifier(), $mappedClasses)) {
-                        $mappedNameIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Name');
-                        $dataMap = $node->dataMap();
-                        $name = $dataMap[$mappedNameIdentifier]->content();
-                        //$contentObjectAttribute->content()->setName($name);
-                    }
+                if ($http->hasPostVariable($base . "_data_ez_name_" . $contentObjectAttribute->attribute("id")) &&
+                    $syliusProductINI->hasVariable($node->classIdentifier(), 'Name')) {
+                            $mappedNameIdentifier = $syliusProductINI->variable( $node->classIdentifier(), 'Name' );
+                            $dataMap = $node->dataMap();
+                            $name = $dataMap[ $mappedNameIdentifier ]->content();
+                            //$contentObjectAttribute->content()->setName($name);
                 } elseif ($http->hasPostVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"))) {
-                    $name = $http->postVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id"));
-                    $name = trim($name) != '' ? $name : null;
+                    $name = trim($http->postVariable($base . "_data_string_" . $contentObjectAttribute->attribute("id")));
+                } else
+                {
+                    $name = '';
                 }
 
                 // if checkbox for ez description checked
-                if ($http->hasPostVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id"))) {
-                    $mappedDescIdentifier = $syliusProductINI->variable($node->classIdentifier(), 'Description');
-                    $dataMap = $node->dataMap();
-                    $desc = $dataMap[$mappedDescIdentifier]->content()->attribute('output')->attribute('output_text');
-                    $desc = strip_tags($desc);
+                if ($http->hasPostVariable($base . "_data_ez_desc_" . $contentObjectAttribute->attribute("id")) &&
+                    $syliusProductINI->hasVariable($node->classIdentifier(), 'Description')) {
+
+                        $mappedDescIdentifier = $syliusProductINI->variable( $node->classIdentifier(), 'Description' );
+                        $dataMap = $node->dataMap();
+                        $desc = $dataMap[ $mappedDescIdentifier ]->content()->attribute( 'output' )->attribute( 'output_text' );
+                        $desc = strip_tags( $desc );
                 } elseif ($http->hasPostVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"))) {
                     $desc = $http->postVariable($base . "_data_desc_" . $contentObjectAttribute->attribute("id"));
                 } else
-                    $desc = 'eZ Product';
+                    $desc = '';
 
                 //check for "available on" information
                 $availableDate = false;
