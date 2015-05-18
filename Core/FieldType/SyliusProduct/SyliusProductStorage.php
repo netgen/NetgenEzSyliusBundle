@@ -9,6 +9,8 @@ use eZ\Publish\SPI\FieldType\FieldStorage as BaseStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
+use Sylius\Component\Core\Model\ProductTranslation;
 
 class SyliusProductStorage implements BaseStorage
 {
@@ -17,13 +19,15 @@ class SyliusProductStorage implements BaseStorage
     protected $sluggable_listener;
     protected $contentService;
     protected $taxRepository;
+    protected $localeConverter;
 
     public function __construct(
         RepositoryInterface $syliusProductRepository,
         EntityManager $syliusManager,
         SluggableListener $sluggableListener,
         ContentService $contentService,
-        RepositoryInterface $taxRepository
+        RepositoryInterface $taxRepository,
+        LocaleConverterInterface $localeConverter
     )
     {
         $this->repository = $syliusProductRepository;
@@ -31,6 +35,7 @@ class SyliusProductStorage implements BaseStorage
         $this->sluggable_listener = $sluggableListener;
         $this->contentService = $contentService;
         $this->taxRepository = $taxRepository;
+        $this->localeConverter = $localeConverter;
     }
 
     /**
@@ -59,6 +64,9 @@ class SyliusProductStorage implements BaseStorage
         $sku = $data['sku'];
         $tax_category = $data['tax_category'];
 
+        $POSIXLocale = $this->localeConverter->convertToPOSIX( $field->languageCode );
+
+
         //check if sylius product already exists
         $product = $this->repository->find( $field->value->data['sylius_id'] );
 
@@ -67,8 +75,17 @@ class SyliusProductStorage implements BaseStorage
             $product = $this->repository->createNew();
         }
 
+        $translation = new ProductTranslation();
+        $translation->setLocale( $POSIXLocale );
+
+        if( !$product->hasTranslation( $translation ) )
+        {
+            $product->addTranslation( $translation );
+        }
+
         /** @var \Sylius\Component\Core\Model\Product $product */
         $product
+            ->setCurrentLocale( $POSIXLocale )
             ->setName( $name )
             ->setDescription( $desc )
             ->setPrice( (int)$price );
@@ -131,8 +148,15 @@ class SyliusProductStorage implements BaseStorage
     {
         /** @var \Sylius\Component\Core\Model\Product $product */
         $product = $this->repository->find( $field->value->data['sylius_id'] );
+
         if ( !empty( $product ) )
         {
+            $product->setCurrentLocale(
+                $this->localeConverter->convertToPOSIX(
+                    $field->languageCode
+                )
+            );
+
             $name = $product->getName();
             $price = $product->getPrice();
             $price /= 100; // sylius feature

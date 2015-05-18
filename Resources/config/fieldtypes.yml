@@ -19,5 +19,6 @@ services:
             - @sluggable.listener
             - @ezpublish.api.service.content
             - @sylius.repository.tax_category
+            - @ezpublish.locale.converter
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}
