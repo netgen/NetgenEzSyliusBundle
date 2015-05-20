@@ -23,5 +23,3 @@ $FunctionList['products'] = array(
     'parameter_type' => 'standard',
     'parameters' => array()
 );
-
-?>

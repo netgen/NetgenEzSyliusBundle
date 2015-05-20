@@ -22,7 +22,6 @@ class ProductNumber extends SortClauseHandler
         return $sortClause instanceof APIProductNumber;
     }
 
-
     /**
      * Applies joins to the query
      *
@@ -67,8 +66,8 @@ class ProductNumber extends SortClauseHandler
                     $this->dbHandler->quoteIdentifier( $externalTable )
                 ),
                 $query->expr->eq(
-                        $this->dbHandler->quoteColumn( "product_id", $externalTable ),
-                        $this->dbHandler->quoteColumn( "data_int", $table )
+                    $this->dbHandler->quoteColumn( "product_id", $externalTable ),
+                    $this->dbHandler->quoteColumn( "data_int", $table )
                 )
             )
             ->innerJoin(

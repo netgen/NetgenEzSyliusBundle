@@ -35,11 +35,11 @@ class SyliusUpdateSlugType extends eZWorkflowEventType
         foreach ( $nodeIDs as $nodeID )
         {
             $node = eZContentObjectTreeNode::fetch( $nodeID );
-            $datamap = $node->dataMap();
+            $dataMap = $node->dataMap();
 
             $hasSylius = false;
             $syliusId = null;
-            foreach ( $datamap as $attribute )
+            foreach ( $dataMap as $attribute )
             {
                 if ( $attribute->attribute( 'data_type_string' ) === 'syliusproduct' )
                 {
@@ -71,7 +71,7 @@ class SyliusUpdateSlugType extends eZWorkflowEventType
                 $syliusManager->persist( $product );
                 $syliusManager->flush();
                 eZLog::write(
-                    'Succesfully updated url. NodeID: ' . $nodeID . ' - SyliusID: ' . $syliusId . ' - URL: ' . $newSlug
+                    'Successfully updated url. NodeID: ' . $nodeID . ' - SyliusID: ' . $syliusId . ' - URL: ' . $newSlug
                 );
             }
             else
@@ -87,5 +87,3 @@ class SyliusUpdateSlugType extends eZWorkflowEventType
 }
 
 eZWorkflowEventType::registerEventType( SyliusUpdateSlugType::WORKFLOW_TYPE_STRING, 'syliusupdateslugtype' );
-
-?>

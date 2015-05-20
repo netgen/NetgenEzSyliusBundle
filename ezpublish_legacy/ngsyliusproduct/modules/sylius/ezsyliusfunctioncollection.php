@@ -1,8 +1,5 @@
 <?php
 
-/**
- * eZSyliusFunctionCollection class implements fetch functions for sylius
- */
 class eZSyliusFunctionCollection
 {
     protected $tax_categories;
@@ -18,6 +15,7 @@ class eZSyliusFunctionCollection
         $serviceContainer = ezpKernel::instance()->getServiceContainer();
         $taxCategoryRepository = $serviceContainer->get( 'sylius.repository.tax_category' );
 
+        /** @var \Sylius\Component\Taxation\Model\TaxCategoryInterface[] $taxCategories */
         $taxCategories = $taxCategoryRepository->findAll();
 
         $taxNames = array();
@@ -67,5 +65,3 @@ class eZSyliusFunctionCollection
         return array( 'result' => false );
     }
 }
-
-?>

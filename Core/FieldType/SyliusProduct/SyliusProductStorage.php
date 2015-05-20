@@ -3,16 +3,16 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\ORM\EntityManager;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Gedmo\Sluggable\SluggableListener;
-use eZ\Publish\SPI\FieldType\FieldStorage as BaseStorage;
+use eZ\Publish\SPI\FieldType\FieldStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Core\Model\ProductTranslation;
 
-class SyliusProductStorage implements BaseStorage
+class SyliusProductStorage implements FieldStorage
 {
     protected $repository;
     protected $manager;
@@ -66,7 +66,6 @@ class SyliusProductStorage implements BaseStorage
 
         $POSIXLocale = $this->localeConverter->convertToPOSIX( $field->languageCode );
 
-
         //check if sylius product already exists
         $product = $this->repository->find( $field->value->data['sylius_id'] );
 
@@ -78,7 +77,7 @@ class SyliusProductStorage implements BaseStorage
         $translation = new ProductTranslation();
         $translation->setLocale( $POSIXLocale );
 
-        if( !$product->hasTranslation( $translation ) )
+        if ( !$product->hasTranslation( $translation ) )
         {
             $product->addTranslation( $translation );
         }
@@ -108,6 +107,7 @@ class SyliusProductStorage implements BaseStorage
         // set tax category
         if ( $tax_category != '0' && !empty( $tax_category ) )
         {
+            /** @var \Sylius\Component\Taxation\Model\TaxCategoryInterface $tax_category */
             $tax_category = $this->taxRepository->findOneBy( array( 'name' => $tax_category ) );
             $product->setTaxCategory( $tax_category );
         }
@@ -116,10 +116,10 @@ class SyliusProductStorage implements BaseStorage
         /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
         $master_variant = $product->getMasterVariant();
         $master_variant->setWeight( $weight )
-                        ->setHeight( $height )
-                        ->setWidth( $width )
-                        ->setDepth( $depth )
-                        ->setSku( $sku );
+            ->setHeight( $height )
+            ->setWidth( $width )
+            ->setDepth( $depth )
+            ->setSku( $sku );
 
         // custom transliterator
         $this->sluggable_listener->setTransliterator( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate' ) );
@@ -210,7 +210,7 @@ class SyliusProductStorage implements BaseStorage
     {
         $fields = $this->contentService->loadContentByVersionInfo( $versionInfo )->getFields();
 
-        foreach( $fields as $field )
+        foreach ( $fields as $field )
         {
             if ( in_array( $field->id, $fieldIds ) )
             {

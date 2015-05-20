@@ -31,7 +31,6 @@ class TrashSlot extends BaseSlot
         $this->syliusManager = $syliusManager;
     }
 
-
     public function receive( Signal $signal )
     {
         if ( !$signal instanceof TrashSignal )
