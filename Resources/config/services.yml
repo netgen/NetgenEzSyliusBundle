@@ -1,30 +1,10 @@
 parameters:
-    netgen.ez_sylius.configuration_factory.class: Sylius\Bundle\ResourceBundle\Controller\Configuration
     netgen.ez_sylius.signalslot.slot.onpublish.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
     netgen.ez_sylius.signalslot.slot.trash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
     netgen.ez_sylius.signalslot.slot.untrash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
     netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler\ProductNumber
 
 services:
-     netgen.ez_sylius.configuration_factory:
-         class: %netgen.ez_sylius.configuration_factory.class%
-         factory_service: sylius.controller.configuration_factory
-         factory_method: createConfiguration
-         arguments:
-             - "sylius"
-             - "cart"
-             - "NetgenEzSyliusBundle:Cart"
-
-     sylius.controller.cart:
-         class: %sylius.controller.cart.class%
-         arguments:
-             - @netgen.ez_sylius.configuration_factory
-         calls:
-             - [setContainer, [@service_container]]
-
-     sluggable.listener:
-          alias: stof_doctrine_extensions.listener.sluggable
-
      netgen.ez_sylius.signalslot.slot.onpublish:
         class: %netgen.ez_sylius.signalslot.slot.onpublish.class%
         arguments:
