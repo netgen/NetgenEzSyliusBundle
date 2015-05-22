@@ -5,7 +5,6 @@ namespace Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Co
 use eZ\Publish\Core\Persistence\Database\SelectQuery;
 use eZ\Publish\API\Repository\Values\Content\Query\SortClause;
 use eZ\Publish\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler;
-use eZ\Publish\SPI\Persistence\Content\Type;
 use Netgen\Bundle\EzSyliusBundle\API\Repository\Values\Content\Query\SortClause\ProductNumber as APIProductNumber;
 
 class ProductNumber extends SortClauseHandler
@@ -31,8 +30,6 @@ class ProductNumber extends SortClauseHandler
      */
     public function applyJoin( SelectQuery $query, SortClause $sortClause, $number )
     {
-        /** @var \eZ\Publish\API\Repository\Values\Content\Query\SortClause\Target\FieldTarget $fieldTarget */
-        $fieldTarget = $sortClause->targetData;
         $table = $this->getSortTableName( $number );
         $externalTable = $this->getSortTableName( $number, "sylius_product_variant" );
 
@@ -65,48 +62,14 @@ class ProductNumber extends SortClauseHandler
                     $this->dbHandler->quoteTable( "sylius_product_variant" ),
                     $this->dbHandler->quoteIdentifier( $externalTable )
                 ),
-                $query->expr->eq(
-                    $this->dbHandler->quoteColumn( "product_id", $externalTable ),
-                    $this->dbHandler->quoteColumn( "data_int", $table )
-                )
-            )
-            ->innerJoin(
-                $query->alias(
-                    $this->dbHandler->quoteTable( "ezcontentclass_attribute" ),
-                    $this->dbHandler->quoteIdentifier( "cc_attr_$number" )
-                ),
                 $query->expr->lAnd(
                     $query->expr->eq(
-                        $this->dbHandler->quoteColumn( "contentclassattribute_id", $table ),
-                        $this->dbHandler->quoteColumn( "id", "cc_attr_$number" )
+                        $this->dbHandler->quoteColumn( "product_id", $externalTable ),
+                        $this->dbHandler->quoteColumn( "data_int", $table )
                     ),
                     $query->expr->eq(
-                        $this->dbHandler->quoteColumn( "identifier", "cc_attr_$number" ),
-                        $query->bindValue( $fieldTarget->fieldIdentifier )
-                    ),
-                    $query->expr->eq(
-                        $this->dbHandler->quoteColumn( "version", "cc_attr_$number" ),
-                        $query->bindValue( Type::STATUS_DEFINED, null, \PDO::PARAM_INT )
-                    )
-                )
-            )
-            ->innerJoin(
-                $query->alias(
-                    $this->dbHandler->quoteTable( "ezcontentclass" ),
-                    $this->dbHandler->quoteIdentifier( "cc_$number" )
-                ),
-                $query->expr->lAnd(
-                    $query->expr->eq(
-                        $this->dbHandler->quoteColumn( "contentclass_id", "cc_attr_$number" ),
-                        $this->dbHandler->quoteColumn( "id", "cc_$number" )
-                    ),
-                    $query->expr->eq(
-                        $this->dbHandler->quoteColumn( "identifier", "cc_$number" ),
-                        $query->bindValue( $fieldTarget->typeIdentifier )
-                    ),
-                    $query->expr->eq(
-                        $this->dbHandler->quoteColumn( "version", "cc_$number" ),
-                        $query->bindValue( Type::STATUS_DEFINED, null, \PDO::PARAM_INT )
+                        $this->dbHandler->quoteColumn( "is_master", $externalTable ),
+                        $query->bindValue( 1, null, \PDO::PARAM_INT )
                     )
                 )
             );
@@ -126,8 +89,16 @@ class ProductNumber extends SortClauseHandler
      */
     public function applySelect( SelectQuery $query, SortClause $sortClause, $number )
     {
-        //$columns = parent::applySelect( $query, $sortClause, $number );
+        $query->select(
+            $query->alias(
+                $this->dbHandler->quoteColumn(
+                    "sku",
+                    $this->getSortTableName( $number, "sylius_product_variant" )
+                ),
+                $column = $this->getSortColumnName( $number )
+            )
+        );
 
-        return "sku";
+        return $column;
     }
 }
