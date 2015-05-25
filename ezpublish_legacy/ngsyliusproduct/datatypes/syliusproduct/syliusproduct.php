@@ -79,7 +79,7 @@ class SyliusProduct
      */
     public function attribute( $name )
     {
-        if( empty( $this->product ) )
+        if ( empty( $this->product ) )
         {
             return null;
         }
@@ -170,7 +170,7 @@ class SyliusProduct
      */
     public function store( eZContentObjectAttribute $attribute )
     {
-        if( !is_numeric( $attribute->attribute( 'contentobject_id' ) ) || !is_numeric( $this->product->getId() ) )
+        if ( !is_numeric( $attribute->attribute( 'contentobject_id' ) ) || !is_numeric( $this->product->getId() ) )
         {
             return;
         }
@@ -185,13 +185,17 @@ class SyliusProduct
 
         if ( $count > 0 )
         {
-            $db->query( "UPDATE ngsyliusproduct SET product_id = " . (int)$productId .
-                                  " WHERE contentobject_id = " . (int)$contentId );
+            $db->query(
+                "UPDATE ngsyliusproduct SET product_id = " . (int)$productId .
+                " WHERE contentobject_id = " . (int)$contentId
+            );
         }
         else
         {
-            $db->query( "INSERT INTO ngsyliusproduct ( contentobject_id, product_id )
-                                   VALUES ( " . (int)$contentId . ", " . (int)$productId . " )" );
+            $db->query(
+                "INSERT INTO ngsyliusproduct ( contentobject_id, product_id )" .
+                " VALUES ( " . (int)$contentId . ", " . (int)$productId . " )"
+            );
         }
     }
 }

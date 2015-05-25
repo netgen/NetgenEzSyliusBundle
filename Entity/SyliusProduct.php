@@ -14,7 +14,6 @@ class SyliusProduct
      */
     private $productId;
 
-
     /**
      * Get eZ Publish content ID
      *
@@ -49,4 +48,3 @@ class SyliusProduct
         return $this->productId;
     }
 }
-
