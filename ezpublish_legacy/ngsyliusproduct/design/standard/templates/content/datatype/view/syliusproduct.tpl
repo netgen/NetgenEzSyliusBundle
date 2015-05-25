@@ -5,7 +5,3 @@
 <p>{"Sylius product id"|i18n( 'extension/ngsyliusproduct/datatypes' )}: {$attribute.content.sylius_id|wash}</p>
 <p>{"Available on"|i18n( 'extension/ngsyliusproduct/datatypes' )}: {$attribute.content.available_on|wash}</p>
 <p>{"SKU"|i18n( 'extension/ngsyliusproduct/datatypes' )}: {$attribute.content.sku|wash}</p>
-
-
-
-

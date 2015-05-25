@@ -168,7 +168,7 @@
         $(function() {
             var base = {/literal}"{$attribute_base}"{literal};
             var attribute_id = {/literal}"{$attribute.id}"{literal};
-            var datetime = {/literal}"{$attribute.content.available_on|datetime('ngsyliusproduct')}"{literal};
+            var datetime = {/literal}"{$attribute.content.available_on|datetime('syliusproduct')}"{literal};
 
             //$("#main_data-"+attribute_id+" input").prop("disabled", true);
             //$("#input_desc-"+attribute_id).prop("disabled", true);
