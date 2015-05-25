@@ -4,7 +4,9 @@ use Sylius\Component\Core\Model\ProductInterface;
 
 class SyliusProduct
 {
-    /** @var  \Sylius\Component\Core\Model\ProductInterface */
+    /**
+     * @var \Sylius\Component\Core\Model\Product
+     */
     protected $product;
 
     /**
@@ -30,9 +32,9 @@ class SyliusProduct
     }
 
     /**
-     * Creates from sylius product
+     * Creates from Sylius product
      *
-     * @param Sylius\Component\Core\Model\ProductInterface $product
+     * @param Sylius\Component\Core\Model\Product $product
      */
     public function createFromSylius( $product )
     {
@@ -141,38 +143,55 @@ class SyliusProduct
         return null;
     }
 
-    public function getProduct( )
+    /**
+     * Returns embedded Sylius product
+     *
+     * @return \Sylius\Component\Core\Model\Product
+     */
+    public function getProduct()
     {
         return $this->product;
     }
 
+    /**
+     * Sets the embedded Sylius product
+     *
+     * @param \Sylius\Component\Core\Model\ProductInterface $product
+     */
     public function setProduct( ProductInterface $product )
     {
         $this->product = $product;
     }
 
+    /**
+     * Stores the attribute
+     *
+     * @param eZContentObjectAttribute $attribute
+     */
     public function store( eZContentObjectAttribute $attribute )
     {
-        if( !is_numeric( $attribute->attribute( 'contentobject_id' ) ) || !is_numeric( $this->attribute( 'product_id' ) ) )
+        if( !is_numeric( $attribute->attribute( 'contentobject_id' ) ) || !is_numeric( $this->product->getId() ) )
+        {
             return;
+        }
 
         $contentId = $attribute->attribute( 'contentobject_id' );
         $productId = $this->attribute( 'product_id' );
 
         $db = eZDB::instance();
 
-        $result = $db->arrayQuery( "SELECT COUNT(*) as count FROM ngsyliusproduct WHERE contentobject_id = " . $contentId );
-        $exists = $result[0]['count'];
+        $result = $db->arrayQuery( "SELECT COUNT(*) as count FROM ngsyliusproduct WHERE contentobject_id = " . (int)$contentId );
+        $count = $result[0]['count'];
 
-        if ( $exists > 0 )
+        if ( $count > 0 )
         {
-            $result = $db->query( "UPDATE ngsyliusproduct SET product_id = " . $productId .
-                                  " WHERE contentobject_id = " . $contentId );
+            $db->query( "UPDATE ngsyliusproduct SET product_id = " . (int)$productId .
+                                  " WHERE contentobject_id = " . (int)$contentId );
         }
         else
         {
-            $result = $db->query( "INSERT INTO ngsyliusproduct (contentobject_id, product_id)
-                                   VALUES ( " . $contentId . ", " . $productId . " )" );
+            $db->query( "INSERT INTO ngsyliusproduct ( contentobject_id, product_id )
+                                   VALUES ( " . (int)$contentId . ", " . (int)$productId . " )" );
         }
     }
 }
