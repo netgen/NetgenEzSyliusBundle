@@ -7,30 +7,48 @@ use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\SignalSlot\Signal;
 use eZ\Publish\Core\SignalSlot\Signal\TrashService\TrashSignal;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TrashSlot extends BaseSlot
 {
     /**
      * @var \eZ\Publish\API\Repository\Repository
      */
-    private $ezRepository;
+    protected $repository;
 
-    private $syliusRepository;
+    /**
+     * @var \Sylius\Component\Resource\Repository\RepositoryInterface
+     */
+    protected $syliusRepository;
 
-    private $syliusManager;
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    protected $productEntityManager;
 
+    /**
+     * Constructor
+     *
+     * @param \eZ\Publish\API\Repository\Repository $repository
+     * @param \Sylius\Component\Resource\Repository\RepositoryInterface $syliusRepository
+     * @param \Doctrine\ORM\EntityManagerInterface $productEntityManager
+     */
     public function __construct(
         Repository $repository,
         RepositoryInterface $syliusRepository,
-        EntityManager $syliusManager
+        EntityManagerInterface $productEntityManager
     )
     {
-        $this->ezRepository = $repository;
+        $this->repository = $repository;
         $this->syliusRepository = $syliusRepository;
-        $this->syliusManager = $syliusManager;
+        $this->productEntityManager = $productEntityManager;
     }
 
+    /**
+     * Receive the given $signal and react on it
+     *
+     * @param \eZ\Publish\Core\SignalSlot\Signal $signal
+     */
     public function receive( Signal $signal )
     {
         if ( !$signal instanceof TrashSignal )
@@ -40,8 +58,8 @@ class TrashSlot extends BaseSlot
 
         $locationId = $signal->locationId;
 
-        $locationService = $this->ezRepository->getLocationService();
-        $contentService = $this->ezRepository->getContentService();
+        $locationService = $this->repository->getLocationService();
+        $contentService = $this->repository->getContentService();
         $location = $locationService->loadLocation( $locationId );
 
         $contentInfo = $location->getContentInfo();
@@ -55,8 +73,8 @@ class TrashSlot extends BaseSlot
             $product = $this->syliusRepository->find( $syliusId );
             if ( $product )
             {
-                $this->syliusManager->remove( $product );
-                $this->syliusManager->flush();
+                $this->productEntityManager->remove( $product );
+                $this->productEntityManager->flush();
             }
         }
     }

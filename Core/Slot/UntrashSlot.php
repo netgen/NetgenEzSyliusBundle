@@ -7,30 +7,48 @@ use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\SignalSlot\Signal;
 use eZ\Publish\Core\SignalSlot\Signal\TrashService\RecoverSignal;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class UntrashSlot extends BaseSlot
 {
     /**
      * @var \eZ\Publish\API\Repository\Repository
      */
-    private $ezRepository;
+    protected $repository;
 
-    private $syliusRepository;
+    /**
+     * @var \Sylius\Component\Resource\Repository\RepositoryInterface
+     */
+    protected $syliusRepository;
 
-    private $syliusManager;
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    protected $productEntityManager;
 
+    /**
+     * Constructor
+     *
+     * @param \eZ\Publish\API\Repository\Repository $repository
+     * @param \Sylius\Component\Resource\Repository\RepositoryInterface $syliusRepository
+     * @param \Doctrine\ORM\EntityManagerInterface $productEntityManager
+     */
     public function __construct(
         Repository $repository,
         RepositoryInterface $syliusRepository,
-        EntityManager $syliusManager
+        EntityManagerInterface $productEntityManager
     )
     {
-        $this->ezRepository = $repository;
+        $this->repository = $repository;
         $this->syliusRepository = $syliusRepository;
-        $this->syliusManager = $syliusManager;
+        $this->productEntityManager = $productEntityManager;
     }
 
+    /**
+     * Receive the given $signal and react on it
+     *
+     * @param \eZ\Publish\Core\SignalSlot\Signal $signal
+     */
     public function receive( Signal $signal )
     {
         if ( !$signal instanceof RecoverSignal )
@@ -38,8 +56,8 @@ class UntrashSlot extends BaseSlot
             return;
         }
 
-        $contentService = $this->ezRepository->getContentService();
-        $trashService = $this->ezRepository->getTrashService();
+        $contentService = $this->repository->getContentService();
+        $trashService = $this->repository->getTrashService();
 
         $trashedItem = $trashService->loadTrashItem( $signal->trashItemId );
 
@@ -57,8 +75,8 @@ class UntrashSlot extends BaseSlot
             {
                 $product->setDeletedAt( null );
                 $product->getMasterVariant()->setDeletedAt( null );
-                $this->syliusManager->persist( $product );
-                $this->syliusManager->flush();
+                $this->productEntityManager->persist( $product );
+                $this->productEntityManager->flush();
             }
         }
     }
