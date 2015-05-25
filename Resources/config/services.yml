@@ -1,22 +1,9 @@
 parameters:
-    netgen.ez_sylius.signalslot.slot.onpublish.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\CreateSlugOnPublishSlot
     netgen.ez_sylius.signalslot.slot.trash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
     netgen.ez_sylius.signalslot.slot.untrash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
     netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler\ProductNumber
 
 services:
-    netgen.ez_sylius.signalslot.slot.onpublish:
-        class: %netgen.ez_sylius.signalslot.slot.onpublish.class%
-        arguments:
-            - @ezpublish.api.repository
-            - @sylius.repository.product
-            - @sylius.manager.product
-            - %netgen.ez_sylius.content_type_identifiers%
-            - %netgen.ez_sylius.field_definition_identifier_mappings%
-            - @ezpublish.cache_pool.spi.cache.decorator
-        tags:
-            - { name: ezpublish.api.slot, signal: ContentService\PublishVersionSignal }
-
     netgen.ez_sylius.signalslot.slot.trash:
         class: %netgen.ez_sylius.signalslot.slot.trash.class%
         arguments:
