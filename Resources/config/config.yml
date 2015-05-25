@@ -3,3 +3,7 @@ ezpublish:
         default:
             field_templates:
                 - { template: NetgenEzSyliusBundle::syliusproduct_content_field.html.twig, priority: 5000 }
+
+netgen_ez_sylius:
+    routing:
+        generate_url_aliases: true

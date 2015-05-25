@@ -1,3 +1,16 @@
 parameters:
     ezpublish.security.login_listener.class: Netgen\Bundle\EzSyliusBundle\Security\EventListener\SecurityListener
     cmf_routing.chain_router.class: eZ\Publish\Core\MVC\Symfony\Routing\ChainRouter
+    sylius.route_generator.class: Netgen\Bundle\EzSyliusBundle\Routing\SyliusAwareGenerator
+
+services:
+    sylius.route_generator:
+        class: %sylius.route_generator.class%
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @router
+            - @sylius.route_provider
+            - @?logger
+        calls:
+            - [setRouteConfig, [%sylius.route_classes%]]
+            - [setGenerateUrlAliases, [%netgen_ez_sylius.routing.generate_url_aliases%]]

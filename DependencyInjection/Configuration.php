@@ -20,9 +20,14 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root( 'netgen_ez_sylius' );
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->arrayNode( 'routing' )
+                    ->children()
+                        ->booleanNode( 'generate_url_aliases' )->defaultTrue()->end()
+                    ->end()
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }

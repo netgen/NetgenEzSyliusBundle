@@ -22,6 +22,8 @@ class NetgenEzSyliusExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration( $configuration, $configs );
 
+        $container->setParameter( 'netgen_ez_sylius.routing.generate_url_aliases', $config['routing']['generate_url_aliases'] );
+
         $loader = new Loader\YamlFileLoader( $container, new FileLocator( __DIR__ . '/../Resources/config' ) );
         $loader->load( 'services.yml' );
         $loader->load( 'override.yml' );

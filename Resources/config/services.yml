@@ -3,7 +3,6 @@ parameters:
     netgen.ez_sylius.signalslot.slot.trash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
     netgen.ez_sylius.signalslot.slot.untrash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
     netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler\ProductNumber
-    netgen.ez_sylius.route_generator.class: Netgen\Bundle\EzSyliusBundle\Routing\SyliusAwareGenerator
 
 services:
     netgen.ez_sylius.signalslot.slot.onpublish:
