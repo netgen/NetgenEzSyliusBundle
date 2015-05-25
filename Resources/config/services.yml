@@ -5,19 +5,19 @@ parameters:
     netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\Search\Common\Gateway\SortClauseHandler\ProductNumber
 
 services:
-     netgen.ez_sylius.signalslot.slot.onpublish:
-        class: %netgen.ez_sylius.signalslot.slot.onpublish.class%
-        arguments:
-            - @ezpublish.api.repository
-            - @sylius.repository.product
-            - @sylius.manager.product
-            - %netgen.ez_sylius.content_type_identifiers%
-            - %netgen.ez_sylius.field_definition_identifier_mappings%
-            - @ezpublish.cache_pool.spi.cache.decorator
-        tags:
-            - { name: ezpublish.api.slot, signal: ContentService\PublishVersionSignal }
+    netgen.ez_sylius.signalslot.slot.onpublish:
+    class: %netgen.ez_sylius.signalslot.slot.onpublish.class%
+    arguments:
+        - @ezpublish.api.repository
+        - @sylius.repository.product
+        - @sylius.manager.product
+        - %netgen.ez_sylius.content_type_identifiers%
+        - %netgen.ez_sylius.field_definition_identifier_mappings%
+        - @ezpublish.cache_pool.spi.cache.decorator
+    tags:
+        - { name: ezpublish.api.slot, signal: ContentService\PublishVersionSignal }
 
-     netgen.ez_sylius.signalslot.slot.trash:
+    netgen.ez_sylius.signalslot.slot.trash:
         class: %netgen.ez_sylius.signalslot.slot.trash.class%
         arguments:
             - @ezpublish.api.repository
@@ -26,7 +26,7 @@ services:
         tags:
             - { name: ezpublish.api.slot, signal: TrashService\TrashSignal }
 
-     netgen.ez_sylius.signalslot.slot.untrash:
+    netgen.ez_sylius.signalslot.slot.untrash:
         class: %netgen.ez_sylius.signalslot.slot.untrash.class%
         arguments:
             - @ezpublish.api.repository
@@ -35,7 +35,7 @@ services:
         tags:
             - { name: ezpublish.api.slot, signal: TrashService\RecoverSignal }
 
-     netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number:
+    netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number:
         class: %netgen.ez_sylius.persistence.legacy.search.gateway.sort_clause_handler.common.product_number.class%
         parent: ezpublish.persistence.legacy.search.gateway.sort_clause_handler.common.field
         tags:
