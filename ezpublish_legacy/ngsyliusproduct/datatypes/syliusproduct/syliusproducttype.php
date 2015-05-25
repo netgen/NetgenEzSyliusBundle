@@ -1,6 +1,6 @@
 <?php
 
-use Sylius\Component\Product\Model\Product;
+use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslation;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 
@@ -33,51 +33,14 @@ class SyliusProductType extends eZDataType
      */
     public function initializeObjectAttribute( $objectAttribute, $currentVersion, $originalContentObjectAttribute )
     {
-        $id = $originalContentObjectAttribute->attribute( 'id' );
         if ( $originalContentObjectAttribute->attribute( 'contentobject_id' ) !== $objectAttribute->attribute( 'contentobject_id' ) )
         {
             eZLog::write( 'COPY - writing to data_text' );
             $objectAttribute->setAttribute( 'data_text', 1 );
+
+            $syliusProductOriginal = $originalContentObjectAttribute->content();
+            $objectAttribute->setContent( $syliusProductOriginal );
             $objectAttribute->store();
-        }
-        else if ( empty( $id ) )
-        {
-            $publishedContent = eZContentObject::fetchObject(
-                eZContentObject::definition(),
-                null,
-                array(
-                    'id' => $objectAttribute->attribute( 'contentobject_id' ),
-                    'status' => eZContentObjectVersion::STATUS_PUBLISHED
-                )
-            );
-
-            if ( $publishedContent instanceof eZContentObject )
-            {
-                $attributeMainTranslation = eZContentObjectAttribute::fetchObjectList(
-                    eZContentObjectAttribute::definition(),
-                    null,
-                    array(
-                        'contentobject_id' => $objectAttribute->attribute( 'contentobject_id' ),
-                        'version' => $publishedContent->attribute( 'current_version' ),
-                        'contentclassattribute_id' => $objectAttribute->attribute( 'contentclassattribute_id' )
-                    ),
-                    null,
-                    null,
-                    true,
-                    false,
-                    null,
-                    null,
-                    ' AND language_id - MOD( language_id, 2 ) = ' . (int)$publishedContent->attribute( 'initial_language_id' )
-                );
-
-                if ( !empty( $attributeMainTranslation ) )
-                {
-                    $objectAttribute->setAttribute(
-                        'data_int',
-                        $attributeMainTranslation[0]->attribute( 'data_int' )
-                    );
-                }
-            }
         }
     }
 
@@ -92,36 +55,6 @@ class SyliusProductType extends eZDataType
      */
     public function fetchObjectAttributeHTTPInput( $http, $base, $objectAttribute )
     {
-        // if existing product is set
-        /* Removed because not needed by current use-case
-        if ( $http->hasPostVariable( $base . "_data_product_" . $objectAttribute->attribute( "id" ) ) )
-        {
-            $productId = $http->postVariable( $base . "_data_product_" . $objectAttribute->attribute( "id" ) );
-
-            //fetch product from sylius database
-            $serviceContainer = ezpKernel::instance()->getServiceContainer();
-            $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
-            /** @var \Sylius\Component\Core\Model\Product $product */
-            /*$product = $syliusRepository->find( $productId );
-
-            $syliusProduct = new SyliusProduct();
-            $syliusProduct->setSyliusId( $productId );
-            $syliusProduct->setName( $product->getName() );
-            $syliusProduct->setAvailableOn( $product->getAvailableOn() );
-            $syliusProduct->setDescription( $product->getDescription() );
-            if ( $product->getTaxCategory() )
-            {
-                $syliusProduct->setTaxCategory( $product->getTaxCategory()->getName() );
-            }
-            $syliusProduct->setWeight( $product->getMasterVariant()->getWeight() );
-            $syliusProduct->setHeight( $product->getMasterVariant()->getHeight() );
-            $syliusProduct->setWidth( $product->getMasterVariant()->getWidth() );
-            $syliusProduct->setSku( $product->getMasterVariant()->getSku() );
-
-            $objectAttribute->setContent( $syliusProduct );
-
-            return true;
-        }*/
     }
 
     /**
@@ -135,7 +68,8 @@ class SyliusProductType extends eZDataType
 
         if ( $syliusProduct instanceof SyliusProduct )
         {
-            $objectAttribute->setAttribute( 'data_int', $syliusProduct->syliusId() );
+            $objectAttribute->setAttribute( 'data_int', $syliusProduct->attribute( 'product_id' ) );
+            $syliusProduct->store( $objectAttribute );
         }
     }
 
@@ -150,7 +84,7 @@ class SyliusProductType extends eZDataType
         // We have to delete product from sylius database
         /** @var SyliusProduct $syliusProduct */
         $syliusProduct = $objectAttribute->content();
-        $syliusId = $syliusProduct->syliusId();
+        $syliusId = $syliusProduct->attribute( 'product_id' );
 
         if ( !empty( $syliusId ) && empty( $version ) )
         {
@@ -188,7 +122,7 @@ class SyliusProductType extends eZDataType
     {
         /** @var SyliusProduct $syliusProduct */
         $syliusProduct = $objectAttribute->content();
-        $syliusId = $syliusProduct->syliusId();
+        $syliusId = $syliusProduct->attribute( 'product_id' );
 
         if ( !empty( $syliusId ) )
         {
@@ -231,7 +165,6 @@ class SyliusProductType extends eZDataType
 
         $nodeID = $publishedNodes[0]->MainNodeID;
         $node = eZContentObjectTreeNode::fetch( $nodeID );
-        $urlAlias = $node->urlAlias();
 
         $serviceContainer = ezpKernel::instance()->getServiceContainer();
         /** @var LocaleConverterInterface $localeConverter */
@@ -253,7 +186,6 @@ class SyliusProductType extends eZDataType
                     $mappedNameIdentifier = $syliusProductINI->variable( $node->classIdentifier(), 'Name' );
                     $dataMap = $node->dataMap();
                     $name = $dataMap[$mappedNameIdentifier]->content();
-                    //$contentObjectAttribute->content()->setName($name);
                 }
                 else if ( $http->hasPostVariable( $base . "_data_string_" . $contentObjectAttribute->attribute( "id" ) ) )
                 {
@@ -388,18 +320,14 @@ class SyliusProductType extends eZDataType
                 /** @var SyliusProduct $syliusProduct */
                 $syliusProduct = $contentObjectAttribute->content();
 
-                // check if sylius product already exists
-                $syliusId = $syliusProduct->syliusId();
-                if ( $syliusId )
-                {
-                    /** @var \Sylius\Component\Core\Model\Product $product */
-                    $product = $syliusRepository->find( $syliusId );
-                }
-                else
+                if( $syliusProduct->getProduct() == null )
                 {
                     /** @var \Sylius\Component\Core\Model\Product $product */
                     $product = $syliusRepository->createNew();
-                    eZLog::write( 'COPY - created new product in onPublish' );
+                }
+                else
+                {
+                    $product = $syliusProduct->getProduct();
                 }
 
                 $translation = new ProductTranslation();
@@ -414,8 +342,7 @@ class SyliusProductType extends eZDataType
                 $product->setCurrentLocale( $localeConverter->convertToPOSIX( $attributeLocale ) )
                     ->setName( $name )
                     ->setDescription( $desc )
-                    ->setPrice( (int)$price )
-                    ->setSlug( $urlAlias );
+                    ->setPrice( (int)$price );
 
                 // set tax category
                 if ( isset( $taxCategoryName ) && $taxCategoryName != '0' )
@@ -440,20 +367,11 @@ class SyliusProductType extends eZDataType
                     ->setDepth( $depth )
                     ->setSku( $sku );
 
-                // custom transliterator
-                $listener = $serviceContainer->get( 'sluggable.listener' );
-                $listener->setTransliterator( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate' ) );
-                $listener->setUrlizer( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize' ) );
-
                 $syliusManager->persist( $product );
                 $syliusManager->flush();
 
-                // fetch product again to get id
-                if ( !$syliusId )
-                {
-                    $syliusProduct->setSyliusId( $product->getId() );
-                }
-
+                $syliusProduct->setProduct( $product );
+                $syliusProduct->store( $contentObjectAttribute );
                 $contentObjectAttribute->store();
             }
         }
@@ -464,13 +382,9 @@ class SyliusProductType extends eZDataType
             $syliusManager = $serviceContainer->get( 'sylius.manager.product' );
 
             // check if sylius product already exists
-            $syliusId = $contentObjectAttribute->attribute( 'data_int' );
-            $product = null;
-            if ( $syliusId )
-            {
-                /** @var \Sylius\Component\Core\Model\Product $product */
-                $product = $syliusRepository->find( $syliusId );
-            }
+            /** @var SyliusProduct $syliusProduct */
+            $syliusProduct = $contentObjectAttribute->content();
+            $product = $syliusProduct->getProduct() ?: null;
 
             if ( $product )
             {
@@ -483,8 +397,8 @@ class SyliusProductType extends eZDataType
                 {
                     $clonedTranslation = clone $translation;
                     $clonedTranslation->setTranslatable( $copiedProduct );
-                    $clonedTranslation->setSlug( $urlAlias );
 
+                    $clonedTranslation->setSlug( $copiedProduct->getName() . '-' . $contentObjectAttribute->attribute( 'id' ) );
                     $copiedProduct->addTranslation( $clonedTranslation );
                 }
 
@@ -496,18 +410,13 @@ class SyliusProductType extends eZDataType
                     ->setHeight( $product->getMasterVariant()->getHeight() )
                     ->setDepth( $product->getMasterVariant()->getDepth() );
 
-                $listener = $serviceContainer->get( 'sluggable.listener' );
-                $listener->setTransliterator( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate' ) );
-                $listener->setUrlizer( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize' ) );
-
                 $syliusManager->persist( $copiedProduct );
                 $syliusManager->flush();
 
-                /** @var SyliusProduct $syliusProduct */
-                $syliusProduct = $contentObjectAttribute->content();
-                $syliusProduct->setSyliusId( $copiedProduct->getId() );
+                $syliusProduct->setProduct( $copiedProduct );
 
                 $contentObjectAttribute->setAttribute( 'data_text', 0 );
+                $syliusProduct->store( $contentObjectAttribute );
                 $contentObjectAttribute->store();
             }
             else
@@ -516,46 +425,18 @@ class SyliusProductType extends eZDataType
                 $product = $syliusRepository->createNew();
                 $product->setName( $contentObject->name() );
 
-                $listener = $serviceContainer->get( 'sluggable.listener' );
-                $listener->setTransliterator( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate' ) );
-                $listener->setUrlizer( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize' ) );
-
                 $syliusManager->persist( $product );
                 $syliusManager->flush();
 
                 /** @var SyliusProduct $syliusProduct */
                 $syliusProduct = $contentObjectAttribute->content();
-                $syliusProduct->setSyliusId( $product->getId() );
+                $syliusProduct->setProduct( $product );
 
                 $contentObjectAttribute->setAttribute( 'data_text', 0 );
+                $syliusProduct->store( $contentObjectAttribute );
                 $contentObjectAttribute->store();
             }
         }
-        // uncomment this if there is need to unlink sylius product from eZ object
-        /*else if (
-            $http->hasPostVariable( $base . "_data_unlink_" . $contentObjectAttribute->attribute( "id" ) ) &&
-            $http->postVariable( $base . "_data_unlink_" . $contentObjectAttribute->attribute( "id" ) ) == 'on'
-        )
-        {
-           // delete sylius id
-            $oldId = $contentObjectAttribute->content()->syliusId();
-            $contentObjectAttribute->content()->setSyliusId( null );
-
-            $contentObjectAttribute->store( $contentObjectAttribute );
-
-            // delete sylius product
-            $serviceContainer = ezpKernel::instance()->getServiceContainer();
-            $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
-            $syliusManager = $serviceContainer->get( 'sylius.manager.product' );
-
-            $product = $syliusRepository->find( $oldId );
-
-            if ( $product )
-            {
-                $syliusManager->remove( $product );
-                $syliusManager->flush();
-            }
-        }*/
     }
 
     /**
@@ -567,8 +448,6 @@ class SyliusProductType extends eZDataType
      */
     public function objectAttributeContent( $objectAttribute )
     {
-        $syliusProduct = new SyliusProduct();
-
         // fill content with sylius information
         $serviceContainer = ezpKernel::instance()->getServiceContainer();
         $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
@@ -576,8 +455,17 @@ class SyliusProductType extends eZDataType
         /** @var \eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface $localeConverter */
         $localeConverter = $serviceContainer->get( 'ezpublish.locale.converter' );
 
+        // get product id from external table
+        $db = eZDB::instance();
+
+        $result = $db->arrayQuery( "SELECT product_id
+                                  FROM ngsyliusproduct
+                                  WHERE contentobject_id = " . $objectAttribute->attribute( 'contentobject_id' )
+        );
+        $productId = $result[0][ "product_id" ];
+
         /** @var \Sylius\Component\Core\Model\Product $product */
-        $product = $syliusRepository->findForDetailsPage( $objectAttribute->attribute( 'data_int' ) );
+        $product = $syliusRepository->findForDetailsPage( $productId );
 
         $attributeLocale = $objectAttribute->attribute( 'language_code' );
 
@@ -586,9 +474,10 @@ class SyliusProductType extends eZDataType
             $product->setCurrentLocale(
                 $localeConverter->convertToPOSIX( $attributeLocale )
             );
-
-            $syliusProduct->createFromSylius( $product );
         }
+
+        $syliusProduct = new SyliusProduct();
+        $syliusProduct->setProduct( $product );
 
         return $syliusProduct;
     }
@@ -729,17 +618,8 @@ class SyliusProductType extends eZDataType
      */
     public function toString( $objectAttribute )
     {
-        $syliusProduct = new SyliusProduct();
-
-        $serviceContainer = ezpKernel::instance()->getServiceContainer();
-        $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
-
-        /** @var \Sylius\Component\Core\Model\Product $product */
-        $product = $syliusRepository->find( $objectAttribute->attribute( 'data_int' ) );
-        if ( $product )
-        {
-            $syliusProduct->createFromSylius( $product );
-        }
+        /** @var SyliusProduct $syliusProduct */
+        $syliusProduct = $objectAttribute->content();
 
         return $syliusProduct->toString();
     }
@@ -760,16 +640,85 @@ class SyliusProductType extends eZDataType
         if ( trim( $string ) != '' )
         {
             $itemsArray = explode( '|#', trim( $string ) );
-            if ( is_array( $itemsArray ) && !empty( $itemsArray ) && count( $itemsArray ) == 5 )
+            if ( is_array( $itemsArray ) && !empty( $itemsArray ) && count( $itemsArray ) == 10 )
             {
+                $syliusProduct = new SyliusProduct();
+
                 $name = $itemsArray[0];
                 $description = $itemsArray[1];
                 $price = $itemsArray[2];
                 $availableOn = $itemsArray[3];
-                $syliusId = $itemsArray[4];
+                $weight = $itemsArray[4];
+                $height = $itemsArray[5];
+                $width = $itemsArray[6];
+                $depth = $itemsArray[7];
+                $sku = $itemsArray[8];
+                $taxCategory = $itemsArray[9];
 
-                $syliusProduct = new SyliusProduct();
-                $syliusProduct->createFromStrings( $price, $name, $description, $syliusId, $availableOn );
+                $serviceContainer = ezpKernel::instance()->getServiceContainer();
+                /** @var \Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductRepository $syliusRepository */
+                $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
+                $syliusManager = $serviceContainer->get( 'sylius.manager.product' );
+
+                /** @var \eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface $localeConverter */
+                $localeConverter = $serviceContainer->get( 'ezpublish.locale.converter' );
+
+                /** @var SyliusProduct $syliusProduct */
+                $syliusProduct = $objectAttribute->content();
+
+                if( $syliusProduct->getProduct() == null )
+                {
+                    /** @var \Sylius\Component\Core\Model\Product $product */
+                    $product = $syliusRepository->createNew();
+                }
+                else
+                {
+                    $product = $syliusProduct->getProduct();
+                }
+
+                $attributeLocale = $objectAttribute->attribute( 'language_code' );
+                $translation = new ProductTranslation();
+                $translation->setLocale( $localeConverter->convertToPOSIX( $attributeLocale ) );
+
+                if ( !$product->hasTranslation( $translation ) )
+                {
+                    $product->addTranslation( $translation );
+                }
+
+                /** @var \Sylius\Component\Core\Model\Product $product */
+                $product->setCurrentLocale( $localeConverter->convertToPOSIX( $attributeLocale ) )
+                        ->setName( $name )
+                        ->setDescription( $description )
+                        ->setPrice( (int)$price );
+
+                // set tax category
+                if ( isset( $taxCategoryName ) && $taxCategoryName != '0' )
+                {
+                    $taxRepository = $serviceContainer->get( 'sylius.repository.tax_category' );
+
+                    /** @var \Sylius\Component\Taxation\Model\TaxCategoryInterface $taxCategory */
+                    $taxCategory = $taxRepository->findOneBy( array( 'name' => $taxCategoryName ) );
+                    $product->setTaxCategory( $taxCategory );
+                }
+
+                if ( $availableOn )
+                {
+                    $product->setAvailableOn( $availableOn );
+                }
+
+                /** @var \Sylius\Component\Core\Model\ProductVariant $masterVariant */
+                $masterVariant = $product->getMasterVariant();
+                $masterVariant->setWeight( $weight )
+                              ->setHeight( $height )
+                              ->setWidth( $width )
+                              ->setDepth( $depth )
+                              ->setSku( $sku );
+
+                $syliusManager->persist( $product );
+                $syliusManager->flush();
+
+                $syliusProduct->setProduct( $product );
+                $syliusProduct->store( $objectAttribute );
                 $objectAttribute->setContent( $syliusProduct );
 
                 return true;
@@ -801,7 +750,13 @@ class SyliusProductType extends eZDataType
     {
         /** @var SyliusProduct $syliusProduct */
         $syliusProduct = $objectAttribute->content();
-        $syliusId = $syliusProduct->syliusId();
+
+        if( empty( $syliusProduct ) )
+        {
+            return false;
+        }
+
+        $syliusId = $syliusProduct->attribute( 'product_id' );
 
         $serviceContainer = ezpKernel::instance()->getServiceContainer();
         $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );

@@ -6,50 +6,18 @@
 {if $attribute.has_content}
     <input type="hidden"
            name="{$attribute_base}_data_sylius_id_{$attribute.id}"
-            value="{$attribute.content.sylius_id}" />
+            value="{$attribute.content.product_id}" />
 {/if}
 
 <table class="list" width="100%" cellspacing="0" cellpadding="0" border="0">
-    {* disabled for now - no need for this in current use-case
-    <tbody id="existing_product-{$attribute_id}">
-    <tr>
-        <td>
-            <label>{'Use existing product'|i18n( 'design/standard/content/datatype/syliusproduct' )}:</label>
-            <select name="{$attribute_base}_data_product_{$attribute.id}"
-                    class="product-select"
-                    id="{$attribute_base}_data_product_{$attribute.id}">
-                <option value="0" disabled="disabled" selected>{'Select product'|i18n( 'design/standard/content/datatype/syliusproduct' )}</option>
-                {foreach $products as $key => $value}
-                    <option value="{$key}" {if $attribute.content.sylius_id|eq($key)}selected="selected"{/if}>
-                        {$value}
-                    </option>>
-                {/foreach}
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a class="new-product" id="new_product-{$attribute.id}">{'Create new product'|i18n( 'design/standard/content/datatype/syliusproduct' )}</a>
-        </td>
-    </tr>
-    </tbody>
-    *}
     <tr>
         <th>
             {'Sylius id'|i18n( 'design/standard/content/datatype/syliusproduct' )}:
             {if $attribute.has_content}
-                {$attribute.content.sylius_id}
+                {$attribute.content.product_id}
             {else}
                 {'This object is not linked to any Sylius products'|i18n( 'design/standard/content/datatype/syliusproduct' )}.
             {/if}
-            {*
-            {'Remove'|i18n( 'design/standard/content/datatype/syliusproduct' )}
-            <input name="{$attribute_base}_data_unlink_{$attribute.id}"
-                   class="checkbox_unlink"
-                   id="checkbox_unlink-{$attribute.id}"
-                   type="checkbox"
-                    {if $attribute.has_content|eq(false())}disabled{/if} />
-            *}
         </th>
     </tr>
     <tbody id="main_data-{$attribute.id}">
@@ -111,7 +79,7 @@
                    id="{$attribute_base}_data_available_y_{$attribute.id}"
                    type="text"
                    placeholder="yyyy"
-                   size=2 />
+                   size=4 />
             <input name="{$attribute_base}_data_available_m_{$attribute.id}"
                    id="{$attribute_base}_data_available_m_{$attribute.id}"
                    type="text"
@@ -139,11 +107,6 @@
                    type="checkbox"/>({'Use current time'|i18n( 'design/standard/content/datatype/syliusproduct' )})
         </td>
     </tr>
-    {*<tr>
-        <td>
-            <a class="additional-info" id="additionalinfo-{$attribute.id}">Additional info</a>
-        </td>
-    </tr>*}
     </tbody>
     <tbody id="additional_data-{$attribute.id}" >
     <tr>
@@ -205,11 +168,11 @@
         $(function() {
             var base = {/literal}"{$attribute_base}"{literal};
             var attribute_id = {/literal}"{$attribute.id}"{literal};
-            var datetime = {/literal}"{$attribute.content.available_on}"{literal};
+            var datetime = {/literal}"{$attribute.content.available_on|datetime('ngsyliusproduct')}"{literal};
 
             //$("#main_data-"+attribute_id+" input").prop("disabled", true);
             //$("#input_desc-"+attribute_id).prop("disabled", true);
-
+            console.log(datetime);
             if (datetime) {
                 datetime = datetime.split(' ');
                 var date = datetime[0];

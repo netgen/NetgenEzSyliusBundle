@@ -1,37 +1,11 @@
 <?php
 
+use Sylius\Component\Core\Model\ProductInterface;
+
 class SyliusProduct
 {
-    private $price = 0;
-
-    private $name;
-
-    private $syliusId = null;
-
-    private $description;
-
-    /** @var \DateTime $availableOn */
-    private $availableOn;
-
-    private $weight = null;
-
-    private $height = null;
-
-    private $width = null;
-
-    private $depth = null;
-
-    private $sku = null;
-
-    private $taxCategory = null;
-
-    /*public function __construct( $price )
-    {
-        if ( $price < 0 )
-        {
-            throw new \Exception( "Price must be positive" );
-        }
-    }*/
+    /** @var  \Sylius\Component\Core\Model\ProductInterface */
+    protected $product;
 
     /**
      * Returns an array with attributes that are available
@@ -41,10 +15,10 @@ class SyliusProduct
     public function attributes()
     {
         return array(
+            'product_id',
             'price',
             'name',
             'description',
-            'sylius_id',
             'available_on',
             'weight',
             'height',
@@ -56,88 +30,13 @@ class SyliusProduct
     }
 
     /**
-     * Initializes the product
-     *
-     * @param $name
-     * @param $price
-     * @param $description
-     * @param $syliusId
-     * @param $availableOn
-     * @param $sku
-     * @param $taxCategory
-     */
-    public function createFromStrings(
-        $price,
-        $name = null,
-        $description = null,
-        $syliusId = null,
-        $availableOn = null,
-        $sku = null,
-        $taxCategory = null
-    )
-    {
-        $this->price = $price;
-
-        if ( $name )
-        {
-            $this->name = $name;
-        }
-
-        if ( $description )
-        {
-            $this->description = $description;
-        }
-
-        if ( $syliusId )
-        {
-            $this->syliusId = $syliusId;
-        }
-
-        if ( $availableOn )
-        {
-            $this->availableOn = $availableOn;
-        }
-
-        if ( $sku )
-        {
-            $this->sku = $sku;
-        }
-
-        if ( $taxCategory )
-        {
-            $this->taxCategory = $taxCategory;
-        }
-    }
-
-    /**
      * Creates from sylius product
      *
-     * @param Sylius\Component\Core\Model\Product $product
+     * @param Sylius\Component\Core\Model\ProductInterface $product
      */
     public function createFromSylius( $product )
     {
-        $this->setName( $product->getName() );
-        $this->setSyliusId( $product->getId() );
-        $price = $product->getPrice();
-        $price = $price / 100; // sylius feature
-        $this->setPrice( $price );
-        $this->setDescription( $product->getDescription() );
-
-        /** @var \DateTime $availableOn */
-        $availableOn = $product->getAvailableOn();
-        $availableOn = $availableOn->format( 'Y-m-d H:i' );
-        $this->setAvailableOn( $availableOn );
-
-        if ( $product->getTaxCategory() )
-        {
-            $this->setTaxCategory( $product->getTaxCategory()->getName() );
-        }
-
-        $this->setWeight( $product->getMasterVariant()->getWeight() );
-        $this->setHeight( $product->getMasterVariant()->getHeight() );
-        $this->setWidth( $product->getMasterVariant()->getWidth() );
-        $this->setDepth( $product->getMasterVariant()->getDepth() );
-        $this->setSku( $product->getMasterVariant()->getSku() );
+        $this->product = $product;
     }
 
     /**
@@ -147,16 +46,16 @@ class SyliusProduct
      */
     public function toString()
     {
-        return $this->name() . '|#' .
-               $this->description() . '|#' .
-               $this->price() . '|#' .
-               $this->availableOn() . '|#' .
-               $this->weight() . '|#' .
-               $this->height() . '|#' .
-               $this->width() . '|#' .
-               $this->depth() . '|#' .
-               $this->sku() . '|#' .
-               $this->taxCategory();
+        return $this->product->getName() . '|#' .
+               $this->product->getDescription() . '|#' .
+               $this->product->getPrice() . '|#' .
+               $this->product->getAvailableOn()->format( 'd-m-Y' ) . '|#' .
+               $this->product->getMasterVariant()->getWeight(). '|#' .
+               $this->product->getMasterVariant()->getHeight() . '|#' .
+               $this->product->getMasterVariant()->getWidth() . '|#' .
+               $this->product->getMasterVariant()->getDepth() . '|#' .
+               $this->product->getMasterVariant()->getSku() . '|#' .
+               $this->product->getTaxCategory()->getName();
     }
 
     /**
@@ -178,239 +77,102 @@ class SyliusProduct
      */
     public function attribute( $name )
     {
+        if( empty( $this->product ) )
+        {
+            return null;
+        }
+
+        if ( $name == 'product_id' )
+        {
+            return $this->product->getId();
+        }
+
         if ( $name == 'price' )
         {
-            return $this->price();
+            return $this->product->getPrice() / 100;
         }
 
         if ( $name == 'name' )
         {
-            return $this->name();
-        }
-
-        if ( $name == 'sylius_id' )
-        {
-            return $this->syliusId();
+            return $this->product->getName();
         }
 
         if ( $name == 'available_on' )
         {
-            return $this->availableOn();
+            return $this->product->getAvailableOn()->getTimestamp();
         }
 
         if ( $name == 'description' )
         {
-            return $this->description();
+            return $this->product->getDescription();
         }
 
         if ( $name == 'weight' )
         {
-            return $this->weight();
+            return $this->product->getMasterVariant()->getWeight();
         }
 
         if ( $name == 'height' )
         {
-            return $this->height();
+            return $this->product->getMasterVariant()->getHeight();
         }
 
         if ( $name == 'width' )
         {
-            return $this->width();
+            return $this->product->getMasterVariant()->getWidth();
         }
 
         if ( $name == 'depth' )
         {
-            return $this->depth();
+            return $this->product->getMasterVariant()->getDepth();
         }
 
         if ( $name == 'sku' )
         {
-            return $this->sku();
+            return $this->product->getMasterVariant()->getSku();
         }
 
         if ( $name == 'tax_category' )
         {
-            return $this->taxCategory();
+            return $this->product->getTaxCategory();
         }
 
         eZDebug::writeError( "Attribute '$name' does not exist", "SyliusProduct::attribute" );
         return null;
     }
 
-    /**
-     * Returns price
-     *
-     * @return int
-     */
-    public function price()
+    public function getProduct( )
     {
-        return $this->price;
+        return $this->product;
     }
 
-    /**
-     * Returns name
-     *
-     * @return string
-     */
-    public function name()
+    public function setProduct( ProductInterface $product )
     {
-        return $this->name;
+        $this->product = $product;
     }
 
-    /**
-     * Sets name
-     *
-     * @param string $name
-     */
-    public function setName( $name )
+    public function store( eZContentObjectAttribute $attribute )
     {
-        $this->name = $name;
-    }
+        if( !is_numeric( $attribute->attribute( 'contentobject_id' ) ) || !is_numeric( $this->attribute( 'product_id' ) ) )
+            return;
 
-    /**
-     * Returns sylius product id
-     *
-     * @return int
-     */
-    public function syliusId()
-    {
-        return $this->syliusId;
-    }
+        $contentId = $attribute->attribute( 'contentobject_id' );
+        $productId = $this->attribute( 'product_id' );
 
-    /**
-     * Sets sylius id
-     *
-     * @param $id
-     */
-    public function setSyliusId( $id )
-    {
-        $this->syliusId = $id;
-    }
+        $db = eZDB::instance();
 
-    /**
-     * Returns description
-     *
-     * @return string
-     */
-    public function description()
-    {
-        return $this->description;
-    }
+        $result = $db->arrayQuery( "SELECT COUNT(*) as count FROM ngsyliusproduct WHERE contentobject_id = " . $contentId );
+        $exists = $result[0]['count'];
 
-    /**
-     * Sets description
-     *
-     * @param string $description
-     */
-    public function setDescription( $description )
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * Sets "available on"
-     *
-     * @param $availableOn
-     */
-    public function setAvailableOn( $availableOn )
-    {
-        $this->availableOn = $availableOn;
-    }
-
-    /**
-     * Returns "available on" date in 'd-m-Y H:i' format
-     *
-     * TODO: enable different formats
-     *
-     * @return string
-     */
-    public function availableOn()
-    {
-        if ( $this->availableOn )
+        if ( $exists > 0 )
         {
-            return $this->availableOn;
+            $result = $db->query( "UPDATE ngsyliusproduct SET product_id = " . $productId .
+                                  " WHERE contentobject_id = " . $contentId );
         }
-
-        return null;
-    }
-
-    /**
-     * Sets price
-     *
-     * @param $price
-     */
-    public function setPrice( $price )
-    {
-        $this->price = $price;
-    }
-
-    /**
-     * Returns slug
-     *
-     * @return string
-     */
-    public function slug()
-    {
-        return $this->slug;
-    }
-
-    public function weight()
-    {
-        return $this->weight;
-    }
-
-    public function setWeight( $weight )
-    {
-        $this->weight = $weight;
-    }
-
-    public function height()
-    {
-        return $this->height;
-    }
-
-    public function setHeight( $height )
-    {
-        $this->height = $height;
-    }
-
-    public function width()
-    {
-        return $this->width;
-    }
-
-    public function setWidth( $width )
-    {
-        $this->width = $width;
-    }
-
-    public function depth()
-    {
-        return $this->depth;
-    }
-
-    public function setDepth( $depth )
-    {
-        $this->depth = $depth;
-    }
-
-    public function sku()
-    {
-        return $this->sku;
-    }
-
-    public function setSku( $sku )
-    {
-        $this->sku = $sku;
-    }
-
-    public function taxCategory()
-    {
-       return $this->taxCategory;
-    }
-
-    public function setTaxCategory( $taxCategory )
-    {
-        $this->taxCategory = $taxCategory;
+        else
+        {
+            $result = $db->query( "INSERT INTO ngsyliusproduct (contentobject_id, product_id)
+                                   VALUES ( " . $contentId . ", " . $productId . " )" );
+        }
     }
 }
