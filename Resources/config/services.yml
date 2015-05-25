@@ -8,6 +8,7 @@ services:
         class: %netgen.ez_sylius.signalslot.slot.trash.class%
         arguments:
             - @ezpublish.api.repository
+            - @doctrine.orm.entity_manager
             - @sylius.repository.product
             - @sylius.manager.product
         tags:
@@ -17,6 +18,7 @@ services:
         class: %netgen.ez_sylius.signalslot.slot.untrash.class%
         arguments:
             - @ezpublish.api.repository
+            - @doctrine.orm.entity_manager
             - @sylius.repository.product
             - @sylius.manager.product
         tags:

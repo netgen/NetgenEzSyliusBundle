@@ -2,12 +2,15 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Core\Slot;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\Core\SignalSlot\Slot as BaseSlot;
 use eZ\Publish\API\Repository\Repository;
-use eZ\Publish\Core\SignalSlot\Signal;
-use eZ\Publish\Core\SignalSlot\Signal\TrashService\RecoverSignal;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use eZ\Publish\Core\SignalSlot\Signal;
+use eZ\Publish\Core\SignalSlot\Signal\TrashService\RecoverSignal;
+use Netgen\Bundle\EzSyliusBundle\Entity\SyliusProduct;
+use Sylius\Component\Core\Model\Product;
 
 class UntrashSlot extends BaseSlot
 {
@@ -17,6 +20,11 @@ class UntrashSlot extends BaseSlot
     protected $repository;
 
     /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    protected $entityManager;
+
+    /**
      * @var \Sylius\Component\Resource\Repository\RepositoryInterface
      */
     protected $syliusRepository;
@@ -24,24 +32,27 @@ class UntrashSlot extends BaseSlot
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
-    protected $productEntityManager;
+    protected $syliusEntityManager;
 
     /**
      * Constructor
      *
      * @param \eZ\Publish\API\Repository\Repository $repository
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
      * @param \Sylius\Component\Resource\Repository\RepositoryInterface $syliusRepository
-     * @param \Doctrine\ORM\EntityManagerInterface $productEntityManager
+     * @param \Doctrine\ORM\EntityManagerInterface $syliusEntityManager
      */
     public function __construct(
         Repository $repository,
+        EntityManagerInterface $entityManager,
         RepositoryInterface $syliusRepository,
-        EntityManagerInterface $productEntityManager
+        EntityManagerInterface $syliusEntityManager
     )
     {
         $this->repository = $repository;
+        $this->entityManager = $entityManager;
         $this->syliusRepository = $syliusRepository;
-        $this->productEntityManager = $productEntityManager;
+        $this->syliusEntityManager = $syliusEntityManager;
     }
 
     /**
@@ -56,28 +67,37 @@ class UntrashSlot extends BaseSlot
             return;
         }
 
-        $contentService = $this->repository->getContentService();
-        $trashService = $this->repository->getTrashService();
-
-        $trashedItem = $trashService->loadTrashItem( $signal->trashItemId );
-
-        $contentId = $trashedItem->contentId;
-        $content = $contentService->loadContent( $contentId );
-
-        $syliusId = $content->getFieldValue( 'sylius_product' )->syliusId;
-
-        if ( !empty( $syliusId ) )
+        try
         {
-            /** @var \Sylius\Component\Core\Model\Product $product */
-            $product = $this->syliusRepository->findForDetailsPage( $syliusId ); // to get deleted product
-
-            if ( $product )
-            {
-                $product->setDeletedAt( null );
-                $product->getMasterVariant()->setDeletedAt( null );
-                $this->productEntityManager->persist( $product );
-                $this->productEntityManager->flush();
-            }
+            $trashItem = $this->repository->getTrashService()
+                ->loadTrashItem( $signal->trashItemId );
         }
+        catch ( NotFoundException $e )
+        {
+            return;
+        }
+
+        $syliusProductEntity = $this->entityManager
+            ->getRepository( 'NetgenEzSyliusBundle:SyliusProduct' )
+            ->find( $trashItem->contentId );
+
+        if ( !$syliusProductEntity instanceof SyliusProduct )
+        {
+            return;
+        }
+
+        $product = $this->syliusRepository->findForDetailsPage(
+            $syliusProductEntity->getProductId()
+        );
+
+        if ( !$product instanceof Product )
+        {
+            return;
+        }
+
+        $product->setDeletedAt( null );
+        $product->getMasterVariant()->setDeletedAt( null );
+        $this->syliusEntityManager->persist( $product );
+        $this->syliusEntityManager->flush();
     }
 }

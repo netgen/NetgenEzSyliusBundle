@@ -2,12 +2,15 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Core\Slot;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\Core\SignalSlot\Slot as BaseSlot;
 use eZ\Publish\API\Repository\Repository;
-use eZ\Publish\Core\SignalSlot\Signal;
-use eZ\Publish\Core\SignalSlot\Signal\TrashService\TrashSignal;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use eZ\Publish\Core\SignalSlot\Signal;
+use eZ\Publish\Core\SignalSlot\Signal\TrashService\TrashSignal;
+use Netgen\Bundle\EzSyliusBundle\Entity\SyliusProduct;
+use Sylius\Component\Core\Model\Product;
 
 class TrashSlot extends BaseSlot
 {
@@ -17,6 +20,11 @@ class TrashSlot extends BaseSlot
     protected $repository;
 
     /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
+    protected $entityManager;
+
+    /**
      * @var \Sylius\Component\Resource\Repository\RepositoryInterface
      */
     protected $syliusRepository;
@@ -24,24 +32,27 @@ class TrashSlot extends BaseSlot
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
      */
-    protected $productEntityManager;
+    protected $syliusEntityManager;
 
     /**
      * Constructor
      *
      * @param \eZ\Publish\API\Repository\Repository $repository
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
      * @param \Sylius\Component\Resource\Repository\RepositoryInterface $syliusRepository
-     * @param \Doctrine\ORM\EntityManagerInterface $productEntityManager
+     * @param \Doctrine\ORM\EntityManagerInterface $syliusEntityManager
      */
     public function __construct(
         Repository $repository,
+        EntityManagerInterface $entityManager,
         RepositoryInterface $syliusRepository,
-        EntityManagerInterface $productEntityManager
+        EntityManagerInterface $syliusEntityManager
     )
     {
         $this->repository = $repository;
+        $this->entityManager = $entityManager;
         $this->syliusRepository = $syliusRepository;
-        $this->productEntityManager = $productEntityManager;
+        $this->syliusEntityManager = $syliusEntityManager;
     }
 
     /**
@@ -56,26 +67,32 @@ class TrashSlot extends BaseSlot
             return;
         }
 
-        $locationId = $signal->locationId;
-
-        $locationService = $this->repository->getLocationService();
-        $contentService = $this->repository->getContentService();
-        $location = $locationService->loadLocation( $locationId );
-
-        $contentInfo = $location->getContentInfo();
-
-        $content = $contentService->loadContent( $contentInfo->id );
-
-        $syliusId = $content->getFieldValue( 'sylius_product' )->syliusId;
-
-        if ( !empty( $syliusId ) )
+        try
         {
-            $product = $this->syliusRepository->find( $syliusId );
-            if ( $product )
-            {
-                $this->productEntityManager->remove( $product );
-                $this->productEntityManager->flush();
-            }
+            $location = $this->repository->getLocationService()
+                ->loadLocation( $signal->locationId );
         }
+        catch ( NotFoundException $e )
+        {
+            return;
+        }
+
+        $syliusProductEntity = $this->entityManager
+            ->getRepository( 'NetgenEzSyliusBundle:SyliusProduct' )
+            ->find( $location->getContentInfo()->id );
+
+        if ( !$syliusProductEntity instanceof SyliusProduct )
+        {
+            return;
+        }
+
+        $product = $this->syliusRepository->find( $syliusProductEntity->getProductId() );
+        if ( !$product instanceof Product )
+        {
+            return;
+        }
+
+        $this->syliusEntityManager->remove( $product );
+        $this->syliusEntityManager->flush();
     }
 }
