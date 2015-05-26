@@ -320,7 +320,7 @@ class SyliusProductType extends eZDataType
                 /** @var SyliusProduct $syliusProduct */
                 $syliusProduct = $contentObjectAttribute->content();
 
-                if( $syliusProduct->getProduct() == null )
+                if ( $syliusProduct->getProduct() === null )
                 {
                     /** @var \Sylius\Component\Core\Model\Product $product */
                     $product = $syliusRepository->createNew();
@@ -458,10 +458,17 @@ class SyliusProductType extends eZDataType
         // get product id from external table
         $db = eZDB::instance();
 
-        $result = $db->arrayQuery( "SELECT product_id
-                                  FROM ngsyliusproduct
-                                  WHERE contentobject_id = " . $objectAttribute->attribute( 'contentobject_id' )
+        $result = $db->arrayQuery(
+            "SELECT product_id
+            FROM ngsyliusproduct
+            WHERE contentobject_id = " . (int)$objectAttribute->attribute( 'contentobject_id' )
         );
+
+        if ( empty( $result[0][ "product_id" ] ) )
+        {
+            return null;
+        }
+
         $productId = $result[0][ "product_id" ];
 
         /** @var \Sylius\Component\Core\Model\Product $product */
@@ -666,7 +673,7 @@ class SyliusProductType extends eZDataType
                 /** @var SyliusProduct $syliusProduct */
                 $syliusProduct = $objectAttribute->content();
 
-                if( $syliusProduct->getProduct() == null )
+                if ( $syliusProduct->getProduct() === null )
                 {
                     /** @var \Sylius\Component\Core\Model\Product $product */
                     $product = $syliusRepository->createNew();
@@ -709,10 +716,10 @@ class SyliusProductType extends eZDataType
                 /** @var \Sylius\Component\Core\Model\ProductVariant $masterVariant */
                 $masterVariant = $product->getMasterVariant();
                 $masterVariant->setWeight( $weight )
-                              ->setHeight( $height )
-                              ->setWidth( $width )
-                              ->setDepth( $depth )
-                              ->setSku( $sku );
+                    ->setHeight( $height )
+                    ->setWidth( $width )
+                    ->setDepth( $depth )
+                    ->setSku( $sku );
 
                 $syliusManager->persist( $product );
                 $syliusManager->flush();
@@ -751,7 +758,7 @@ class SyliusProductType extends eZDataType
         /** @var SyliusProduct $syliusProduct */
         $syliusProduct = $objectAttribute->content();
 
-        if( empty( $syliusProduct ) )
+        if ( empty( $syliusProduct ) )
         {
             return false;
         }
@@ -761,7 +768,7 @@ class SyliusProductType extends eZDataType
         $serviceContainer = ezpKernel::instance()->getServiceContainer();
         $syliusRepository = $serviceContainer->get( 'sylius.repository.product' );
 
-        /** @var Product $product */
+        /** @var \Sylius\Component\Core\Model\Product $product */
         $product = $syliusRepository->find( $syliusId );
 
         return !empty( $product );
