@@ -1,6 +1,5 @@
 <?php
 
-use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslation;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 
@@ -20,8 +19,6 @@ class SyliusProductType extends eZDataType
                 'serialize_supported' => true
             )
         );
-
-        $this->IntegerValidator = new eZIntegerValidator();
     }
 
     /**
@@ -84,6 +81,11 @@ class SyliusProductType extends eZDataType
         // We have to delete product from sylius database
         /** @var SyliusProduct $syliusProduct */
         $syliusProduct = $objectAttribute->content();
+        if ( !$syliusProduct instanceof SyliusProduct )
+        {
+            return;
+        }
+
         $syliusId = $syliusProduct->attribute( 'product_id' );
 
         if ( !empty( $syliusId ) && empty( $version ) )
@@ -122,6 +124,11 @@ class SyliusProductType extends eZDataType
     {
         /** @var SyliusProduct $syliusProduct */
         $syliusProduct = $objectAttribute->content();
+        if ( !$syliusProduct instanceof SyliusProduct )
+        {
+            return;
+        }
+
         $syliusId = $syliusProduct->attribute( 'product_id' );
 
         if ( !empty( $syliusId ) )
@@ -649,8 +656,6 @@ class SyliusProductType extends eZDataType
             $itemsArray = explode( '|#', trim( $string ) );
             if ( is_array( $itemsArray ) && !empty( $itemsArray ) && count( $itemsArray ) == 10 )
             {
-                $syliusProduct = new SyliusProduct();
-
                 $name = $itemsArray[0];
                 $description = $itemsArray[1];
                 $price = $itemsArray[2];
@@ -660,7 +665,6 @@ class SyliusProductType extends eZDataType
                 $width = $itemsArray[6];
                 $depth = $itemsArray[7];
                 $sku = $itemsArray[8];
-                $taxCategory = $itemsArray[9];
 
                 $serviceContainer = ezpKernel::instance()->getServiceContainer();
                 /** @var \Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductRepository $syliusRepository */
