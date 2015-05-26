@@ -32,7 +32,6 @@ class SyliusProductType extends eZDataType
     {
         if ( $originalContentObjectAttribute->attribute( 'contentobject_id' ) !== $objectAttribute->attribute( 'contentobject_id' ) )
         {
-            eZLog::write( 'COPY - writing to data_text' );
             $objectAttribute->setAttribute( 'data_text', 1 );
 
             $syliusProductOriginal = $originalContentObjectAttribute->content();
@@ -397,7 +396,6 @@ class SyliusProductType extends eZDataType
             {
                 /** @var \Sylius\Component\Core\Model\Product $copiedProduct */
                 $copiedProduct = $syliusRepository->createNew();
-                eZLog::write( 'COPY - created new product in onPublish (else)' );
 
                 $translations = $product->getTranslations();
                 foreach ( $translations as $translation )
@@ -428,7 +426,6 @@ class SyliusProductType extends eZDataType
             }
             else
             {
-                eZLog::write( 'COPY - something went wrong, creating new product' );
                 $product = $syliusRepository->createNew();
                 $product->setName( $contentObject->name() );
 

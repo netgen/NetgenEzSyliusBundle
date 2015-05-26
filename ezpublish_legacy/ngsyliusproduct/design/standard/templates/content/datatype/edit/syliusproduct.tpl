@@ -172,7 +172,6 @@
 
             //$("#main_data-"+attribute_id+" input").prop("disabled", true);
             //$("#input_desc-"+attribute_id).prop("disabled", true);
-            console.log(datetime);
             if (datetime) {
                 datetime = datetime.split(' ');
                 var date = datetime[0];
