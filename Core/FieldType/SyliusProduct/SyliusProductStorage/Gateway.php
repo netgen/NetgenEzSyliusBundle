@@ -3,7 +3,6 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage;
 
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
-use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\Core\FieldType\StorageGateway;
 
 abstract class Gateway extends StorageGateway
@@ -17,10 +16,11 @@ abstract class Gateway extends StorageGateway
     abstract public function storeFieldData( VersionInfo $versionInfo, $productId );
 
     /**
-     * Gets the product id stored in the field
+     * Gets the product ID stored in the field
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @returns int product id
+     *
+     * @return int product ID
      */
     abstract public function getFieldData( VersionInfo $versionInfo );
 
@@ -34,10 +34,11 @@ abstract class Gateway extends StorageGateway
     abstract public function deleteFieldData( VersionInfo $versionInfo, array $fieldIds );
 
     /**
-     * Returns true if content and product id match the data in the database, false otherwise
+     * Returns true if content and product ID match the data in the database, false otherwise
      *
      * @param VersionInfo $versionInfo
      * @param int $productId
+     *
      * @return bool
      */
     abstract public function checkFieldData( VersionInfo $versionInfo, $productId );

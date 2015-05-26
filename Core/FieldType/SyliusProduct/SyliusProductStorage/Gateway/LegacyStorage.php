@@ -3,12 +3,10 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway;
 
 use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway;
-use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use RuntimeException;
 use PDO;
-use Sylius\Component\Product\Model\ProductInterface;
 
 class LegacyStorage extends Gateway
 {
@@ -59,7 +57,7 @@ class LegacyStorage extends Gateway
     }
 
     /**
-     * Stores the tags in the database based on the given field data
+     * Stores the data in the database based on the given field data
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param int $productId
@@ -120,11 +118,11 @@ class LegacyStorage extends Gateway
     }
 
     /**
-     * Gets the tags stored in the field
+     * Gets the product ID stored in the field
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      *
-     * @return int productId
+     * @return int product ID
      */
     public function getFieldData( VersionInfo $versionInfo )
     {
@@ -162,10 +160,11 @@ class LegacyStorage extends Gateway
     }
 
     /**
-     * Returns true if content and product id match the data in the database, false otherwise
+     * Returns true if content and product ID match the data in the database, false otherwise
      *
      * @param VersionInfo $versionInfo
      * @param int $productId
+     *
      * @return bool
      */
     public function checkFieldData( VersionInfo $versionInfo, $productId )

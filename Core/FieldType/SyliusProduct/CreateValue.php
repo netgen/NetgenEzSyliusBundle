@@ -6,6 +6,9 @@ use eZ\Publish\Core\FieldType\Value as BaseValue;
 
 class CreateValue extends BaseValue
 {
+    /**
+     * @var array
+     */
     public $createArray = array(
         'name' => null,
         'description' => null,
@@ -19,11 +22,21 @@ class CreateValue extends BaseValue
         'tax_category' => null
     );
 
-    public function __construct( array $valueArray )
+    /**
+     * Constructor
+     *
+     * @param array $valueArray
+     */
+    public function __construct( array $valueArray = array() )
     {
         $this->createArray = array_merge( $this->createArray, $valueArray );
     }
 
+    /**
+     * Returns a string representation of the field value.
+     *
+     * @return string
+     */
     public function __toString()
     {
         return json_encode( $this->createArray );

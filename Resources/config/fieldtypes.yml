@@ -17,7 +17,6 @@ services:
         arguments:
             - @sylius.repository.product
             - @sylius.manager.product
-            - @stof_doctrine_extensions.listener.sluggable
             - @ezpublish.api.service.content
             - @sylius.repository.tax_category
             - @ezpublish.locale.converter

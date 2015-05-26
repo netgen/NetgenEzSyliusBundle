@@ -9,13 +9,19 @@ use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
-use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value;
-use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\CreateValue;
 
 class Type extends FieldType
 {
+    /**
+     * @var \Sylius\Component\Resource\Repository\RepositoryInterface
+     */
     protected $syliusRepository;
 
+    /**
+     * Constructor
+     *
+     * @param \Sylius\Component\Resource\Repository\RepositoryInterface $syliusRepository
+     */
     public function __construct( RepositoryInterface $syliusRepository )
     {
         $this->syliusRepository = $syliusRepository;
@@ -36,7 +42,7 @@ class Type extends FieldType
      * It will be used to generate content name and url alias if current field
      * is designated to be used in the content name/urlAlias pattern.
      *
-     * @param SPIValue $value
+     * @param \eZ\Publish\SPI\FieldType\Value $value
      *
      * @return integer
      */
@@ -63,7 +69,7 @@ class Type extends FieldType
     /**
      * Returns information for FieldValue->$sortKey relevant to the field type.
      *
-     * @param BaseValue $value
+     * @param \eZ\Publish\Core\FieldType\Value $value
      *
      * @return bool
      */
@@ -77,7 +83,7 @@ class Type extends FieldType
      *
      * @param mixed $inputValue
      *
-     * @return Value|CreateValue $value The potentially converted input value.
+     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value|\Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\CreateValue $value The potentially converted input value.
      */
     protected function createValueFromInput( $inputValue )
     {
@@ -108,7 +114,7 @@ class Type extends FieldType
      *
      * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException If the value does not match the expected structure.
      *
-     * @param BaseValue $value
+     * @param \eZ\Publish\Core\FieldType\Value $value
      */
     protected function checkValueStructure( BaseValue $value )
     {
@@ -135,8 +141,6 @@ class Type extends FieldType
      *
      * @param mixed $hash
      *
-     * @throws \Exception
-     *
      * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\CreateValue
      */
     public function fromHash( $hash )
@@ -154,7 +158,7 @@ class Type extends FieldType
     /**
      * Converts the given $value into a plain hash format
      *
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value|SPIValue $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value|\eZ\Publish\SPI\FieldType\Value $value
      *
      * @return array
      */
@@ -181,7 +185,9 @@ class Type extends FieldType
     }
 
     /**
-     * @param SPIValue $value
+     * Converts a $value to a persistence value
+     *
+     * @param \eZ\Publish\SPI\FieldType\Value $value
      *
      * @return \eZ\Publish\SPI\Persistence\Content\FieldValue
      */
@@ -210,13 +216,15 @@ class Type extends FieldType
     }
 
     /**
+     * Converts a persistence $fieldValue to a Value
+     *
      * @param \eZ\Publish\SPI\Persistence\Content\FieldValue $fieldValue
      *
      * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
      */
     public function fromPersistenceValue( FieldValue $fieldValue )
     {
-        if ( $fieldValue->externalData === null || !( $fieldValue->externalData instanceof ProductInterface) )
+        if ( $fieldValue->externalData === null || !$fieldValue->externalData instanceof ProductInterface )
         {
             return $this->getEmptyValue();
         }
@@ -227,6 +235,13 @@ class Type extends FieldType
         return $value;
     }
 
+    /**
+     * Throws an exception if the given $value is not an instance of the supported value subtype.
+     *
+     * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException If the parameter is not an instance of the supported value subtype.
+     *
+     * @param mixed $value A value returned by {@see createValueFromInput()}.
+     */
     static protected function checkValueType( $value )
     {
         if ( !$value instanceof Value && !$value instanceof CreateValue )

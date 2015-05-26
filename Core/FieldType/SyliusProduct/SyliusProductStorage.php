@@ -2,9 +2,7 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
-use Doctrine\ORM\EntityManager;
-use Gedmo\Sluggable\SluggableListener;
-use eZ\Publish\SPI\FieldType\FieldStorage;
+use Doctrine\ORM\EntityManagerInterface;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
@@ -16,17 +14,43 @@ use eZ\Publish\Core\FieldType\GatewayBasedStorage;
 
 class SyliusProductStorage extends GatewayBasedStorage
 {
+    /**
+     * @var \Sylius\Component\Resource\Repository\RepositoryInterface
+     */
     protected $repository;
+
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     protected $manager;
-    protected $sluggable_listener;
+
+    /**
+     * @var \eZ\Publish\API\Repository\ContentService
+     */
     protected $contentService;
+
+    /**
+     * @var \Sylius\Component\Resource\Repository\RepositoryInterface
+     */
     protected $taxRepository;
+
+    /**
+     * @var \eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface
+     */
     protected $localeConverter;
 
+    /**
+     * Constructor
+     *
+     * @param \Sylius\Component\Resource\Repository\RepositoryInterface $syliusProductRepository
+     * @param \Doctrine\ORM\EntityManagerInterface $syliusManager
+     * @param \eZ\Publish\API\Repository\ContentService $contentService
+     * @param \Sylius\Component\Resource\Repository\RepositoryInterface $taxRepository
+     * @param \eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface $localeConverter
+     */
     public function __construct(
         RepositoryInterface $syliusProductRepository,
-        EntityManager $syliusManager,
-        SluggableListener $sluggableListener,
+        EntityManagerInterface $syliusManager,
         ContentService $contentService,
         RepositoryInterface $taxRepository,
         LocaleConverterInterface $localeConverter
@@ -34,7 +58,6 @@ class SyliusProductStorage extends GatewayBasedStorage
     {
         $this->repository = $syliusProductRepository;
         $this->manager = $syliusManager;
-        $this->sluggable_listener = $sluggableListener;
         $this->contentService = $contentService;
         $this->taxRepository = $taxRepository;
         $this->localeConverter = $localeConverter;
@@ -76,6 +99,7 @@ class SyliusProductStorage extends GatewayBasedStorage
             $translations = $product->getTranslations();
             foreach ( $translations as $translation )
             {
+                /** @var \Sylius\Component\Core\Model\ProductTranslation $clonedTranslation */
                 $clonedTranslation = clone $translation;
                 $clonedTranslation->setTranslatable( $copiedProduct );
 
@@ -173,6 +197,8 @@ class SyliusProductStorage extends GatewayBasedStorage
 
             return true;
         }
+
+        return false;
     }
 
     /**
@@ -181,8 +207,6 @@ class SyliusProductStorage extends GatewayBasedStorage
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
      * @param array $context
-     *
-     * @return void
      */
     public function getFieldData( VersionInfo $versionInfo, Field $field, array $context )
     {
