@@ -9,10 +9,12 @@ use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Core\Model\ProductTranslation;
+use eZ\Publish\Core\FieldType\GatewayBasedStorage;
 
-class SyliusProductStorage implements FieldStorage
+class SyliusProductStorage extends GatewayBasedStorage
 {
     protected $repository;
     protected $manager;
@@ -49,90 +51,128 @@ class SyliusProductStorage implements FieldStorage
      */
     public function storeFieldData( VersionInfo $versionInfo, Field $field, array $context )
     {
-        $data = $field->value->externalData;
+        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway $gateway */
+        $gateway = $this->getGateway( $context );
 
-        $name = $data['name'];
-        $price = $data['price'];
-        $price *= 100; // sylius feature
-        $desc = $data['description'];
-        $slug = $data['slug'];
-        $available_on = $data['available_on'];
-        $weight = $data['weight'];
-        $height = $data['height'];
-        $width = $data['width'];
-        $depth = $data['depth'];
-        $sku = $data['sku'];
-        $tax_category = $data['tax_category'];
-
-        $POSIXLocale = $this->localeConverter->convertToPOSIX( $field->languageCode );
-
-        //check if sylius product already exists
-        $product = $this->repository->find( $field->value->data['sylius_id'] );
-
-        if ( !$product )
+        if( $field->value->externalData instanceof ProductInterface )
         {
-            $product = $this->repository->createNew();
-        }
+            $product = $field->value->externalData;
 
-        $translation = new ProductTranslation();
-        $translation->setLocale( $POSIXLocale );
-
-        if ( !$product->hasTranslation( $translation ) )
-        {
-            $product->addTranslation( $translation );
-        }
-
-        /** @var \Sylius\Component\Core\Model\Product $product */
-        $product
-            ->setCurrentLocale( $POSIXLocale )
-            ->setName( $name )
-            ->setDescription( $desc )
-            ->setPrice( (int)$price );
-
-        if ( $slug )
-        {
-            $product->setSlug( $slug );
-        }
-
-        if ( $available_on )
-        {
-            if ( !$available_on instanceof \DateTime )
+            if( $gateway->checkFieldData( $versionInfo, $product->getId() ) )
             {
-                $available_on = new \DateTime( $available_on );
+                $this->manager->persist( $product );
+                $this->manager->flush();
+
+                $gateway->storeFieldData( $versionInfo, $product->getId() );
+
+                $field->value->data = $product->getId();
+
+                return true;
             }
 
-            $product->setAvailableOn( $available_on );
-        }
+            /** @var \Sylius\Component\Core\Model\Product $copiedProduct */
+            $copiedProduct = $this->repository->createNew();
 
-        // set tax category
-        if ( $tax_category != '0' && !empty( $tax_category ) )
+            $translations = $product->getTranslations();
+            foreach ( $translations as $translation )
+            {
+                $clonedTranslation = clone $translation;
+                $clonedTranslation->setTranslatable( $copiedProduct );
+
+                $clonedTranslation->setSlug( $copiedProduct->getName() . '-' . $field->id );
+                $copiedProduct->addTranslation( $clonedTranslation );
+            }
+
+            $copiedProduct->setPrice( (int)$product->getPrice() );
+            /** @var \Sylius\Component\Core\Model\ProductVariant $copiedProductMasterVariant */
+            $copiedProductMasterVariant = $copiedProduct->getMasterVariant();
+            $copiedProductMasterVariant->setWeight( $product->getMasterVariant()->getWeight() )
+                                       ->setWidth( $product->getMasterVariant()->getWidth() )
+                                       ->setHeight( $product->getMasterVariant()->getHeight() )
+                                       ->setDepth( $product->getMasterVariant()->getDepth() );
+
+            $this->manager->persist( $copiedProduct );
+            $this->manager->flush();
+
+            $gateway->storeFieldData( $versionInfo, $copiedProduct->getId() );
+
+            $field->value->data = $copiedProduct->getId();
+
+            return true;
+        }
+        elseif( is_array( $field->value->externalData ) )
         {
-            /** @var \Sylius\Component\Taxation\Model\TaxCategoryInterface $tax_category */
-            $tax_category = $this->taxRepository->findOneBy( array( 'name' => $tax_category ) );
-            $product->setTaxCategory( $tax_category );
+            $createArray = $field->value->externalData;
+
+            $name = $createArray[ 'name' ];
+            $price = $createArray[ 'price' ];
+            $price *= 100; // sylius feature
+            $desc = $createArray[ 'description' ];
+            $available_on = $createArray[ 'available_on' ];
+            $weight = $createArray[ 'weight' ];
+            $height = $createArray[ 'height' ];
+            $width = $createArray[ 'width' ];
+            $depth = $createArray[ 'depth' ];
+            $sku = $createArray[ 'sku' ];
+            $tax_category = $createArray[ 'tax_category' ];
+
+            $POSIXLocale = $this->localeConverter->convertToPOSIX( $field->languageCode );
+
+            $product = $this->repository->createNew();
+
+            $translation = new ProductTranslation();
+            $translation->setLocale( $POSIXLocale );
+
+            if ( !$product->hasTranslation( $translation ) )
+            {
+                $product->addTranslation( $translation );
+            }
+
+            /** @var \Sylius\Component\Core\Model\Product $product */
+            $product
+                ->setCurrentLocale( $POSIXLocale )
+                ->setName( $name )
+                ->setDescription( $desc )
+                ->setPrice( (int)$price );
+
+            if ( $available_on )
+            {
+                if ( !$available_on instanceof \DateTime )
+                {
+                    $available_on = new \DateTime( $available_on );
+                }
+
+                $product->setAvailableOn( $available_on );
+            }
+
+            // set tax category
+            if ( $tax_category != '0' && !empty( $tax_category ) )
+            {
+                /** @var \Sylius\Component\Taxation\Model\TaxCategoryInterface $tax_category */
+                $tax_category = $this->taxRepository->findOneBy( array( 'name' => $tax_category ) );
+                $product->setTaxCategory( $tax_category );
+            }
+
+            // set additional info
+            /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
+            $master_variant = $product->getMasterVariant();
+            $master_variant->setWeight( $weight )
+                           ->setHeight( $height )
+                           ->setWidth( $width )
+                           ->setDepth( $depth )
+                           ->setSku( $sku );
+
+            $this->manager->persist( $product );
+            $this->manager->flush();
+
+            $gateway->storeFieldData( $versionInfo, $product->getId() );
+
+            // fetch product again to get id
+            $productId = $product->getId();
+            $field->value->data = $productId;
+
+            return true;
         }
-
-        // set additional info
-        /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
-        $master_variant = $product->getMasterVariant();
-        $master_variant->setWeight( $weight )
-            ->setHeight( $height )
-            ->setWidth( $width )
-            ->setDepth( $depth )
-            ->setSku( $sku );
-
-        // custom transliterator
-        $this->sluggable_listener->setTransliterator( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'transliterate' ) );
-        $this->sluggable_listener->setUrlizer( array( 'Netgen\Bundle\EzSyliusBundle\Util\Urlizer', 'urlize' ) );
-
-        $this->manager->persist( $product );
-        $this->manager->flush();
-
-        // fetch product again to get id
-        $productId = $product->getId();
-        $field->value->data['sylius_id'] = $productId;
-
-        return true;
     }
 
     /**
@@ -146,55 +186,14 @@ class SyliusProductStorage implements FieldStorage
      */
     public function getFieldData( VersionInfo $versionInfo, Field $field, array $context )
     {
-        /** @var \Sylius\Component\Core\Model\Product $product */
-        $product = $this->repository->find( $field->value->data['sylius_id'] );
+        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway $gateway */
+        $gateway = $this->getGateway( $context );
 
-        if ( !empty( $product ) )
-        {
-            $product->setCurrentLocale(
-                $this->localeConverter->convertToPOSIX(
-                    $field->languageCode
-                )
-            );
+        $productId = $gateway->getFieldData( $versionInfo );
 
-            $name = $product->getName();
-            $price = $product->getPrice();
-            $price /= 100; // sylius feature
-            $description = $product->getDescription();
-            $slug = $product->getSlug();
+        $product = $this->repository->find( $productId );
 
-            /** @var \DateTime $available_on */
-            $available_on = $product->getAvailableOn();
-            $available_on = $available_on->format( 'Y-m-d H:i' );
-
-            $tax_category = "";
-            if ( $product->getTaxCategory() )
-            {
-                $tax_category = $product->getTaxCategory()->getName();
-            }
-
-            /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
-            $master_variant = $product->getMasterVariant();
-            $weight = $master_variant->getWeight();
-            $height = $master_variant->getHeight();
-            $width = $master_variant->getWidth();
-            $depth = $master_variant->getDepth();
-            $sku = $master_variant->getSku();
-
-            $field->value->externalData = array(
-                'name' => $name,
-                'price' => $price,
-                'description' => $description,
-                'slug' => $slug,
-                'available_on' => $available_on,
-                'weight' => $weight,
-                'height' => $height,
-                'width' => $width,
-                'depth' => $depth,
-                'sku' => $sku,
-                'tax_category' => $tax_category
-            );
-        }
+        $field->value->externalData = $product;
     }
 
     /**
@@ -216,7 +215,7 @@ class SyliusProductStorage implements FieldStorage
             {
                 /**@var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value */
                 $value = $field->value;
-                $syliusId = $value->syliusId;
+                $syliusId = $value->product->getId();
 
                 if ( !empty ( $syliusId ) )
                 {

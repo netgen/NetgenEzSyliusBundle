@@ -637,9 +637,9 @@ class SyliusProductType extends eZDataType
 
     /**
      * Creates the content object attribute content from the input string
-     * Valid string value is name, description, price, available_on and sylius product id all together
+     * Valid string value is name, description, price, available_on all together
      * separated by '|#'
-     * for example "name|#description|#100|#31-12-2014 23:59|#42"
+     * for example "name|#description|#100|#31-12-2014 23:59"
      *
      * @param eZContentObjectAttribute $objectAttribute
      * @param string $string

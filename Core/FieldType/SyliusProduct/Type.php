@@ -3,11 +3,14 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
+use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value;
+use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\CreateValue;
 
 class Type extends FieldType
 {
@@ -33,13 +36,18 @@ class Type extends FieldType
      * It will be used to generate content name and url alias if current field
      * is designated to be used in the content name/urlAlias pattern.
      *
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param SPIValue $value
      *
      * @return integer
      */
     public function getName( SPIValue $value )
     {
-        return $value->name;
+        if( !empty( $value->product ) )
+        {
+            return $value->product->getName();
+        }
+
+        return '';
     }
 
     /**
@@ -55,13 +63,13 @@ class Type extends FieldType
     /**
      * Returns information for FieldValue->$sortKey relevant to the field type.
      *
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param BaseValue $value
      *
      * @return bool
      */
     protected function getSortInfo( BaseValue $value )
     {
-        return $value->price;
+        return false;
     }
 
     /**
@@ -69,51 +77,25 @@ class Type extends FieldType
      *
      * @param mixed $inputValue
      *
-     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value The potentially converted input value.
+     * @return Value|CreateValue $value The potentially converted input value.
      */
     protected function createValueFromInput( $inputValue )
     {
-        if ( $inputValue instanceof Value )
+        if ( $inputValue instanceof Value || $inputValue instanceof CreateValue )
         {
             return $inputValue;
         }
         else if ( is_array( $inputValue ) )
         {
-            $newValue = $this->fromHash( $inputValue );
-
-            return $newValue;
+            return new CreateValue( $inputValue );
         }
         else if ( is_int( $inputValue ) )
         {
             /** @var \Sylius\Component\Core\Model\Product $product */
             $product = $this->syliusRepository->find( $inputValue );
-            $price = $product->getPrice();
-            $price /= 100; // sylius feature
 
-            // format date
-            /** @var \DateTime $available_on */
-            $available_on = $product->getAvailableOn();
-            $available_on = $available_on->format( 'Y-m-d H:i' );
-            $newValue = new Value(
-                array(
-                    'price' => $price,
-                    'sylius_id' => $product->getId(),
-                    'name' => $product->getName(),
-                    'description' => $product->getDescription(),
-                    'available_on' => $available_on,
-                    'weight' => $product->getMasterVariant()->getWeight(),
-                    'height' => $product->getMasterVariant()->getHeight(),
-                    'width' => $product->getMasterVariant()->getWidth(),
-                    'depth' => $product->getMasterVariant()->getDepth(),
-                    'sku' => $product->getSku(),
-                    'tax_category' => null
-                )
-            );
-
-            if ( $product->getTaxCategory() )
-            {
-                $newValue->tax_category = $product->getTaxCategory();
-            }
+            $newValue = new Value();
+            $newValue->product = $product;
 
             return $newValue;
         }
@@ -126,70 +108,24 @@ class Type extends FieldType
      *
      * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException If the value does not match the expected structure.
      *
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param BaseValue $value
      */
     protected function checkValueStructure( BaseValue $value )
     {
-        if ( !is_int( $value->price ) && $value->price < 0 )
+        if ( $value instanceof Value && !( $value->product instanceof ProductInterface ) )
         {
             throw new InvalidArgumentType(
-                '$value->price',
-                'integer',
-                $value->price
+                '$value',
+                'Sylius\Component\Core\Model\ProductInterface',
+                $value->product
             );
         }
-
-        if ( !is_string( $value->name ) )
+        elseif ( $value instanceof CreateValue && !is_array( $value->createArray ) )
         {
             throw new InvalidArgumentType(
-                '$value->name',
-                'string',
-                $value->name
-            );
-        }
-
-        if ( !is_string( $value->description ) )
-        {
-            throw new InvalidArgumentType(
-                '$value->description',
-                'string',
-                $value->description
-            );
-        }
-
-        if ( !is_numeric( $value->height ) && $value->height !== null )
-        {
-            throw new InvalidArgumentType(
-                '$value->height',
-                'integer',
-                $value->height
-            );
-        }
-
-        if ( !is_numeric( $value->weight ) && $value->weight !== null )
-        {
-            throw new InvalidArgumentType(
-                '$value->weight',
-                'integer',
-                $value->weight
-            );
-        }
-
-        if ( !is_numeric( $value->width ) && $value->width !== null )
-        {
-            throw new InvalidArgumentType(
-                '$value->width',
-                'integer',
-                $value->width
-            );
-        }
-
-        if ( !is_numeric( $value->depth ) && $value->depth !== null )
-        {
-            throw new InvalidArgumentType(
-                '$value->depth',
-                'integer',
-                $value->depth
+                '$value',
+                'array',
+                $value->createArray
             );
         }
     }
@@ -201,76 +137,16 @@ class Type extends FieldType
      *
      * @throws \Exception
      *
-     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
+     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\CreateValue
      */
     public function fromHash( $hash )
     {
-        if ( !is_array( $hash ) || ( empty( $hash['price'] ) && intval( $hash['price'] ) !== 0 ) )
+        if ( !is_array( $hash ) )
         {
-            return new Value();
+            return $this->getEmptyValue();
         }
 
-        $value = new Value();
-
-        if ( !empty( $hash['price'] ) )
-        {
-            $value->price = $hash['price'];
-        }
-
-        if ( !empty( $hash['name'] ) )
-        {
-            $value->name = $hash['name'];
-        }
-
-        if ( !empty( $hash['sylius_id'] ) )
-        {
-            $value->syliusId = $hash['sylius_id'];
-        }
-
-        if ( !empty( $hash['description'] ) )
-        {
-            $value->description = $hash['description'];
-        }
-
-        if ( !empty( $hash['slug'] ) )
-        {
-            $value->slug = $hash['slug'];
-        }
-
-        if ( !empty( $hash['available_on'] ) )
-        {
-            $value->available_on = $hash['available_on'];
-        }
-
-        if ( !empty( $hash['weight'] ) )
-        {
-            $value->weight = $hash['weight'];
-        }
-
-        if ( !empty( $hash['height'] ) )
-        {
-            $value->height = $hash['height'];
-        }
-
-        if ( !empty( $hash['width'] ) )
-        {
-            $value->width = $hash['width'];
-        }
-
-        if ( !empty( $hash['depth'] ) )
-        {
-            $value->depth = $hash['depth'];
-        }
-
-        if ( !empty( $hash['sku'] ) )
-        {
-            $value->sku = $hash['sku'];
-        }
-
-        if ( !empty( $hash['tax_category'] ) )
-        {
-            $value->tax_category = $hash['tax_category'];
-        }
+        $value = new CreateValue( $hash );
 
         return $value;
     }
@@ -278,113 +154,88 @@ class Type extends FieldType
     /**
      * Converts the given $value into a plain hash format
      *
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value|SPIValue $value
      *
      * @return array
      */
     public function toHash( SPIValue $value )
     {
-        if ( empty( $value->price ) || empty( $value->name ) || empty( $value->syliusId ) )
+        if( $value->product === null )
         {
             return array();
         }
 
         return array(
-            'price' => $value->price,
-            'name' => $value->name,
-            'sylius_id' => $value->syliusId,
-            'description' => $value->description,
-            'slug' => $value->slug,
-            'available_on' => $value->available_on,
-            'weight' => $value->weight,
-            'height' => $value->height,
-            'width' => $value->width,
-            'depth' => $value->depth,
-            'sku' => $value->sku,
-            'tax_category' => $value->tax_category
+            'price' => $value->product->getPrice(),
+            'name' => $value->product->getName(),
+            'description' => $value->product->getDescription(),
+            'slug' => $value->product->getSlug(),
+            'available_on' => $value->product->getAvailableOn(),
+            'weight' => $value->product->getMasterVariant()->getWeight(),
+            'height' => $value->product->getMasterVariant()->getHeight(),
+            'width' => $value->product->getMasterVariant()->getWidth(),
+            'depth' => $value->product->getMasterVariant()->getDepth(),
+            'sku' => $value->product->getSku(),
+            'tax_category' => $value->product->getTaxCategory()->getName()
         );
     }
 
     /**
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
+     * @param SPIValue $value
+     *
      * @return \eZ\Publish\SPI\Persistence\Content\FieldValue
      */
     public function toPersistenceValue( SPIValue $value )
     {
-        return new FieldValue(
-            array(
-                "data" => $this->ezToHash( $value ),
-                "externalData" => $this->syliusToHash( $value ),
-                "sortKey" => $this->getSortInfo( $value ),
-            )
-        );
+        if( $value instanceof Value )
+        {
+            return new FieldValue(
+                array(
+                    "data" => $value->product->getId(),
+                    "externalData" => $value->product,
+                    "sortKey" => $this->getSortInfo( $value ),
+                )
+            );
+        }
+        elseif( $value instanceof CreateValue )
+        {
+            return new FieldValue(
+                array(
+                    "data" => null,
+                    "externalData" => $value->createArray,
+                    "sortKey" => $this->getSortInfo( $value ),
+                )
+            );
+        }
     }
 
     /**
      * @param \eZ\Publish\SPI\Persistence\Content\FieldValue $fieldValue
+     *
      * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
      */
     public function fromPersistenceValue( FieldValue $fieldValue )
     {
-        if ( $fieldValue->data === null )
+        if ( $fieldValue->externalData === null || !( $fieldValue->externalData instanceof ProductInterface)  )
         {
             return $this->getEmptyValue();
         }
 
-        $value = new Value(
-            array(
-                'name' => $fieldValue->externalData['name'],
-                'price' => $fieldValue->externalData['price'],
-                'description' => $fieldValue->externalData['description'],
-                'slug' => $fieldValue->externalData['slug'],
-                'syliusId' => $fieldValue->data['sylius_id'],
-                'available_on' => $fieldValue->externalData['available_on'],
-                'weight' => $fieldValue->externalData['weight'],
-                'height' => $fieldValue->externalData['height'],
-                'width' => $fieldValue->externalData['width'],
-                'depth' => $fieldValue->externalData['depth'],
-                'sku' => $fieldValue->externalData['sku'],
-                'tax_category' => $fieldValue->externalData['tax_category']
-            )
-        );
+        $value = new Value();
+        $value->product = $fieldValue->externalData;
 
         return $value;
     }
 
-    /**
-     * Returns hash of values to be stored in eZ database
-     *
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
-     * @return array
-     */
-    protected function ezToHash( $value )
+    static protected function checkValueType( $value )
     {
-        return array(
-            'sylius_id' => $value->syliusId
-        );
-    }
-
-    /**
-     * Returns hash of values to be stored in sylius database
-     *
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value
-     * @return array
-     */
-    protected function syliusToHash( $value )
-    {
-        return array(
-            'name' => $value->name,
-            'price' => $value->price,
-            'description' => $value->description,
-            'slug' => $value->slug,
-            'available_on' => $value->available_on,
-            'weight' => $value->weight,
-            'height' => $value->height,
-            'width' => $value->width,
-            'depth' => $value->depth,
-            'sku' => $value->sku,
-            'tax_category' => $value->tax_category
-        );
+        if ( !$value instanceof Value && !$value instanceof CreateValue )
+        {
+            throw new InvalidArgumentType(
+                "\$value",
+                "Netgen\\Bundle\\EzSyliusBundle\\Core\\FieldType\\SyliusProduct\Value or Netgen\\Bundle\\EzSyliusBundle\\Core\\FieldType\\SyliusProduct\\CreateValue",
+                $value );
+        }
     }
 
     /**

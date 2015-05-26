@@ -33,7 +33,7 @@ class SyliusProductConverter implements Converter
      */
     public function toStorageValue( FieldValue $value, StorageFieldValue $storageFieldValue )
     {
-        $storageFieldValue->dataInt = $value->data['sylius_id'];
+        $storageFieldValue->dataInt = $value->data;
     }
 
     /**
@@ -44,7 +44,7 @@ class SyliusProductConverter implements Converter
      */
     public function toFieldValue( StorageFieldValue $value, FieldValue $fieldValue )
     {
-        $fieldValue->data['sylius_id'] = $value->dataInt;
+        $fieldValue->data = $value->dataInt;
     }
 
     /**

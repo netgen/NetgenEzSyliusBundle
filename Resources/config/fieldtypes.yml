@@ -1,6 +1,7 @@
 parameters:
     ezpublish.fieldType.syliusproduct.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
     ezpublish.fieldType.syliusproduct.externalStorage.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage
+    ezpublish.fieldType.syliusproduct.storage_gateway.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\LegacyStorage
 
 services:
     ezpublish.fieldType.syliusproduct:
@@ -22,3 +23,8 @@ services:
             - @ezpublish.locale.converter
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}
+
+    ezpublish.fieldType.syliusproduct.storage_gateway:
+        class: %ezpublish.fieldType.syliusproduct.storage_gateway.class%
+        tags:
+            - {name: ezpublish.fieldType.externalStorageHandler.gateway, alias: syliusproduct, identifier: LegacyStorage}
