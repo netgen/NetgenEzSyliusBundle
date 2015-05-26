@@ -29,5 +29,14 @@ class NetgenEzSyliusExtension extends Extension
         $loader->load( 'override.yml' );
         $loader->load( 'fieldtypes.yml' );
         $loader->load( 'storage_engines.yml' );
+
+        if ( $container->hasParameter( 'ezpublish.persistence.legacy.search.gateway.sort_clause_handler.common.field.class' ) )
+        {
+            $loader->load( 'search_old.yml' );
+        }
+        else
+        {
+            $loader->load( 'search.yml' );
+        }
     }
 }
