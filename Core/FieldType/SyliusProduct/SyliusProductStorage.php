@@ -54,11 +54,11 @@ class SyliusProductStorage extends GatewayBasedStorage
         /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway $gateway */
         $gateway = $this->getGateway( $context );
 
-        if( $field->value->externalData instanceof ProductInterface )
+        if ( $field->value->externalData instanceof ProductInterface )
         {
             $product = $field->value->externalData;
 
-            if( $gateway->checkFieldData( $versionInfo, $product->getId() ) )
+            if ( $gateway->checkFieldData( $versionInfo, $product->getId() ) )
             {
                 $this->manager->persist( $product );
                 $this->manager->flush();
@@ -87,9 +87,9 @@ class SyliusProductStorage extends GatewayBasedStorage
             /** @var \Sylius\Component\Core\Model\ProductVariant $copiedProductMasterVariant */
             $copiedProductMasterVariant = $copiedProduct->getMasterVariant();
             $copiedProductMasterVariant->setWeight( $product->getMasterVariant()->getWeight() )
-                                       ->setWidth( $product->getMasterVariant()->getWidth() )
-                                       ->setHeight( $product->getMasterVariant()->getHeight() )
-                                       ->setDepth( $product->getMasterVariant()->getDepth() );
+                ->setWidth( $product->getMasterVariant()->getWidth() )
+                ->setHeight( $product->getMasterVariant()->getHeight() )
+                ->setDepth( $product->getMasterVariant()->getDepth() );
 
             $this->manager->persist( $copiedProduct );
             $this->manager->flush();
@@ -100,7 +100,7 @@ class SyliusProductStorage extends GatewayBasedStorage
 
             return true;
         }
-        elseif( is_array( $field->value->externalData ) )
+        else if ( is_array( $field->value->externalData ) )
         {
             $createArray = $field->value->externalData;
 
@@ -157,10 +157,10 @@ class SyliusProductStorage extends GatewayBasedStorage
             /** @var \Sylius\Component\Core\Model\ProductVariant $master_variant */
             $master_variant = $product->getMasterVariant();
             $master_variant->setWeight( $weight )
-                           ->setHeight( $height )
-                           ->setWidth( $width )
-                           ->setDepth( $depth )
-                           ->setSku( $sku );
+                ->setHeight( $height )
+                ->setWidth( $width )
+                ->setDepth( $depth )
+                ->setSku( $sku );
 
             $this->manager->persist( $product );
             $this->manager->flush();

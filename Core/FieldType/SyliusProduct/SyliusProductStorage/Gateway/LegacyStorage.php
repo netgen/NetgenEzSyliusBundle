@@ -86,7 +86,7 @@ class LegacyStorage extends Gateway
 
         $rows = $statement->fetchAll( PDO::FETCH_ASSOC );
 
-        if( count( $rows ) > 0 )
+        if ( count( $rows ) > 0 )
         {
             $updateQuery = $connection->createUpdateQuery();
             $updateQuery

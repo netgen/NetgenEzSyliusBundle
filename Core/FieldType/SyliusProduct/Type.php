@@ -42,7 +42,7 @@ class Type extends FieldType
      */
     public function getName( SPIValue $value )
     {
-        if( !empty( $value->product ) )
+        if ( !empty( $value->product ) )
         {
             return $value->product->getName();
         }
@@ -120,7 +120,7 @@ class Type extends FieldType
                 $value->product
             );
         }
-        elseif ( $value instanceof CreateValue && !is_array( $value->createArray ) )
+        else if ( $value instanceof CreateValue && !is_array( $value->createArray ) )
         {
             throw new InvalidArgumentType(
                 '$value',
@@ -160,7 +160,7 @@ class Type extends FieldType
      */
     public function toHash( SPIValue $value )
     {
-        if( $value->product === null )
+        if ( $value->product === null )
         {
             return array();
         }
@@ -187,7 +187,7 @@ class Type extends FieldType
      */
     public function toPersistenceValue( SPIValue $value )
     {
-        if( $value instanceof Value )
+        if ( $value instanceof Value )
         {
             return new FieldValue(
                 array(
@@ -197,7 +197,7 @@ class Type extends FieldType
                 )
             );
         }
-        elseif( $value instanceof CreateValue )
+        else if ( $value instanceof CreateValue )
         {
             return new FieldValue(
                 array(
@@ -216,7 +216,7 @@ class Type extends FieldType
      */
     public function fromPersistenceValue( FieldValue $fieldValue )
     {
-        if ( $fieldValue->externalData === null || !( $fieldValue->externalData instanceof ProductInterface)  )
+        if ( $fieldValue->externalData === null || !( $fieldValue->externalData instanceof ProductInterface) )
         {
             return $this->getEmptyValue();
         }
@@ -233,8 +233,9 @@ class Type extends FieldType
         {
             throw new InvalidArgumentType(
                 "\$value",
-                "Netgen\\Bundle\\EzSyliusBundle\\Core\\FieldType\\SyliusProduct\Value or Netgen\\Bundle\\EzSyliusBundle\\Core\\FieldType\\SyliusProduct\\CreateValue",
-                $value );
+                "Netgen\\Bundle\\EzSyliusBundle\\Core\\FieldType\\SyliusProduct\\Value or Netgen\\Bundle\\EzSyliusBundle\\Core\\FieldType\\SyliusProduct\\CreateValue",
+                $value
+            );
         }
     }
 

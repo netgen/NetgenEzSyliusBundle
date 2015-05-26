@@ -4,7 +4,7 @@ namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 
-class CreateValue extends  BaseValue
+class CreateValue extends BaseValue
 {
     public $createArray = array(
         'name' => null,
