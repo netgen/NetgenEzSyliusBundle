@@ -69,8 +69,8 @@ class UntrashSlot extends BaseSlot
 
         try
         {
-            $trashItem = $this->repository->getTrashService()
-                ->loadTrashItem( $signal->trashItemId );
+            $location = $this->repository->getLocationService()
+                ->loadLocation( $signal->newLocationId );
         }
         catch ( NotFoundException $e )
         {
@@ -79,7 +79,7 @@ class UntrashSlot extends BaseSlot
 
         $syliusProductEntity = $this->entityManager
             ->getRepository( 'NetgenEzSyliusBundle:SyliusProduct' )
-            ->find( $trashItem->contentId );
+            ->find( $location->getContentInfo()->id );
 
         if ( !$syliusProductEntity instanceof SyliusProduct )
         {
