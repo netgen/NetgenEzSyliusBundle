@@ -11,7 +11,7 @@ class CurrencyContext extends BaseCurrencyContext
     {
         try
         {
-            parent::getDefaultCurrency();
+            return parent::getDefaultCurrency();
         }
         catch ( TableNotFoundException $e )
         {
