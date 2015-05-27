@@ -2,6 +2,7 @@ parameters:
     ezpublish.security.login_listener.class: Netgen\Bundle\EzSyliusBundle\Security\EventListener\SecurityListener
     cmf_routing.chain_router.class: eZ\Publish\Core\MVC\Symfony\Routing\ChainRouter
     sylius.route_generator.class: Netgen\Bundle\EzSyliusBundle\Routing\SyliusAwareGenerator
+    sylius.context.currency.class: Netgen\Bundle\EzSyliusBundle\Context\CurrencyContext
 
 services:
     sylius.route_generator:
