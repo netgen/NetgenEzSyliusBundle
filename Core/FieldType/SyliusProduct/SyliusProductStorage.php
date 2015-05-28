@@ -216,7 +216,7 @@ class SyliusProductStorage extends GatewayBasedStorage
         $productId = $gateway->getFieldData( $versionInfo );
 
         $product = null;
-        if( !empty( $productId ) )
+        if ( !empty( $productId ) )
         {
             $product = $this->repository->find( $productId );
         }
