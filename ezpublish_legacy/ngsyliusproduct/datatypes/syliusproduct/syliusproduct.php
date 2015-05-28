@@ -7,7 +7,7 @@ class SyliusProduct
     /**
      * @var \Sylius\Component\Core\Model\Product
      */
-    protected $product;
+    protected $product = null;
 
     /**
      * Returns an array with attributes that are available

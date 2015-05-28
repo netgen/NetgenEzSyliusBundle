@@ -470,7 +470,7 @@ class SyliusProductType extends eZDataType
 
         if ( empty( $result[0][ "product_id" ] ) )
         {
-            return null;
+            return new SyliusProduct();
         }
 
         $productId = $result[0][ "product_id" ];
