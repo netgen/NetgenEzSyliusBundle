@@ -3,6 +3,7 @@ parameters:
     cmf_routing.chain_router.class: eZ\Publish\Core\MVC\Symfony\Routing\ChainRouter
     sylius.route_generator.class: Netgen\Bundle\EzSyliusBundle\Routing\SyliusAwareGenerator
     sylius.context.currency.class: Netgen\Bundle\EzSyliusBundle\Context\CurrencyContext
+    sylius.translation.translatable_listener.doctrine.orm.class: Netgen\Bundle\EzSyliusBundle\EventListener\ORMTranslatableListener
 
 services:
     sylius.route_generator:
