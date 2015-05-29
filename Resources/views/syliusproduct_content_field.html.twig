@@ -1,22 +1,72 @@
 {% block syliusproduct_field %}
+{% spaceless %}
 
-    <div>{{ 'Name'|trans~": " }}{{ field.value.name }}</div>
-    <div>{{ 'Description'|trans~": " }}{{ field.value.description }}</div>
-    <div>{{ 'Price'|trans~": " }}{{ field.value.price }}</div>
-    {% if field.value.available_on %}
-    <div>{{ 'Available on'|trans~": " }}{{ field.value.available_on }}</div>
-    {% endif %}
-    {% if field.value.weight %}
-        <div>{{ 'Weight'|trans~": " }}{{ field.value.weight }}</div>
-    {% endif %}
-    {% if field.value.height %}
-        <div>{{ 'Height'|trans~": " }}{{ field.value.height }}</div>
-    {% endif %}
-    {% if field.value.width %}
-        <div>{{ 'Width'|trans~": " }}{{ field.value.width }}</div>
-    {% endif %}
-    {% if field.value.depth %}
-        <div>{{ 'Depth'|trans~": " }}{{ field.value.depth }}</div>
+    {% set showFields = parameters['show']|default([]) %}
+
+    {% if showFields is empty or 'name' in showFields %}
+        <div>{{ 'product.name'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.name }}</div>
     {% endif %}
 
+    {% if showFields is empty or 'description' in showFields %}
+        <div>{{ 'product.description'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.description }}</div>
+    {% endif %}
+
+    {% if showFields is empty or 'price' in showFields %}
+        <div>{{ 'product.price'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.price|sylius_price }}</div>
+    {% endif %}
+
+    {% if showFields is empty or 'sku' in showFields %}
+        {% if field.value.product.masterVariant.sku %}
+            <div>{{ 'product.sku'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.masterVariant.sku }}</div>
+        {% endif %}
+    {% endif %}
+
+    {% if showFields is empty or 'available_on' in showFields %}
+        {% if field.value.product.availableOn %}
+            <div>{{ 'product.available_from'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.availableOn.date|date }}</div>
+        {% endif %}
+    {% endif %}
+
+    {% if showFields is empty or 'weight' in showFields %}
+        {% if field.value.product.masterVariant.weight %}
+            <div>{{ 'product.weight'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.masterVariant.weight }}</div>
+        {% endif %}
+    {% endif %}
+
+    {% if showFields is empty or 'height' in showFields %}
+        {% if field.value.product.masterVariant.height %}
+            <div>{{ 'product.height'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.masterVariant.height }}</div>
+        {% endif %}
+    {% endif %}
+
+    {% if showFields is empty or 'width' in showFields %}
+        {% if field.value.product.masterVariant.width %}
+            <div>{{ 'product.width'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.masterVariant.width }}</div>
+        {% endif %}
+    {% endif %}
+
+    {% if showFields is empty or 'depth' in showFields %}
+        {% if field.value.product.masterVariant.depth %}
+            <div>{{ 'product.depth'|trans( {}, 'ezsylius' ) ~ ": " }}{{ field.value.product.masterVariant.depth }}</div>
+        {% endif %}
+    {% endif %}
+
+    {% if showFields is empty or 'form' in showFields %}
+        <div class="add-to-cart">
+            <form action="{{ path('sylius_cart_item_add', {'id': field.value.product.id}) }}" method="post">
+                {% set form = sylius_cart_form() %}
+
+                {{ form_widget( form.quantity ) }}
+                <button
+                        type="submit"
+                        class="btn btn-default btn-add-to-cart"
+                        >
+                    {{ 'product.add_to_cart'|trans( {}, 'ezsylius' ) ~ ": " }}
+                </button>
+                {{ form_end(form) }}
+            </form>
+        </div>
+    {% endif %}
+
+{% endspaceless %}
 {% endblock %}
