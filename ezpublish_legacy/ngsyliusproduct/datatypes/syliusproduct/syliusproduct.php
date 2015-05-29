@@ -136,7 +136,12 @@ class SyliusProduct
 
         if ( $name == 'tax_category' )
         {
-            return $this->product->getTaxCategory();
+            if ( $this->product->getTaxCategory() )
+            {
+                return $this->product->getTaxCategory()->getName();
+            }
+
+            return null;
         }
 
         eZDebug::writeError( "Attribute '$name' does not exist", "SyliusProduct::attribute" );
