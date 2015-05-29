@@ -130,8 +130,7 @@ class LegacyStorage extends Gateway
     }
 
     /**
-     * Deletes field data for all $fieldIds in the version identified by
-     * $versionInfo.
+     * Deletes field data for content id identified by $versionInfo.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param array $fieldIds
@@ -140,19 +139,15 @@ class LegacyStorage extends Gateway
     {
         $connection = $this->getConnection();
 
+        $contentId = $versionInfo->contentInfo->id;
+
         $query = $connection->createDeleteQuery();
         $query
-            ->deleteFrom( $connection->quoteTable( "eztags_attribute_link" ) )
+            ->deleteFrom( $connection->quoteTable( "ngsyliusproduct" ) )
             ->where(
-                $query->expr->lAnd(
-                    $query->expr->in(
-                        $connection->quoteColumn( "objectattribute_id" ),
-                        $fieldIds
-                    ),
-                    $query->expr->eq(
-                        $connection->quoteColumn( "objectattribute_version" ),
-                        $query->bindValue( $versionInfo->versionNo, null, PDO::PARAM_INT )
-                    )
+                $query->expr->eq(
+                    $connection->quoteColumn( "contentobject_id" ),
+                    $query->bindValue( $contentId, null, PDO::PARAM_INT )
                 )
             );
 
