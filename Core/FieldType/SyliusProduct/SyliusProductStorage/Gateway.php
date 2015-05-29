@@ -25,8 +25,7 @@ abstract class Gateway extends StorageGateway
     abstract public function getFieldData( VersionInfo $versionInfo );
 
     /**
-     * Deletes field data for all $fieldIds in the version identified by
-     * $versionInfo.
+     * Deletes field data for content id identified by $versionInfo.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param array $fieldIds

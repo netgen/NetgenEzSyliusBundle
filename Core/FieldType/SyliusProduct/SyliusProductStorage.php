@@ -261,6 +261,11 @@ class SyliusProductStorage extends GatewayBasedStorage
                 }
             }
         }
+
+        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway $gateway */
+        $gateway = $this->getGateway( $context );
+
+        $gateway->deleteFieldData( $versionInfo, $fieldIds );
     }
 
     /**

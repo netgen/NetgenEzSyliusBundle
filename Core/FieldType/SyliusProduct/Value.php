@@ -7,7 +7,7 @@ use eZ\Publish\Core\FieldType\Value as BaseValue;
 class Value extends BaseValue
 {
     /**
-     * @var \Sylius\Component\Core\Model\Product
+     * @var \Sylius\Component\Core\Model\Product|null
      */
     public $product = null;
 

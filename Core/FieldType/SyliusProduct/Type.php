@@ -9,6 +9,8 @@ use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
+use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value;
+use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\CreateValue;
 
 class Type extends FieldType
 {
@@ -59,7 +61,7 @@ class Type extends FieldType
     /**
      * Returns the empty value for this field type.
      *
-     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value
+     * @return Value
      */
     public function getEmptyValue()
     {
@@ -83,7 +85,7 @@ class Type extends FieldType
      *
      * @param mixed $inputValue
      *
-     * @return \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value|\Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\CreateValue $value The potentially converted input value.
+     * @return Value|CreateValue $value The potentially converted input value.
      */
     protected function createValueFromInput( $inputValue )
     {
