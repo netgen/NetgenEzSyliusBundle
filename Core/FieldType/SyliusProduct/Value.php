@@ -18,6 +18,6 @@ class Value extends BaseValue
      */
     public function __toString()
     {
-        return $this->product->getName();
+        return json_encode( $this->product );
     }
 }
