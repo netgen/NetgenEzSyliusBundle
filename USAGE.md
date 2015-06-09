@@ -1,6 +1,6 @@
-## USAGE
+# USAGE
 
-## Legacy datatype
+# Legacy datatype
 
 After installing and properly activating the extension, you can add the datatype `Sylius product` datatype to you content class.
 Next step would be to create `ngsyliusproduct.ini.append.php` where you can define mapping of some attributes from eZ Publish objects to Sylius products. For now, only name and description are supported.
@@ -29,13 +29,13 @@ When creating/editing content which contains Sylius product datatype, several fi
 
 Publishing object in eZ Publish legacy administration will create new Sylius product if there is no connection, or update the existing Sylius product that is connected to the eZ object.
 
-## Field type
+# Field type
 The goal was to provide full sylius product as value of the field type, but also to provide some kind of wrapper around it when manipulating eZ content.
 
 Because of that, there is special `CreateValue` class that is used only for creating new content with Sylius product field type.
 CreateValue holds associative array with values which will be used to create Sylius product (same fields as in legacy datatype).
 
-# Creating content
+## Creating content
 Example:
 
 ```
@@ -58,7 +58,7 @@ $draft = $contentService->createContent( $contentCreateStruct, array( $locationC
 $content = $contentService->publishVersion( $draft->versionInfo );
 ```
 
-# Translating content
+## Translating content
 When translating the content, you are free to change the value directly on the value received from the field type. The field type will take care to save new value with appropriate locale:
 
 ```
@@ -76,7 +76,7 @@ $contentDraft = $contentService->updateContent( $contentDraft->versionInfo, $con
 $translatedContent = $contentService->publishVersion( $contentDraft->versionInfo );
 ```
 
-# Viewing content
+## Viewing content
 Content field template has also been provided, so it is possible to render the Sylius product field with `ez_render_field` twig function. If there are no additional parameters provided, all values that have been set will be shown, including `add to cart` form.
 
 However, it is possible to specify which fields to show by adding `show` parameter to `ez_render_field`.
