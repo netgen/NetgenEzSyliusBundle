@@ -1,6 +1,7 @@
 parameters:
     netgen.ez_sylius.signalslot.slot.trash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\TrashSlot
     netgen.ez_sylius.signalslot.slot.untrash.class: Netgen\Bundle\EzSyliusBundle\Core\Slot\UntrashSlot
+    netgen.ez_sylius.listener.product_post_update.class: Netgen\Bundle\EzSyliusBundle\EventListener\ProductListener
 
 services:
     netgen.ez_sylius.signalslot.slot.trash:
@@ -22,3 +23,11 @@ services:
             - @sylius.manager.product
         tags:
             - { name: ezpublish.api.slot, signal: TrashService\RecoverSignal }
+
+    netgen.ez_sylius.listener.product_post_update:
+        class: %netgen.ez_sylius.listener.product_post_update.class%
+        arguments:
+            - @ezpublish.cache_pool.spi.cache.decorator
+            - @doctrine.orm.entity_manager
+        tags:
+            - { name: kernel.event_listener, event: sylius.product.post_update, method: "onProductUpdate" }
