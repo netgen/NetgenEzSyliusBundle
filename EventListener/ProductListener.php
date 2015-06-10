@@ -18,13 +18,24 @@ class ProductListener
      */
     protected $entityManager;
 
+    /**
+     * Constructor
+     *
+     * @param \eZ\Publish\Core\Persistence\Cache\CacheServiceDecorator $cacheServiceDecorator
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager
+     */
     public function __construct( CacheServiceDecorator $cacheServiceDecorator, EntityManagerInterface $entityManager )
     {
         $this->cache = $cacheServiceDecorator;
         $this->entityManager = $entityManager;
     }
 
-    public function onProductUpdate(GenericEvent $event)
+    /**
+     * Executes on Sylius product update
+     *
+     * @param \Symfony\Component\EventDispatcher\GenericEvent $event
+     */
+    public function onProductUpdate( GenericEvent $event )
     {
         $subject = $event->getSubject();
 
