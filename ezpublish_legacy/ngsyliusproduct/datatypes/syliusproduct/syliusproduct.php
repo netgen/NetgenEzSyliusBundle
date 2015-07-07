@@ -175,6 +175,11 @@ class SyliusProduct
      */
     public function store( eZContentObjectAttribute $attribute )
     {
+        if ( empty( $this->product ) )
+        {
+            return;
+        }
+
         if ( !is_numeric( $attribute->attribute( 'contentobject_id' ) ) || !is_numeric( $this->product->getId() ) )
         {
             return;
