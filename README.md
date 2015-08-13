@@ -8,7 +8,7 @@ This includes eZ Publish field type and legacy datatype which provide the abilit
 
 ## Installation
 
-For installation instructions, see [installation instructions of the main integration repo](https://github.com/netgen/ezpublish-community-sylius/blob/master/INSTALL.md).
+For installation instructions, see [installation instructions of the main integration repo](https://github.com/netgen/ezpublish-community-sylius/blob/sylius_integration/INSTALL.md).
 
 ## Usage
 
