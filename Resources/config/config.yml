@@ -4,6 +4,13 @@ ezpublish:
             field_templates:
                 - { template: NetgenEzSyliusBundle::syliusproduct_content_field.html.twig, priority: 5000 }
 
+sylius_core:
+    routing:
+        %sylius.model.product.class%:
+            prefix: %ez_sylius.shop_path_prefix%/p
+        %sylius.model.taxon.class%:
+            prefix: %ez_sylius.shop_path_prefix%/t
+
 netgen_ez_sylius:
     routing:
         generate_url_aliases: true
