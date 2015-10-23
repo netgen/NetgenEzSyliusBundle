@@ -7,12 +7,12 @@ class SyliusProduct
     /**
      * @var int
      */
-    private $contentId;
+    protected $contentId;
 
     /**
      * @var int
      */
-    private $productId;
+    protected $productId;
 
     /**
      * Get eZ Publish content ID

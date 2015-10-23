@@ -39,7 +39,7 @@ class ORMTranslatableListener extends BaseListener
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata
      */
-    private function mapTranslatable( ClassMetadata $metadata )
+    protected function mapTranslatable( ClassMetadata $metadata )
     {
         // In the case A -> B -> TranslatableInterface, B might not have mapping defined as it
         // is probably defined in A, so in that case, we just return.
@@ -72,7 +72,7 @@ class ORMTranslatableListener extends BaseListener
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata
      */
-    private function mapTranslation( ClassMetadata $metadata )
+    protected function mapTranslation( ClassMetadata $metadata )
     {
         // In the case A -> B -> TranslationInterface, B might not have mapping defined as it
         // is probably defined in A, so in that case, we just return.
@@ -138,7 +138,7 @@ class ORMTranslatableListener extends BaseListener
      *
      * @return bool
      */
-    private function hasUniqueConstraint( ClassMetadata $metadata, array $columns )
+    protected function hasUniqueConstraint( ClassMetadata $metadata, array $columns )
     {
         if ( !isset( $metadata->table['uniqueConstraints'] ) )
         {
