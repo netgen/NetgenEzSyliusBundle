@@ -1,19 +1,19 @@
 parameters:
-    ezpublish.fieldType.syliusproduct.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
-    ezpublish.fieldType.syliusproduct.externalStorage.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage
-    ezpublish.fieldType.syliusproduct.storage_gateway.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\LegacyStorage
+    netgen.ez_sylius.field_type.syliusproduct.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
+    netgen.ez_sylius.field_type.syliusproduct.external_storage.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage
+    netgen.ez_sylius.field_type.syliusproduct.storage_gateway.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\LegacyStorage
 
 services:
-    ezpublish.fieldType.syliusproduct:
-        class: %ezpublish.fieldType.syliusproduct.class%
+    netgen.ez_sylius.field_type.syliusproduct:
+        class: %netgen.ez_sylius.field_type.syliusproduct.class%
         parent: ezpublish.fieldType
         arguments:
             - @sylius.repository.product
         tags:
             - {name: ezpublish.fieldType, alias: syliusproduct}
 
-    ezpublish.fieldType.syliusproduct.externalStorage:
-        class: %ezpublish.fieldType.syliusproduct.externalStorage.class%
+    netgen.ez_sylius.field_type.syliusproduct.external_storage:
+        class: %netgen.ez_sylius.field_type.syliusproduct.external_storage.class%
         arguments:
             - @sylius.repository.product
             - @sylius.manager.product
@@ -23,7 +23,7 @@ services:
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}
 
-    ezpublish.fieldType.syliusproduct.storage_gateway:
-        class: %ezpublish.fieldType.syliusproduct.storage_gateway.class%
+    netgen.ez_sylius.field_type.syliusproduct.storage_gateway:
+        class: %netgen.ez_sylius.field_type.syliusproduct.storage_gateway.class%
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler.gateway, alias: syliusproduct, identifier: LegacyStorage}
