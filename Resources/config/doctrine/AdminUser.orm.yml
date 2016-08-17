@@ -1,0 +1,3 @@
+Netgen\Bundle\EzSyliusBundle\Entity\AdminUser:
+    type: entity
+    table: sylius_admin_user

@@ -1,6 +1,6 @@
 {
     "name": "netgen/ez-sylius-bundle",
-    "description": "eZ Publish & Sylius integration bundle",
+    "description": "eZ Platform & Sylius eCommerce integration bundle",
     "license": "GPL-2.0",
     "authors": [
         {
@@ -10,11 +10,15 @@
         }
     ],
     "require": {
-        "ezsystems/ezpublish-kernel": "*",
-        "sylius/sylius": "~0.14.0"
+        "ezsystems/ezpublish-kernel": "^6.0",
+        "sylius/sylius": "*"
     },
-    "target-dir": "Netgen/Bundle/EzSyliusBundle",
     "autoload": {
-        "psr-0": { "Netgen\\Bundle\\EzSyliusBundle": "" }
+        "psr-4": { "Netgen\\Bundle\\EzSyliusBundle\\": "" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.x-dev"
+        }
     }
 }

@@ -1,0 +1,13 @@
+parameters:
+    netgen.ez_sylius.listeners.platform_ui_csrf_token.route_name: "ezpublish_rest_createSession"
+    netgen.ez_sylius.listeners.platform_ui_csrf_token.class: Netgen\Bundle\EzSyliusBundle\EventListener\PlatformUICsrfTokenListener
+
+services:
+    netgen.ez_sylius.listeners.platform_ui_csrf_token:
+        class: "%netgen.ez_sylius.listeners.platform_ui_csrf_token.class%"
+        arguments:
+            - "%netgen.ez_sylius.listeners.platform_ui_csrf_token.route_name%"
+            - "%ezpublish_rest.csrf_token_intention%"
+            - "@?security.csrf.token_manager"
+        tags:
+            - { name: kernel.event_subscriber }

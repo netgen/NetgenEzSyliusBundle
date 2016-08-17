@@ -1,8 +1,0 @@
-parameters:
-    netgen.ez_sylius.field_type.syliusproduct.converter.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
-
-services:
-    netgen.ez_sylius.field_type.syliusproduct.converter:
-        class: %netgen.ez_sylius.field_type.syliusproduct.converter.class%
-        tags:
-            - {name: ezpublish.storageEngine.legacy.converter, alias: syliusproduct, lazy: true, callback: "::create"}

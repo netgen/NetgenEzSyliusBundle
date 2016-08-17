@@ -1,0 +1,3 @@
+Netgen\Bundle\EzSyliusBundle\Entity\ShopUser:
+    type: entity
+    table: sylius_shop_user

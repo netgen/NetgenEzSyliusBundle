@@ -1,0 +1,12 @@
+Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusShopUser:
+    type: entity
+    table: ezsylius_shop_user
+    id:
+        eZUserId:
+            type: integer
+            column: ez_user_id
+            id: true
+    fields:
+        syliusUserId:
+            type: integer
+            column: sylius_user_id

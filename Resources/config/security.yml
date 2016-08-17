@@ -1,0 +1,19 @@
+parameters:
+    netgen.ez_sylius.security.user_provider.class: Netgen\Bundle\EzSyliusBundle\Provider\UserProvider
+
+services:
+    netgen.ez_sylius.security.shop_user_provider:
+        class: "%netgen.ez_sylius.security.user_provider.class%"
+        arguments:
+            - "@sylius.repository.shop_user"
+            - "@netgen.ez_sylius.repository.ez_sylius_shop_user"
+            - "@ezpublish.api.repository"
+            - "%netgen.ez_sylius.entity.shop_user.class%"
+
+    netgen.ez_sylius.security.admin_user_provider:
+        class: "%netgen.ez_sylius.security.user_provider.class%"
+        arguments:
+            - "@sylius.repository.admin_user"
+            - "@netgen.ez_sylius.repository.ez_sylius_admin_user"
+            - "@ezpublish.api.repository"
+            - "%netgen.ez_sylius.entity.admin_user.class%"
