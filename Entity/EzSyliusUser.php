@@ -20,17 +20,15 @@ class EzSyliusUser
     protected $eZUserId;
 
     /**
-     * Set Sylius user ID.
+     * Constructor.
      *
      * @param int $syliusUserId
-     *
-     * @return \Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser
+     * @param string $syliusUserType
      */
-    public function setSyliusUserId($syliusUserId)
+    public function __construct($syliusUserId, $syliusUserType)
     {
         $this->syliusUserId = $syliusUserId;
-
-        return $this;
+        $this->syliusUserType = $syliusUserType;
     }
 
     /**
@@ -41,20 +39,6 @@ class EzSyliusUser
     public function getSyliusUserId()
     {
         return $this->syliusUserId;
-    }
-
-    /**
-     * Set Sylius user type.
-     *
-     * @param int $syliusUserType
-     *
-     * @return \Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser
-     */
-    public function setSyliusUserType($syliusUserType)
-    {
-        $this->syliusUserType = $syliusUserType;
-
-        return $this;
     }
 
     /**
