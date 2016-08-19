@@ -87,7 +87,7 @@ EOT
                     array(
                         sprintf('Sylius user (%s)', $syliusUserType),
                         $syliusUser->getEmail(),
-                        '',
+                        $syliusUser->getUsername(),
                     ),
                     array(
                         'eZ Platform user',
