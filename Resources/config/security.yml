@@ -1,19 +1,19 @@
 parameters:
-    netgen_ez_sylius.security.user_provider.class: Netgen\Bundle\EzSyliusBundle\Provider\UserProvider
+    netgen_ez_sylius.user.provider.email_or_name_based.class: Netgen\Bundle\EzSyliusBundle\Provider\EmailOrNameBased
 
 services:
-    netgen_ez_sylius.security.shop_user_provider:
-        class: "%netgen_ez_sylius.security.user_provider.class%"
+    netgen_ez_sylius.shop_user.provider.email_or_name_based:
+        class: "%netgen_ez_sylius.user.provider.email_or_name_based.class%"
         arguments:
-            - "@sylius.repository.shop_user"
-            - "@netgen_ez_sylius.repository.ez_sylius_shop_user"
+            - "@sylius.shop_user.provider.email_or_name_based"
+            - "@netgen_ez_sylius.repository.ez_sylius_user"
             - "@ezpublish.api.repository"
-            - "%netgen_ez_sylius.entity.shop_user.class%"
+            - "shop"
 
-    netgen_ez_sylius.security.admin_user_provider:
-        class: "%netgen_ez_sylius.security.user_provider.class%"
+    netgen_ez_sylius.admin_user.provider.email_or_name_based:
+        class: "%netgen_ez_sylius.user.provider.email_or_name_based.class%"
         arguments:
-            - "@sylius.repository.admin_user"
-            - "@netgen_ez_sylius.repository.ez_sylius_admin_user"
+            - "@sylius.admin_user.provider.email_or_name_based"
+            - "@netgen_ez_sylius.repository.ez_sylius_user"
             - "@ezpublish.api.repository"
-            - "%netgen_ez_sylius.entity.admin_user.class%"
+            - "admin"

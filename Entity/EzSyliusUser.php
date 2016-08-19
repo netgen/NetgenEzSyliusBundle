@@ -2,41 +2,22 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Entity;
 
-abstract class EzSyliusUser
+class EzSyliusUser
 {
-    /**
-     * @var int
-     */
-    protected $eZUserId;
-
     /**
      * @var int
      */
     protected $syliusUserId;
 
     /**
-     * Set eZ Publish user ID.
-     *
-     * @param int $eZUserId
-     *
-     * @return \Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser
+     * @var string
      */
-    public function setEzUserId($eZUserId)
-    {
-        $this->eZUserId = $eZUserId;
-
-        return $this;
-    }
+    protected $syliusUserType;
 
     /**
-     * Get eZ Publish user ID.
-     *
-     * @return int
+     * @var int
      */
-    public function getEzUserId()
-    {
-        return $this->eZUserId;
-    }
+    protected $eZUserId;
 
     /**
      * Set Sylius user ID.
@@ -60,5 +41,53 @@ abstract class EzSyliusUser
     public function getSyliusUserId()
     {
         return $this->syliusUserId;
+    }
+
+    /**
+     * Set Sylius user type.
+     *
+     * @param int $syliusUserType
+     *
+     * @return \Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser
+     */
+    public function setSyliusUserType($syliusUserType)
+    {
+        $this->syliusUserType = $syliusUserType;
+
+        return $this;
+    }
+
+    /**
+     * Get Sylius user type.
+     *
+     * @return string
+     */
+    public function getSyliusUserType()
+    {
+        return $this->syliusUserType;
+    }
+
+    /**
+     * Set eZ Publish user ID.
+     *
+     * @param int $eZUserId
+     *
+     * @return \Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser
+     */
+    public function setEzUserId($eZUserId)
+    {
+        $this->eZUserId = $eZUserId;
+
+        return $this;
+    }
+
+    /**
+     * Get eZ Publish user ID.
+     *
+     * @return int
+     */
+    public function getEzUserId()
+    {
+        return $this->eZUserId;
     }
 }

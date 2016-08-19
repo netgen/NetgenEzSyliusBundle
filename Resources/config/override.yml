@@ -1,3 +1,4 @@
 parameters:
     security.authentication.success_handler.class: Netgen\Bundle\EzSyliusBundle\Authentication\AuthenticationSuccessHandler
     sylius.authentication.success_handler.class: Netgen\Bundle\EzSyliusBundle\Authentication\AuthenticationSuccessHandler
+    security.authentication.provider.dao.class: Netgen\Bundle\EzSyliusBundle\Authentication\DaoAuthenticationProvider

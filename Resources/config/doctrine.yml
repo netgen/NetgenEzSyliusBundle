@@ -1,18 +1,9 @@
 parameters:
-    netgen_ez_sylius.entity.ez_sylius_shop_user.class: Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusShopUser
-    netgen_ez_sylius.entity.ez_sylius_admin_user.class: Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusAdminUser
-    netgen_ez_sylius.entity.shop_user.class: Netgen\Bundle\EzSyliusBundle\Entity\ShopUser
-    netgen_ez_sylius.entity.admin_user.class: Netgen\Bundle\EzSyliusBundle\Entity\AdminUser
+    netgen_ez_sylius.entity.ez_sylius_user.class: Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser
 
 services:
-    netgen_ez_sylius.repository.ez_sylius_shop_user:
+    netgen_ez_sylius.repository.ez_sylius_user:
         class: Doctrine\ORM\EntityRepository
         factory: ["@doctrine.orm.entity_manager", getRepository]
         arguments:
-            - "%netgen_ez_sylius.entity.ez_sylius_shop_user.class%"
-
-    netgen_ez_sylius.repository.ez_sylius_admin_user:
-        class: Doctrine\ORM\EntityRepository
-        factory: ["@doctrine.orm.entity_manager", getRepository]
-        arguments:
-            - "%netgen_ez_sylius.entity.ez_sylius_admin_user.class%"
+            - "%netgen_ez_sylius.entity.ez_sylius_user.class%"
