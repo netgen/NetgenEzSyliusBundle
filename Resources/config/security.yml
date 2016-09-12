@@ -1,5 +1,6 @@
 parameters:
     netgen_ez_sylius.user.provider.email_or_name_based.class: Netgen\Bundle\EzSyliusBundle\Provider\EmailOrNameBased
+    netgen_ez_sylius.user.provider.composite.class: Netgen\Bundle\EzSyliusBundle\Provider\Composite
 
 services:
     netgen_ez_sylius.shop_user.provider.email_or_name_based:
@@ -17,3 +18,10 @@ services:
             - "@netgen_ez_sylius.repository.ez_sylius_user"
             - "@ezpublish.api.repository"
             - "admin"
+
+    netgen_ez_sylius.user.provider.composite:
+        class: "%netgen_ez_sylius.user.provider.composite.class%"
+        arguments:
+            -
+                - "@netgen_ez_sylius.admin_user.provider.email_or_name_based"
+                - "@netgen_ez_sylius.shop_user.provider.email_or_name_based"
