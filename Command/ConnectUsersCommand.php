@@ -25,7 +25,7 @@ class ConnectUsersCommand extends ContainerAwareCommand
             ->addOption('sylius-user-email', null, InputOption::VALUE_REQUIRED, 'Sylius user e-mail to connect')
             ->addOption('ez-user-login', null, InputOption::VALUE_REQUIRED, 'eZ Platform user login to connect')
             ->setDescription('Connects eZ Platform and Sylius users.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command allows you to connect eZ Platform and Sylius users in order to allow shared login.
 EOT
             )
