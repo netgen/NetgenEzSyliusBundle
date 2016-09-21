@@ -29,6 +29,7 @@ class NetgenEzSyliusExtension extends Extension
 
         $loader->load('override.yml');
         $loader->load('doctrine.yml');
+        $loader->load('fieldtypes.yml');
         $loader->load('listeners.yml');
         $loader->load('security.yml');
     }
