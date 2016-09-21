@@ -17,7 +17,7 @@ return Symfony\CS\Config\Config::create()
         Symfony\CS\Finder\DefaultFinder::create()
             ->in(__DIR__)
             ->exclude([
-                'ezpublish_legacy/ngsyliusproduct/settings',
+                'ezpublish_legacy/ezsylius/settings',
                 'vendor',
             ])
             ->files()->name('*.php')

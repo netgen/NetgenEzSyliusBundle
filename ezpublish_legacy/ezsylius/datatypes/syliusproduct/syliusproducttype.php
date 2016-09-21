@@ -30,7 +30,7 @@ class SyliusProductType extends eZDataType
     {
         parent::eZDataType(
             self::DATA_TYPE_STRING,
-            ezpI18n::tr('extension/ngsyliusproduct/datatypes', 'Sylius product')
+            ezpI18n::tr('extension/ezsylius/datatypes', 'Sylius product')
         );
 
         $this->container = ezpKernel::instance()->getServiceContainer();

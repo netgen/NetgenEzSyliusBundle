@@ -1,6 +1,6 @@
 <?php /* #?ini charset="utf8"?
 
 [DataTypeSettings]
-ExtensionDirectories[]=ngsyliusproduct
+ExtensionDirectories[]=ezsylius
 AvailableDataTypes[]=syliusproduct
 */ ?>
