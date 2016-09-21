@@ -8,7 +8,8 @@ use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\MVC\Symfony\Security\UserInterface as EzUserInterface;
 use Sylius\Component\User\Model\UserInterface as SyliusUserInterface;
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
-use Sylius\Bundle\UserBundle\Provider\UserProviderInterface;
+use Sylius\Bundle\UserBundle\Provider\UserProviderInterface as SyliusUserProviderInterface;
+use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\EntityRepository;
 
@@ -22,7 +23,12 @@ class EmailOrNameBased implements UserProviderInterface
     /**
      * @var \Doctrine\ORM\EntityRepository
      */
-    protected $entityRepository;
+    protected $eZUserRepository;
+
+    /**
+     * @var \Sylius\Component\User\Repository\UserRepositoryInterface
+     */
+    protected $syliusUserRepository;
 
     /**
      * @var \eZ\Publish\API\Repository\Repository
@@ -38,18 +44,21 @@ class EmailOrNameBased implements UserProviderInterface
      * Constructor.
      *
      * @param \Sylius\Bundle\UserBundle\Provider\UserProviderInterface $innerUserProvider
-     * @param \Doctrine\ORM\EntityRepository $entityRepository
+     * @param \Doctrine\ORM\EntityRepository $eZUserRepository
+     * @param \Sylius\Component\User\Repository\UserRepositoryInterface $syliusUserRepository
      * @param \eZ\Publish\API\Repository\Repository $repository
      * @param string $syliusUserType
      */
     public function __construct(
-        UserProviderInterface $innerUserProvider,
-        EntityRepository $entityRepository,
+        SyliusUserProviderInterface $innerUserProvider,
+        EntityRepository $eZUserRepository,
+        UserRepositoryInterface $syliusUserRepository,
         Repository $repository,
         $syliusUserType
     ) {
         $this->innerUserProvider = $innerUserProvider;
-        $this->entityRepository = $entityRepository;
+        $this->eZUserRepository = $eZUserRepository;
+        $this->syliusUserRepository = $syliusUserRepository;
         $this->repository = $repository;
         $this->syliusUserType = $syliusUserType;
     }
@@ -104,7 +113,7 @@ class EmailOrNameBased implements UserProviderInterface
      */
     protected function loadAPIUser(SyliusUserInterface $user)
     {
-        $eZSyliusUser = $this->entityRepository->findOneBy(
+        $eZSyliusUser = $this->eZUserRepository->findOneBy(
             array(
                 'syliusUserId' => $user->getId(),
                 'syliusUserType' => $this->syliusUserType,
@@ -122,5 +131,30 @@ class EmailOrNameBased implements UserProviderInterface
         } catch (NotFoundException $e) {
             return null;
         }
+    }
+
+    /**
+     * Loads Sylius user based on provided eZ API user.
+     *
+     * @param \eZ\Publish\API\Repository\Values\User\UserReference $apiUser
+     *
+     * @return \Sylius\Component\User\Model\UserInterface
+     */
+    public function loadUserByAPIUser(UserReference $apiUser)
+    {
+        $eZSyliusUser = $this->eZUserRepository->findOneBy(
+            array(
+                'eZUserId' => $apiUser->getUserId(),
+                'syliusUserType' => $this->syliusUserType,
+            )
+        );
+
+        if (!$eZSyliusUser instanceof EzSyliusUser) {
+            return null;
+        }
+
+        return $this->syliusUserRepository->find(
+            $eZSyliusUser->getSyliusUserId()
+        );
     }
 }
