@@ -79,8 +79,8 @@ class LegacyRequestListener implements EventSubscriberInterface
         $session = $request->getSession();
         if (
             $event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST
-            || !$this->configResolver->getParameter('legacy_mode')
             || !$this->configResolver->hasParameter('legacy_mode')
+            || !$this->configResolver->getParameter('legacy_mode')
             || !($session->isStarted() && $session->has('eZUserLoggedInID'))
         ) {
             return;
