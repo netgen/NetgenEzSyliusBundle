@@ -22,17 +22,21 @@ class eZSyliusUser extends eZUser
             $encoder = $factory->getEncoder($syliusUser);
 
             // check if login and password are legit.
-            $check = $encoder->isPasswordValid(
-                $syliusUser->getPassword(),
-                $password,
-                $syliusUser->getSalt()
-            );
-
-            if (!$check) {
+            if (!$encoder->isPasswordValid(
+                    $syliusUser->getPassword(),
+                    $password,
+                    $syliusUser->getSalt()
+                )
+            ) {
                 return false;
             }
 
-            return self::fetch($syliusUser->getAPIUser()->getUserId());
+            if (!$eZUser = $syliusUser->getAPIUser()) {
+                return false;
+            }
+
+            $eZUserId = $eZUser->getUserId();
+            return self::fetch($eZUserId);
 
         } catch(Exception $exception) {
             return false;
