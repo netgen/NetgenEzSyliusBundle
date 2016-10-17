@@ -6,7 +6,7 @@ services:
     netgen_ez_sylius.shop_user.provider.email_or_name_based:
         class: "%netgen_ez_sylius.user.provider.email_or_name_based.class%"
         arguments:
-            - "@sylius.shop_user.provider.email_or_name_based"
+            - "@sylius.shop_user_provider.email_or_name_based"
             - "@netgen_ez_sylius.repository.ez_sylius_user"
             - "@sylius.repository.shop_user"
             - "@ezpublish.api.repository"
@@ -15,7 +15,7 @@ services:
     netgen_ez_sylius.admin_user.provider.email_or_name_based:
         class: "%netgen_ez_sylius.user.provider.email_or_name_based.class%"
         arguments:
-            - "@sylius.admin_user.provider.email_or_name_based"
+            - "@sylius.admin_user_provider.email_or_name_based"
             - "@netgen_ez_sylius.repository.ez_sylius_user"
             - "@sylius.repository.admin_user"
             - "@ezpublish.api.repository"
