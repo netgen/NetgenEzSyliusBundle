@@ -2,6 +2,10 @@ parameters:
     security.authentication.success_handler.class: Netgen\Bundle\EzSyliusBundle\Authentication\AuthenticationSuccessHandler
     security.authentication.provider.dao.class: Netgen\Bundle\EzSyliusBundle\Authentication\DaoAuthenticationProvider
 
+    # Overrides Legacy Bridge cache purger to set "quiet" flag to eZCLI,
+    # since it crashes Sylius installation procedure.
+    ezpublish_legacy.legacy_cache_purger.class: Netgen\Bundle\EzSyliusBundle\Cache\LegacyCachePurger
+
 services:
     sylius.authentication.success_handler:
         class: Netgen\Bundle\EzSyliusBundle\Authentication\AuthenticationSuccessHandler
