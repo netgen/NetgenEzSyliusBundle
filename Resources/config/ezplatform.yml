@@ -1,0 +1,4 @@
+system:
+    default:
+        fielddefinition_settings_templates:
+            - {template: "NetgenEzSyliusBundle:platformui/content_type/view:syliusproduct.html.twig", priority: 10}
