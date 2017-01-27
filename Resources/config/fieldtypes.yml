@@ -1,13 +1,6 @@
-parameters:
-    netgen_ez_sylius.field_type.syliusproduct.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
-    netgen_ez_sylius.field_type.syliusproduct.external_storage.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage
-    netgen_ez_sylius.field_type.syliusproduct.storage_gateway.class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\LegacyStorage
-    netgen_ez_sylius.field_type.syliusproduct.converter.class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
-    netgen_ez_sylius.field_type.syliusproduct.indexable.class: eZ\Publish\Core\FieldType\Unindexed
-
 services:
     netgen_ez_sylius.field_type.syliusproduct:
-        class: "%netgen_ez_sylius.field_type.syliusproduct.class%"
+        class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Type
         parent: ezpublish.fieldType
         arguments:
             - "@sylius.repository.product"
@@ -15,7 +8,7 @@ services:
             - {name: ezpublish.fieldType, alias: syliusproduct}
 
     netgen_ez_sylius.field_type.syliusproduct.external_storage:
-        class: "%netgen_ez_sylius.field_type.syliusproduct.external_storage.class%"
+        class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage
         arguments:
             - "@sylius.repository.product"
             - "@sylius.factory.product"
@@ -26,16 +19,16 @@ services:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}
 
     netgen_ez_sylius.field_type.syliusproduct.storage_gateway:
-        class: "%netgen_ez_sylius.field_type.syliusproduct.storage_gateway.class%"
+        class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\LegacyStorage
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler.gateway, alias: syliusproduct, identifier: LegacyStorage}
 
     netgen_ez_sylius.field_type.syliusproduct.converter:
-        class: "%netgen_ez_sylius.field_type.syliusproduct.converter.class%"
+        class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
         tags:
             - {name: ezpublish.storageEngine.legacy.converter, alias: syliusproduct, lazy: true, callback: "::create"}
 
     netgen_ez_sylius.field_type.syliusproduct.indexable:
-        class: "%netgen_ez_sylius.field_type.syliusproduct.indexable.class%"
+        class: eZ\Publish\Core\FieldType\Unindexed
         tags:
             - {name: ezpublish.fieldType.indexable, alias: syliusproduct}

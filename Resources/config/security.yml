@@ -1,10 +1,6 @@
-parameters:
-    netgen_ez_sylius.user.provider.email_or_name_based.class: Netgen\Bundle\EzSyliusBundle\Provider\EmailOrNameBased
-    netgen_ez_sylius.user.provider.composite.class: Netgen\Bundle\EzSyliusBundle\Provider\Composite
-
 services:
     netgen_ez_sylius.shop_user.provider.email_or_name_based:
-        class: "%netgen_ez_sylius.user.provider.email_or_name_based.class%"
+        class: Netgen\Bundle\EzSyliusBundle\Provider\EmailOrNameBased
         arguments:
             - "@sylius.shop_user_provider.email_or_name_based"
             - "@netgen_ez_sylius.repository.ez_sylius_user"
@@ -13,7 +9,7 @@ services:
             - "shop"
 
     netgen_ez_sylius.admin_user.provider.email_or_name_based:
-        class: "%netgen_ez_sylius.user.provider.email_or_name_based.class%"
+        class: Netgen\Bundle\EzSyliusBundle\Provider\EmailOrNameBased
         arguments:
             - "@sylius.admin_user_provider.email_or_name_based"
             - "@netgen_ez_sylius.repository.ez_sylius_user"
@@ -22,7 +18,7 @@ services:
             - "admin"
 
     netgen_ez_sylius.user.provider.composite:
-        class: "%netgen_ez_sylius.user.provider.composite.class%"
+        class: Netgen\Bundle\EzSyliusBundle\Provider\Composite
         arguments:
             -
                 - "@netgen_ez_sylius.admin_user.provider.email_or_name_based"

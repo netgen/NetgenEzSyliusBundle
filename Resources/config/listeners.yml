@@ -1,11 +1,9 @@
 parameters:
     netgen_ez_sylius.listeners.platform_ui_csrf_token.route_name: "ezpublish_rest_createSession"
-    netgen_ez_sylius.listeners.platform_ui_csrf_token.class: Netgen\Bundle\EzSyliusBundle\EventListener\PlatformUICsrfTokenListener
-    ezpublish_legacy.request_listener.class: Netgen\Bundle\EzSyliusBundle\EventListener\LegacyRequestListener
 
 services:
     netgen_ez_sylius.listeners.platform_ui_csrf_token:
-        class: "%netgen_ez_sylius.listeners.platform_ui_csrf_token.class%"
+        class: Netgen\Bundle\EzSyliusBundle\EventListener\PlatformUICsrfTokenListener
         arguments:
             - "%netgen_ez_sylius.listeners.platform_ui_csrf_token.route_name%"
             - "%ezpublish_rest.csrf_token_intention%"
@@ -14,7 +12,7 @@ services:
             - { name: kernel.event_subscriber }
 
     ezpublish_legacy.request_listener:
-        class: "%ezpublish_legacy.request_listener.class%"
+        class: Netgen\Bundle\EzSyliusBundle\EventListener\LegacyRequestListener
         arguments:
             - "@ezpublish.config.resolver"
             - "@ezpublish.api.repository"
