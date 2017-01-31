@@ -4,10 +4,10 @@ namespace Netgen\Bundle\EzSyliusBundle\Provider;
 
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Sylius\Bundle\UserBundle\Provider\UserProviderInterface;
+use Sylius\Bundle\UserBundle\Provider\UserProviderInterface as SyliusUserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class Composite implements UserProviderInterface
+class Composite implements SyliusUserProviderInterface
 {
     /**
      * @var \Sylius\Bundle\UserBundle\Provider\UserProviderInterface[]
