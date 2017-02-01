@@ -3,7 +3,7 @@
 namespace Netgen\Bundle\EzSyliusBundle\Command;
 
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
-use eZ\Publish\API\Repository\Values\User\UserReference;
+use eZ\Publish\API\Repository\Values\User\User;
 use Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser;
 use Sylius\Component\User\Model\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -71,7 +71,7 @@ EOT
             }
 
             $eZUser = $this->loadEzUser($eZUserLogin);
-            while (empty($eZUserLogin) || !$eZUser instanceof UserReference) {
+            while (empty($eZUserLogin) || !$eZUser instanceof User) {
                 if ($eZUserLogin !== null) {
                     $io->error('Selected eZ Platform user does not exist');
                 }

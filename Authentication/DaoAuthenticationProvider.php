@@ -3,7 +3,7 @@
 namespace Netgen\Bundle\EzSyliusBundle\Authentication;
 
 use eZ\Publish\API\Repository\Repository;
-use eZ\Publish\API\Repository\Values\User\UserReference;
+use eZ\Publish\API\Repository\Values\User\User;
 use eZ\Publish\Core\MVC\Symfony\Security\UserInterface as EzUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -34,7 +34,7 @@ class DaoAuthenticationProvider extends BaseAuthenticationProvider
         if ($user instanceof EzUserInterface) {
             $apiUser = $user->getAPIUser();
 
-            if ($apiUser instanceof UserReference) {
+            if ($apiUser instanceof User) {
                 $this->repository->setCurrentUser($apiUser);
             }
         }

@@ -2,7 +2,7 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Provider;
 
-use eZ\Publish\API\Repository\Values\User\UserReference;
+use eZ\Publish\API\Repository\Values\User\User;
 use Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\MVC\Symfony\Security\UserInterface as EzUserInterface;
@@ -72,7 +72,7 @@ class EmailOrNameBased implements UserProviderInterface
 
         $apiUser = $this->loadAPIUser($user);
 
-        if ($user instanceof EzUserInterface && $apiUser instanceof UserReference) {
+        if ($user instanceof EzUserInterface && $apiUser instanceof User) {
             $user->setAPIUser($apiUser);
         }
 
@@ -88,7 +88,7 @@ class EmailOrNameBased implements UserProviderInterface
 
         $apiUser = $this->loadAPIUser($user);
 
-        if ($user instanceof EzUserInterface && $apiUser instanceof UserReference) {
+        if ($user instanceof EzUserInterface && $apiUser instanceof User) {
             $user->setAPIUser($apiUser);
             $this->repository->setCurrentUser($apiUser);
         }
@@ -136,11 +136,11 @@ class EmailOrNameBased implements UserProviderInterface
     /**
      * Loads Sylius user based on provided eZ API user.
      *
-     * @param \eZ\Publish\API\Repository\Values\User\UserReference $apiUser
+     * @param \eZ\Publish\API\Repository\Values\User\User $apiUser
      *
      * @return \Sylius\Component\User\Model\UserInterface
      */
-    public function loadUserByAPIUser(UserReference $apiUser)
+    public function loadUserByAPIUser(User $apiUser)
     {
         $eZSyliusUser = $this->eZUserRepository->findOneBy(
             array(
