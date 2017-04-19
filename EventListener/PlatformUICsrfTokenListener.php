@@ -77,7 +77,7 @@ class PlatformUICsrfTokenListener implements EventSubscriberInterface
 
         $request = $event->getRequest();
 
-        if ($request->isMethodSafe()) {
+        if ($request->isMethodCacheable()) {
             return;
         }
 
