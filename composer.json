@@ -11,7 +11,7 @@
     ],
     "require": {
         "ezsystems/ezpublish-kernel": "^5.4.9|^6.0|>=2014.11",
-        "sylius/sylius": "*"
+        "sylius/sylius": "^1.0"
     },
     "autoload": {
         "psr-4": { "Netgen\\Bundle\\EzSyliusBundle\\": "" }
