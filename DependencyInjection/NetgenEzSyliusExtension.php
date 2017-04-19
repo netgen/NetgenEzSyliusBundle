@@ -25,7 +25,6 @@ class NetgenEzSyliusExtension extends Extension implements PrependExtensionInter
             new FileLocator(__DIR__ . '/../Resources/config')
         );
 
-        $loader->load('override.yml');
         $loader->load('doctrine.yml');
         $loader->load('fieldtypes.yml');
         $loader->load('listeners.yml');
