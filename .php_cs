@@ -1,25 +1,28 @@
 <?php
 
-return Symfony\CS\Config\Config::create()
-    ->setUsingLinter(false)
-    ->setUsingCache(true)
-    ->level(Symfony\CS\FixerInterface::SYMFONY_LEVEL)
-    ->fixers([
-        'concat_with_spaces',
-        'phpdoc_order',
-        '-psr0',
-        '-concat_without_spaces',
-        '-phpdoc_params',
-        '-phpdoc_to_comment',
-        '-spaces_cast',
+return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules([
+        '@Symfony' => true,
+        '@Symfony:risky' => true,
+        'array_syntax' => array('syntax' => 'long'),
+        'combine_consecutive_unsets' => true,
+        'concat_space' => ['spacing' => 'one'],
+        'no_useless_else' => true,
+        'no_useless_return' => true,
+        'ordered_class_elements' => true,
+        'ordered_imports' => true,
+        'phpdoc_add_missing_param_annotation' => true,
+        'phpdoc_align' => false,
+        'phpdoc_order' => true,
+        'psr4' => true,
+        'semicolon_after_instruction' => true,
+        'strict_comparison' => true,
+        'strict_param' => true,
     ])
-    ->finder(
-        Symfony\CS\Finder\DefaultFinder::create()
+    ->setFinder(
+        PhpCsFixer\Finder::create()
+            ->exclude(['vendor', 'ezpublish_legacy'])
             ->in(__DIR__)
-            ->exclude([
-                'ezpublish_legacy/ezsylius/settings',
-                'vendor',
-            ])
-            ->files()->name('*.php')
     )
 ;

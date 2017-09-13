@@ -3,9 +3,9 @@
 namespace Netgen\Bundle\EzSyliusBundle\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 /**
  * This listener injects a CSRF token into request in very specific case:.

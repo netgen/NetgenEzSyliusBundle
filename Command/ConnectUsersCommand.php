@@ -48,7 +48,7 @@ EOT
         $eZUser = null;
 
         while (true) {
-            while (!in_array($syliusUserType, array('shop', 'admin'))) {
+            while (!in_array($syliusUserType, array('shop', 'admin'), true)) {
                 if ($syliusUserType !== null) {
                     $io->error('Selected user type is invalid');
                 }

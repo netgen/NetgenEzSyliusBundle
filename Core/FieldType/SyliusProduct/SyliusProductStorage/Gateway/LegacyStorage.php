@@ -2,11 +2,11 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway;
 
-use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway;
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
-use RuntimeException;
+use eZ\Publish\SPI\Persistence\Content\VersionInfo;
+use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway;
 use PDO;
+use RuntimeException;
 
 class LegacyStorage extends Gateway
 {
@@ -37,22 +37,6 @@ class LegacyStorage extends Gateway
         }
 
         $this->connection = $connection;
-    }
-
-    /**
-     * Returns the active connection.
-     *
-     * @throws \RuntimeException if no connection has been set, yet
-     *
-     * @return \eZ\Publish\Core\Persistence\Database\DatabaseHandler
-     */
-    protected function getConnection()
-    {
-        if ($this->connection === null) {
-            throw new RuntimeException('Missing database connection.');
-        }
-
-        return $this->connection;
     }
 
     /**
@@ -142,7 +126,7 @@ class LegacyStorage extends Gateway
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        return !empty($rows[0]['product_id']) ? (int)$rows[0]['product_id'] : null;
+        return !empty($rows[0]['product_id']) ? (int) $rows[0]['product_id'] : null;
     }
 
     /**
@@ -167,5 +151,21 @@ class LegacyStorage extends Gateway
         ;
 
         $query->prepare()->execute();
+    }
+
+    /**
+     * Returns the active connection.
+     *
+     * @throws \RuntimeException if no connection has been set, yet
+     *
+     * @return \eZ\Publish\Core\Persistence\Database\DatabaseHandler
+     */
+    protected function getConnection()
+    {
+        if ($this->connection === null) {
+            throw new RuntimeException('Missing database connection.');
+        }
+
+        return $this->connection;
     }
 }

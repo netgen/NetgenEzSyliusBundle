@@ -2,11 +2,20 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
-use Sylius\Component\Product\Model\ProductInterface;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
+use Sylius\Component\Product\Model\ProductInterface;
 
 class Value extends BaseValue
 {
+    /**
+     * @var \Sylius\Component\Core\Model\Product
+     */
+    public $product;
+
+    /**
+     * @var array
+     */
+    public $productData;
     /**
      * @var array
      */
@@ -17,16 +26,6 @@ class Value extends BaseValue
         'name',
         'description',
     );
-
-    /**
-     * @var \Sylius\Component\Core\Model\Product
-     */
-    public $product;
-
-    /**
-     * @var array
-     */
-    public $productData;
 
     /**
      * Constructor.
@@ -55,20 +54,6 @@ class Value extends BaseValue
     }
 
     /**
-     * Function where list of properties are returned.
-     *
-     * @param array $dynamicProperties Additional dynamic properties exposed on the object
-     *
-     * @return array
-     */
-    protected function getProperties($dynamicProperties = array())
-    {
-        $dynamicProperties = array_merge($dynamicProperties, $this->dynamicProperties);
-
-        return parent::getProperties($dynamicProperties);
-    }
-
-    /**
      * Magic get function handling read to non public properties.
      *
      * @param string $property Name of the property
@@ -77,7 +62,7 @@ class Value extends BaseValue
      */
     public function __get($property)
     {
-        if (!in_array($property, $this->dynamicProperties)) {
+        if (!in_array($property, $this->dynamicProperties, true)) {
             return parent::__get($property);
         }
 
@@ -114,10 +99,24 @@ class Value extends BaseValue
      */
     public function __isset($property)
     {
-        if (in_array($property, $this->dynamicProperties)) {
+        if (in_array($property, $this->dynamicProperties, true)) {
             return true;
         }
 
         return parent::__isset($property);
+    }
+
+    /**
+     * Function where list of properties are returned.
+     *
+     * @param array $dynamicProperties Additional dynamic properties exposed on the object
+     *
+     * @return array
+     */
+    protected function getProperties($dynamicProperties = array())
+    {
+        $dynamicProperties = array_merge($dynamicProperties, $this->dynamicProperties);
+
+        return parent::getProperties($dynamicProperties);
     }
 }

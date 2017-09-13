@@ -3,13 +3,13 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\ORM\EntityManagerInterface;
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
-use eZ\Publish\SPI\Persistence\Content\Field;
+use eZ\Publish\Core\FieldType\GatewayBasedStorage;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
+use eZ\Publish\SPI\Persistence\Content\Field;
+use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use eZ\Publish\Core\FieldType\GatewayBasedStorage;
 
 class SyliusProductStorage extends GatewayBasedStorage
 {

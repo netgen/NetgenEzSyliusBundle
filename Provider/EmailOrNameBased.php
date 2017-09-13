@@ -2,16 +2,16 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Provider;
 
-use eZ\Publish\API\Repository\Values\User\User;
-use Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser;
-use eZ\Publish\API\Repository\Repository;
-use eZ\Publish\Core\MVC\Symfony\Security\UserInterface as EzUserInterface;
-use Sylius\Component\User\Model\UserInterface as SyliusUserInterface;
+use Doctrine\ORM\EntityRepository;
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
+use eZ\Publish\API\Repository\Repository;
+use eZ\Publish\API\Repository\Values\User\User;
+use eZ\Publish\Core\MVC\Symfony\Security\UserInterface as EzUserInterface;
+use Netgen\Bundle\EzSyliusBundle\Entity\EzSyliusUser;
 use Sylius\Bundle\UserBundle\Provider\UserProviderInterface as SyliusUserProviderInterface;
+use Sylius\Component\User\Model\UserInterface as SyliusUserInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\ORM\EntityRepository;
 
 class EmailOrNameBased implements UserProviderInterface
 {
@@ -105,6 +105,31 @@ class EmailOrNameBased implements UserProviderInterface
     }
 
     /**
+     * Loads Sylius user based on provided eZ API user.
+     *
+     * @param \eZ\Publish\API\Repository\Values\User\User $apiUser
+     *
+     * @return \Sylius\Component\User\Model\UserInterface
+     */
+    public function loadUserByAPIUser(User $apiUser)
+    {
+        $eZSyliusUser = $this->eZUserRepository->findOneBy(
+            array(
+                'eZUserId' => $apiUser->getUserId(),
+                'syliusUserType' => $this->syliusUserType,
+            )
+        );
+
+        if (!$eZSyliusUser instanceof EzSyliusUser) {
+            return null;
+        }
+
+        return $this->syliusUserRepository->find(
+            $eZSyliusUser->getSyliusUserId()
+        );
+    }
+
+    /**
      * Loads eZ API user based on provided Sylius user.
      *
      * @param \Sylius\Component\User\Model\UserInterface $user
@@ -131,30 +156,5 @@ class EmailOrNameBased implements UserProviderInterface
         } catch (NotFoundException $e) {
             return null;
         }
-    }
-
-    /**
-     * Loads Sylius user based on provided eZ API user.
-     *
-     * @param \eZ\Publish\API\Repository\Values\User\User $apiUser
-     *
-     * @return \Sylius\Component\User\Model\UserInterface
-     */
-    public function loadUserByAPIUser(User $apiUser)
-    {
-        $eZSyliusUser = $this->eZUserRepository->findOneBy(
-            array(
-                'eZUserId' => $apiUser->getUserId(),
-                'syliusUserType' => $this->syliusUserType,
-            )
-        );
-
-        if (!$eZSyliusUser instanceof EzSyliusUser) {
-            return null;
-        }
-
-        return $this->syliusUserRepository->find(
-            $eZSyliusUser->getSyliusUserId()
-        );
     }
 }

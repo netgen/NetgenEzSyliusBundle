@@ -4,12 +4,12 @@ namespace Netgen\Bundle\EzSyliusBundle\Cache;
 
 use eZ\Bundle\EzPublishLegacyBundle\LegacyMapper\Configuration;
 use eZ\Publish\Core\MVC\Symfony\SiteAccess;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\CacheClearer\CacheClearerInterface;
+use eZCache;
 use eZCacheHelper;
 use eZCLI;
 use eZScript;
-use eZCache;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\CacheClearer\CacheClearerInterface;
 
 /**
  * Purger for legacy file based cache.
@@ -42,16 +42,6 @@ class LegacyCachePurger implements CacheClearerInterface
     }
 
     /**
-     * @return \ezpKernelHandler
-     */
-    private function getLegacyKernel()
-    {
-        $closure = $this->legacyKernelClosure;
-
-        return $closure();
-    }
-
-    /**
      * Clears any caches necessary.
      *
      * @param string $cacheDir The cache directory
@@ -78,5 +68,15 @@ class LegacyCachePurger implements CacheClearerInterface
             false,
             false
         );
+    }
+
+    /**
+     * @return \ezpKernelHandler
+     */
+    private function getLegacyKernel()
+    {
+        $closure = $this->legacyKernelClosure;
+
+        return $closure();
     }
 }

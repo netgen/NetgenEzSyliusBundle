@@ -4,8 +4,8 @@ namespace Netgen\Bundle\EzSyliusBundle\Entity;
 
 use eZ\Publish\API\Repository\Values\User\User as APIUser;
 use eZ\Publish\Core\Repository\Values\User\UserReference;
-use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 use LogicException;
+use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 
 trait User
 {
@@ -18,6 +18,16 @@ trait User
      * @var \eZ\Publish\API\Repository\Values\User\User
      */
     protected $apiUser;
+
+    /**
+     * Returns string representation of the user.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->apiUser->contentInfo->name;
+    }
 
     /**
      * @return \eZ\Publish\API\Repository\Values\User\UserReference
@@ -36,7 +46,7 @@ trait User
     }
 
     /**
-     * @throws \LogicException If api user has not been refreshed yet by UserProvider after being unserialized from session.
+     * @throws \LogicException if api user has not been refreshed yet by UserProvider after being unserialized from session
      *
      * @return \eZ\Publish\API\Repository\Values\User\User
      */
@@ -73,15 +83,5 @@ trait User
         }
 
         return false;
-    }
-
-    /**
-     * Returns string representation of the user.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->apiUser->contentInfo->name;
     }
 }
