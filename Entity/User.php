@@ -4,6 +4,7 @@ namespace Netgen\Bundle\EzSyliusBundle\Entity;
 
 use eZ\Publish\API\Repository\Values\User\User as APIUser;
 use eZ\Publish\Core\Repository\Values\User\UserReference;
+use eZ\Publish\API\Repository\Values\User\UserReference as APIUserReference;
 use LogicException;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 
@@ -24,7 +25,7 @@ trait User
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->apiUser->contentInfo->name;
     }
@@ -32,7 +33,7 @@ trait User
     /**
      * @return \eZ\Publish\API\Repository\Values\User\UserReference
      */
-    public function getAPIUserReference()
+    public function getAPIUserReference(): APIUserReference
     {
         if ($this->reference === null && class_exists(UserReference::class)) {
             $this->reference = new UserReference(
@@ -50,7 +51,7 @@ trait User
      *
      * @return \eZ\Publish\API\Repository\Values\User\User
      */
-    public function getAPIUser()
+    public function getAPIUser(): APIUser
     {
         if (!$this->apiUser instanceof APIUser) {
             throw new LogicException(
@@ -64,7 +65,7 @@ trait User
     /**
      * @param \eZ\Publish\API\Repository\Values\User\User $apiUser
      */
-    public function setAPIUser(APIUser $apiUser)
+    public function setAPIUser(APIUser $apiUser): void
     {
         $this->apiUser = $apiUser;
     }
@@ -76,7 +77,7 @@ trait User
      *
      * @return bool
      */
-    public function isEqualTo(BaseUserInterface $user)
+    public function isEqualTo(BaseUserInterface $user): bool
     {
         if ($user instanceof self && $this->apiUser instanceof APIUser) {
             return $user->getAPIUser()->id === $this->apiUser->id;
