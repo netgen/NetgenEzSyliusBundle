@@ -10,8 +10,7 @@
         }
     ],
     "require": {
-        "php": "^5.5|^7.0",
-        "ezsystems/ezpublish-kernel": "^5.4.9|^6.0|>=2014.11",
+        "ezsystems/ezpublish-kernel": "^6.11",
         "sylius/sylius": "^1.0"
     },
     "conflict": {
