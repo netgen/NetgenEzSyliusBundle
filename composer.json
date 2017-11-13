@@ -14,6 +14,9 @@
         "ezsystems/ezpublish-kernel": "^5.4.9|^6.0|>=2014.11",
         "sylius/sylius": "^1.0"
     },
+    "conflict": {
+        "ezsystems/ezpublish-legacy": "<2017.10"
+    },
     "autoload": {
         "psr-4": { "Netgen\\Bundle\\EzSyliusBundle\\": "" }
     },
