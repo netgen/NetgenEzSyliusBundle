@@ -3,7 +3,8 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\ORM\EntityManagerInterface;
-use eZ\Publish\Core\FieldType\GatewayBasedStorage;
+use eZ\Publish\SPI\FieldType\GatewayBasedStorage;
+use eZ\Publish\SPI\FieldType\StorageGateway;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
@@ -40,21 +41,21 @@ class SyliusProductStorage extends GatewayBasedStorage
      * @param \Sylius\Component\Product\Factory\ProductFactoryInterface $productFactory
      * @param \Doctrine\ORM\EntityManagerInterface $entityManager
      * @param \eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface $localeConverter
-     * @param \eZ\Publish\Core\FieldType\StorageGateway[] $gateways
+     * @param \eZ\Publish\SPI\FieldType\StorageGateway $storageGateway
      */
     public function __construct(
         RepositoryInterface $productRepository,
         ProductFactoryInterface $productFactory,
         EntityManagerInterface $entityManager,
         LocaleConverterInterface $localeConverter,
-        array $gateways = array()
+        StorageGateway $storageGateway
     ) {
         $this->productRepository = $productRepository;
         $this->productFactory = $productFactory;
         $this->entityManager = $entityManager;
         $this->localeConverter = $localeConverter;
 
-        parent::__construct($gateways);
+        parent::__construct($storageGateway);
     }
 
     /**
@@ -68,9 +69,6 @@ class SyliusProductStorage extends GatewayBasedStorage
      */
     public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
     {
-        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway $gateway */
-        $gateway = $this->getGateway($context);
-
         $product = $field->value->externalData;
         $productData = $field->value->data;
 
@@ -101,7 +99,7 @@ class SyliusProductStorage extends GatewayBasedStorage
         $this->entityManager->persist($product);
         $this->entityManager->flush();
 
-        $gateway->storeFieldData($versionInfo, $product->getId());
+        $this->gateway->storeFieldData($versionInfo, $product->getId());
 
         return true;
     }
@@ -115,10 +113,7 @@ class SyliusProductStorage extends GatewayBasedStorage
      */
     public function getFieldData(VersionInfo $versionInfo, Field $field, array $context)
     {
-        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway $gateway */
-        $gateway = $this->getGateway($context);
-
-        $productId = $gateway->getFieldData($versionInfo);
+        $productId = $this->gateway->getFieldData($versionInfo);
 
         $product = null;
         if (!empty($productId)) {
@@ -145,10 +140,7 @@ class SyliusProductStorage extends GatewayBasedStorage
      */
     public function deleteFieldData(VersionInfo $versionInfo, array $fieldIds, array $context)
     {
-        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway $gateway */
-        $gateway = $this->getGateway($context);
-
-        $gateway->deleteFieldData($versionInfo, $fieldIds);
+        $this->gateway->deleteFieldData($versionInfo, $fieldIds);
 
         return true;
     }

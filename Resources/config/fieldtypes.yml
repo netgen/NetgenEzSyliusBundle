@@ -14,14 +14,14 @@ services:
             - "@sylius.factory.product"
             - "@sylius.manager.product"
             - "@ezpublish.locale.converter"
-            - []
+            - "@netgen_ez_sylius.field_type.syliusproduct.storage_gateway"
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}
 
     netgen_ez_sylius.field_type.syliusproduct.storage_gateway:
         class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\LegacyStorage
-        tags:
-            - {name: ezpublish.fieldType.externalStorageHandler.gateway, alias: syliusproduct, identifier: LegacyStorage}
+        arguments:
+            - "@ezpublish.api.storage_engine.legacy.dbhandler"
 
     netgen_ez_sylius.field_type.syliusproduct.converter:
         class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter

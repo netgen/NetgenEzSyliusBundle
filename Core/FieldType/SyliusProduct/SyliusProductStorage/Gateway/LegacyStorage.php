@@ -6,7 +6,6 @@ use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway;
 use PDO;
-use RuntimeException;
 
 class LegacyStorage extends Gateway
 {
@@ -15,28 +14,16 @@ class LegacyStorage extends Gateway
      *
      * @var \eZ\Publish\Core\Persistence\Database\DatabaseHandler
      */
-    protected $connection;
+    protected $dbHandler;
 
     /**
-     * Sets the data storage connection to use.
+     * Constructor.
      *
-     *
-     * @param \eZ\Publish\Core\Persistence\Database\DatabaseHandler $connection
-     *
-     * @throws \RuntimeException if $connection is not an instance of
-     *         {@link \eZ\Publish\Core\Persistence\Database\DatabaseHandler}
+     * @param \eZ\Publish\Core\Persistence\Database\DatabaseHandler $dbHandler
      */
-    public function setConnection($connection)
+    public function __construct(DatabaseHandler $dbHandler)
     {
-        // This obviously violates the Liskov substitution Principle, but with
-        // the given class design there is no sane other option. Actually the
-        // dbHandler *should* be passed to the constructor, and there should
-        // not be the need to post-inject it.
-        if (!$connection instanceof DatabaseHandler) {
-            throw new RuntimeException('Invalid connection passed');
-        }
-
-        $this->connection = $connection;
+          $this->dbHandler = $dbHandler;
     }
 
     /**
@@ -47,17 +34,15 @@ class LegacyStorage extends Gateway
      */
     public function storeFieldData(VersionInfo $versionInfo, $productId)
     {
-        $connection = $this->getConnection();
-
         $contentId = $versionInfo->contentInfo->id;
 
-        $selectQuery = $connection->createSelectQuery();
+        $selectQuery = $this->dbHandler->createSelectQuery();
         $selectQuery
-            ->selectDistinct($connection->quoteColumn('contentobject_id', 'ngsyliusproduct'))
-            ->from($connection->quoteTable('ngsyliusproduct'))
+            ->selectDistinct($this->dbHandler->quoteColumn('contentobject_id', 'ngsyliusproduct'))
+            ->from($this->dbHandler->quoteTable('ngsyliusproduct'))
             ->where(
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn('contentobject_id', 'ngsyliusproduct'),
+                    $this->dbHandler->quoteColumn('contentobject_id', 'ngsyliusproduct'),
                     $selectQuery->bindValue($contentId, null, PDO::PARAM_INT)
                 )
             );
@@ -68,29 +53,29 @@ class LegacyStorage extends Gateway
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         if (count($rows) > 0) {
-            $query = $connection->createUpdateQuery();
+            $query = $this->dbHandler->createUpdateQuery();
             $query
                 ->update('ngsyliusproduct')
                 ->set(
-                    $connection->quoteColumn('product_id'),
+                    $this->dbHandler->quoteColumn('product_id'),
                     $query->bindValue($productId, null, PDO::PARAM_INT)
                 )
                 ->where(
                     $query->expr->eq(
-                        $connection->quoteColumn('contentobject_id', 'ngsyliusproduct'),
+                        $this->dbHandler->quoteColumn('contentobject_id', 'ngsyliusproduct'),
                         $query->bindValue($contentId, null, PDO::PARAM_INT)
                     )
                 )
             ;
         } else {
-            $query = $connection->createInsertQuery();
+            $query = $this->dbHandler->createInsertQuery();
             $query
-                ->insertInto($connection->quoteTable('ngsyliusproduct'))
+                ->insertInto($this->dbHandler->quoteTable('ngsyliusproduct'))
                 ->set(
-                    $connection->quoteColumn('contentobject_id'),
+                    $this->dbHandler->quoteColumn('contentobject_id'),
                     $query->bindValue($contentId, null, PDO::PARAM_INT)
                 )->set(
-                    $connection->quoteColumn('product_id'),
+                    $this->dbHandler->quoteColumn('product_id'),
                     $query->bindValue($productId, null, PDO::PARAM_INT)
                 )
             ;
@@ -108,15 +93,13 @@ class LegacyStorage extends Gateway
      */
     public function getFieldData(VersionInfo $versionInfo)
     {
-        $connection = $this->getConnection();
-
-        $query = $connection->createSelectQuery();
+        $query = $this->dbHandler->createSelectQuery();
         $query
-            ->selectDistinct($connection->quoteColumn('product_id', 'ngsyliusproduct'))
-            ->from($connection->quoteTable('ngsyliusproduct'))
+            ->selectDistinct($this->dbHandler->quoteColumn('product_id', 'ngsyliusproduct'))
+            ->from($this->dbHandler->quoteTable('ngsyliusproduct'))
             ->where(
                 $query->expr->eq(
-                    $connection->quoteColumn('contentobject_id', 'ngsyliusproduct'),
+                    $this->dbHandler->quoteColumn('contentobject_id', 'ngsyliusproduct'),
                     $query->bindValue($versionInfo->contentInfo->id, null, PDO::PARAM_INT)
                 )
             );
@@ -137,35 +120,17 @@ class LegacyStorage extends Gateway
      */
     public function deleteFieldData(VersionInfo $versionInfo, array $fieldIds)
     {
-        $connection = $this->getConnection();
-
-        $query = $connection->createDeleteQuery();
+        $query = $this->dbHandler->createDeleteQuery();
         $query
-            ->deleteFrom($connection->quoteTable('ngsyliusproduct'))
+            ->deleteFrom($this->dbHandler->quoteTable('ngsyliusproduct'))
             ->where(
                 $query->expr->eq(
-                    $connection->quoteColumn('contentobject_id'),
+                    $this->dbHandler->quoteColumn('contentobject_id'),
                     $query->bindValue($versionInfo->contentInfo->id, null, PDO::PARAM_INT)
                 )
             )
         ;
 
         $query->prepare()->execute();
-    }
-
-    /**
-     * Returns the active connection.
-     *
-     * @throws \RuntimeException if no connection has been set, yet
-     *
-     * @return \eZ\Publish\Core\Persistence\Database\DatabaseHandler
-     */
-    protected function getConnection()
-    {
-        if ($this->connection === null) {
-            throw new RuntimeException('Missing database connection.');
-        }
-
-        return $this->connection;
     }
 }
