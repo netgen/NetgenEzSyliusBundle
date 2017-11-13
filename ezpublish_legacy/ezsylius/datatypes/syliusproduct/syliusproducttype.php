@@ -28,7 +28,7 @@ class SyliusProductType extends eZDataType
      */
     public function __construct()
     {
-        parent::eZDataType(
+        parent::__construct(
             self::DATA_TYPE_STRING,
             ezpI18n::tr('extension/ezsylius/datatypes', 'Sylius product')
         );

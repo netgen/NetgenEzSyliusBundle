@@ -25,7 +25,7 @@ class eZSyliusUser extends eZUser
      */
     public function __construct()
     {
-        parent::eZUser();
+        parent::__construct();
 
         self::$container = ezpKernel::instance()->getServiceContainer();
 
