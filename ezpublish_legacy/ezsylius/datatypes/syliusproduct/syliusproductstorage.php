@@ -29,11 +29,6 @@ class SyliusProductStorage
     protected $externalStorage;
 
     /**
-     * @var array
-     */
-    protected $context;
-
-    /**
      * Constructor.
      */
     public function __construct()
@@ -43,11 +38,6 @@ class SyliusProductStorage
         $this->fieldType = $this->container->get('netgen_ez_sylius.field_type.syliusproduct');
         $this->contentHandler = $this->container->get('ezpublish.spi.persistence.content_handler');
         $this->externalStorage = $this->container->get('netgen_ez_sylius.field_type.syliusproduct.external_storage');
-
-        $this->context = array(
-            'identifier' => 'LegacyStorage',
-            'connection' => $this->container->get('ezpublish.api.storage_engine.legacy.dbhandler'),
-        );
     }
 
     public function storeFieldData(eZContentObjectAttribute $objectAttribute, Value $value)
@@ -59,7 +49,7 @@ class SyliusProductStorage
 
         $field = $this->getField($objectAttribute, $value);
 
-        return $this->externalStorage->storeFieldData($versionInfo, $field, $this->context);
+        return $this->externalStorage->storeFieldData($versionInfo, $field, array());
     }
 
     public function getFieldData(eZContentObjectAttribute $objectAttribute)
@@ -70,7 +60,7 @@ class SyliusProductStorage
         );
 
         $field = $this->getField($objectAttribute);
-        $this->externalStorage->getFieldData($versionInfo, $field, $this->context);
+        $this->externalStorage->getFieldData($versionInfo, $field, array());
 
         return $this->fieldType->fromPersistenceValue($field->value);
     }
@@ -103,7 +93,7 @@ class SyliusProductStorage
                 $versionNo
             );
 
-            $this->externalStorage->deleteFieldData($versionInfo, $fieldIds, $this->context);
+            $this->externalStorage->deleteFieldData($versionInfo, $fieldIds, array());
         }
     }
 
@@ -141,7 +131,7 @@ class SyliusProductStorage
     {
         $fieldValue = new FieldValue(
             array(
-                'data' => $value instanceof Value ? $value->productData : null,
+                'data' => null,
                 'externalData' => $value instanceof Value ? $value->product : null,
                 'sortKey' => false,
             )

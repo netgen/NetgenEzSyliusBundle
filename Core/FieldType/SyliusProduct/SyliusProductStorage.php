@@ -70,34 +70,10 @@ class SyliusProductStorage extends GatewayBasedStorage
     public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
     {
         $product = $field->value->externalData;
-        $productData = $field->value->data;
 
         if (!$product instanceof ProductInterface) {
-            /** @var \Sylius\Component\Core\Model\ProductInterface $product */
-            $product = $this->productFactory->createWithVariant();
+            return $this->deleteFieldData($versionInfo, array($field->id), $context);
         }
-
-        if (is_array($productData)) {
-            $product->setCode($productData['code']);
-            $product->getFirstVariant()->setCode($productData['code']);
-
-            $product->getFirstVariant()->setPrice($productData['price']);
-
-            /** @var \Sylius\Component\Product\Model\ProductTranslationInterface $translation */
-            $locale = $this->localeConverter->convertToPOSIX($field->languageCode);
-            $translation = $product->translate($locale);
-
-            $product->setName($productData['name']);
-            $translation->setName($productData['name']);
-
-            if (isset($productData['description'])) {
-                $product->setDescription($productData['description']);
-                $translation->setDescription($productData['description']);
-            }
-        }
-
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
 
         $this->gateway->storeFieldData($versionInfo, $product->getId());
 
@@ -113,9 +89,9 @@ class SyliusProductStorage extends GatewayBasedStorage
      */
     public function getFieldData(VersionInfo $versionInfo, Field $field, array $context)
     {
-        $productId = $this->gateway->getFieldData($versionInfo);
-
         $product = null;
+
+        $productId = $this->gateway->getFieldData($versionInfo);
         if (!empty($productId)) {
             $product = $this->productRepository->find($productId);
         }

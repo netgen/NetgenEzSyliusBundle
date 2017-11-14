@@ -15,14 +15,9 @@ class Value extends BaseValue
     /**
      * @var array
      */
-    public $productData;
-    /**
-     * @var array
-     */
     protected $dynamicProperties = array(
         'productId',
         'code',
-        'price',
         'name',
         'description',
     );
@@ -31,12 +26,10 @@ class Value extends BaseValue
      * Constructor.
      *
      * @param \Sylius\Component\Product\Model\ProductInterface $product
-     * @param array $productData
      */
-    public function __construct(ProductInterface $product = null, array $productData = null)
+    public function __construct(ProductInterface $product = null)
     {
         $this->product = $product;
-        $this->productData = $productData;
     }
 
     /**
@@ -66,10 +59,6 @@ class Value extends BaseValue
             return parent::__get($property);
         }
 
-        if (is_array($this->productData) && isset($this->productData[$property])) {
-            return $this->productData['property'];
-        }
-
         if (!$this->product instanceof ProductInterface) {
             return null;
         }
@@ -79,8 +68,6 @@ class Value extends BaseValue
                 return $this->product->getId();
             case 'code':
                 return $this->product->getCode();
-            case 'price':
-                return $this->product->getPrice();
             case 'name':
                 return $this->product->getName();
             case 'description':

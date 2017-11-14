@@ -95,12 +95,6 @@ class SyliusProductType extends eZDataType
      */
     public function objectAttributeContent($objectAttribute)
     {
-        if (!empty($objectAttribute->attribute('data_text'))) {
-            return $this->fieldType->fromHash(
-                json_decode($objectAttribute->attribute('data_text'), true)
-            );
-        }
-
         return $this->storage->getFieldData($objectAttribute);
     }
 
@@ -111,12 +105,10 @@ class SyliusProductType extends eZDataType
      */
     public function storeObjectAttribute($objectAttribute)
     {
+        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value */
         $value = $objectAttribute->content();
-        if (!$value instanceof Value || !is_array($value->productData)) {
-            return;
-        }
 
-        $objectAttribute->setAttribute('data_text', json_encode($value->productData));
+        $this->storage->storeFieldData($objectAttribute, $value);
     }
 
     /**
@@ -130,10 +122,10 @@ class SyliusProductType extends eZDataType
      */
     public function validateObjectAttributeHTTPInput($http, $base, $objectAttribute)
     {
-        $productData = $this->getProductDataFromInput($http, $base, $objectAttribute);
+        $productId = $this->getProductIdFromInput($http, $base, $objectAttribute);
 
         try {
-            $value = $this->fieldType->acceptValue($productData);
+            $value = $this->fieldType->acceptValue($productId);
         } catch (InvalidArgumentException $e) {
             $objectAttribute->setValidationError($e->getMessage());
 
@@ -186,66 +178,27 @@ class SyliusProductType extends eZDataType
      */
     public function fetchObjectAttributeHTTPInput($http, $base, $objectAttribute)
     {
-        $productData = $this->getProductDataFromInput($http, $base, $objectAttribute);
+        $productId = $this->getProductIdFromInput($http, $base, $objectAttribute);
 
         $objectAttribute->setContent(
-            $this->fieldType->fromHash($productData)
+            $this->fieldType->fromHash($productId)
         );
 
         return true;
     }
 
     /**
-     * Fetches the HTTP input for the content object attribute and builds product data from it.
+     * Fetches the product ID from HTTP input for the content object attribute.
      *
      * @param eZHTTPTool $http
      * @param string $base
      * @param eZContentObjectAttribute $objectAttribute
      *
-     * @return array
+     * @return int
      */
-    protected function getProductDataFromInput($http, $base, $objectAttribute)
+    protected function getProductIdFromInput($http, $base, $objectAttribute)
     {
-        $attributeId = $objectAttribute->attribute('id');
-
-        $productData = array();
-
-        $productData['productId'] = $http->postVariable($base . '_data_product_id_' . $attributeId);
-        $productData['code'] = $http->postVariable($base . '_data_code_' . $attributeId);
-
-        $price = $http->postVariable($base . '_data_price_' . $attributeId);
-        $productData['price'] = is_numeric($price) ? (int)$price : $price;
-
-        $productData['name'] = $http->postVariable($base . '_data_name_' . $attributeId);
-
-        $description = $http->postVariable($base . '_data_description_' . $attributeId);
-        if ($description !== null) {
-            $productData['description'] = $description;
-        }
-
-        return $productData;
-    }
-
-    /**
-     * Stores additional data on publish and creates Sylius product.
-     *
-     * Might be transaction unsafe.
-     *
-     * @param eZContentObjectAttribute $objectAttribute
-     * @param eZContentObject $object
-     * @param eZContentObjectTreeNode[] $publishedNodes
-     *
-     * @return true If the value was stored correctly
-     */
-    public function onPublish($objectAttribute, $object, $publishedNodes)
-    {
-        /** @var \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value $value */
-        $value = $objectAttribute->content();
-
-        $objectAttribute->setAttribute('data_text', null);
-        $objectAttribute->storeData();
-
-        return $this->storage->storeFieldData($objectAttribute, $value);
+        return (int) $http->postVariable($base . '_data_product_id_' . $objectAttribute->attribute('id'));
     }
 
     /**

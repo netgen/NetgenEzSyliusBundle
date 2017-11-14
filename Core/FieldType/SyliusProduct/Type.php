@@ -2,10 +2,8 @@
 
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
-use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
 use eZ\Publish\Core\FieldType\FieldType;
-use eZ\Publish\Core\FieldType\ValidationError;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
@@ -62,56 +60,6 @@ class Type extends FieldType
     }
 
     /**
-     * Validates a field based on the validator configuration in the field definition.
-     *
-     *
-     * @param \eZ\Publish\API\Repository\Values\ContentType\FieldDefinition $fieldDef The field definition of the field
-     * @param \Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\Value|\eZ\Publish\SPI\FieldType\Value $value The field value for which an action is performed
-     *
-     * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException
-     *
-     * @return \eZ\Publish\SPI\FieldType\ValidationError[]
-     */
-    public function validate(FieldDefinition $fieldDef, SPIValue $value)
-    {
-        $validationErrors = array();
-
-        if (!is_array($value->productData)) {
-            return $validationErrors;
-        }
-
-        if (empty($value->productData['code']) && empty($value->productData['price'])) {
-            if ($fieldDef->isRequired) {
-                $validationErrors[] = new ValidationError('Product code and price must be specified');
-            }
-
-            return $validationErrors;
-        }
-
-        if (empty($value->productData['code'])) {
-            $validationErrors[] = new ValidationError('Product code cannot be empty');
-        }
-
-        if ($this->productCodeExists($value->productData['code'], $value->product)) {
-            $validationErrors[] = new ValidationError('Product with specified code already exists');
-        }
-
-        if (empty($value->productData['price'])) {
-            $validationErrors[] = new ValidationError('Product price cannot be empty');
-        }
-
-        if ($value->productData['price'] < 0) {
-            $validationErrors[] = new ValidationError('Product price cannot be negative');
-        }
-
-        if (empty($value->productData['name'])) {
-            $validationErrors[] = new ValidationError('Product name cannot be empty');
-        }
-
-        return $validationErrors;
-    }
-
-    /**
      * Converts an $hash to the Value defined by the field type.
      *
      * @param mixed $hash
@@ -120,7 +68,7 @@ class Type extends FieldType
      */
     public function fromHash($hash)
     {
-        if (!is_array($hash)) {
+        if (!is_int($hash)) {
             return $this->getEmptyValue();
         }
 
@@ -137,16 +85,10 @@ class Type extends FieldType
     public function toHash(SPIValue $value)
     {
         if (!$value->product instanceof ProductInterface) {
-            return array();
+            return null;
         }
 
-        return array(
-            'productId' => $value->product->getId(),
-            'code' => $value->product->getCode(),
-            'price' => $value->product->getPrice(),
-            'name' => $value->product->getName(),
-            'description' => $value->product->getDescription(),
-        );
+        return $value->product->getId();
     }
 
     /**
@@ -160,7 +102,7 @@ class Type extends FieldType
     {
         return new FieldValue(
             array(
-                'data' => $value->productData,
+                'data' => null,
                 'externalData' => $value->product,
                 'sortKey' => false,
             )
@@ -178,7 +120,7 @@ class Type extends FieldType
      */
     public function fromPersistenceValue(FieldValue $fieldValue)
     {
-        return new Value($fieldValue->externalData, $fieldValue->data);
+        return new Value($fieldValue->externalData);
     }
 
     /**
@@ -212,27 +154,13 @@ class Type extends FieldType
      */
     protected function createValueFromInput($inputValue)
     {
-        if (is_array($inputValue)) {
-            $product = null;
-
-            if (!empty($inputValue['productId'])) {
-                $product = $this->productRepository->find($inputValue['productId']);
-
-                if (!$product instanceof ProductInterface) {
-                    unset($inputValue['productId']);
-                }
-            }
-
-            return new Value($product, $inputValue);
+        if (!is_int($inputValue)) {
+            return $inputValue;
         }
 
-        if (is_int($inputValue)) {
-            $product = $this->productRepository->find($inputValue);
-
-            return new Value($product);
-        }
-
-        return $inputValue;
+        return new Value(
+            $this->productRepository->find($inputValue)
+        );
     }
 
     /**
@@ -252,72 +180,5 @@ class Type extends FieldType
                 $value->product
             );
         }
-
-        $productData = $value->productData;
-
-        if ($productData !== null && !is_array($productData)) {
-            throw new InvalidArgumentType(
-                '$value->productData',
-                'array',
-                $productData
-            );
-        }
-
-        if (!is_array($productData)) {
-            return;
-        }
-
-        if (!isset($productData['code']) || !is_string($productData['code'])) {
-            throw new InvalidArgumentType(
-                '$value->productData["code"]',
-                'string',
-                isset($productData['code']) ? $productData['code'] : null
-            );
-        }
-
-        if (!isset($productData['price']) || !is_int($productData['price'])) {
-            throw new InvalidArgumentType(
-                '$value->productData["price"]',
-                'int',
-                isset($productData['price']) ? $productData['price'] : null
-            );
-        }
-
-        if (!isset($productData['name']) || !is_string($productData['name'])) {
-            throw new InvalidArgumentType(
-                '$value->productData["name"]',
-                'string',
-                isset($productData['name']) ? $productData['name'] : null
-            );
-        }
-
-        if (isset($productData['description']) && !is_string($productData['description'])) {
-            throw new InvalidArgumentType(
-                '$value->productData["description"]',
-                'string',
-                isset($productData['description']) ? $productData['description'] : null
-            );
-        }
-    }
-
-    protected function productCodeExists($code, ProductInterface $product = null)
-    {
-        $productByCode = $this->productRepository->findOneBy(
-            array(
-                'code' => $code,
-            )
-        );
-
-        if (!$productByCode instanceof ProductInterface) {
-            return false;
-        }
-
-        if ($product instanceof ProductInterface) {
-            if ($productByCode->getId() === $product->getId()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
