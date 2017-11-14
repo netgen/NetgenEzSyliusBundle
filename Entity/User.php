@@ -3,8 +3,8 @@
 namespace Netgen\Bundle\EzSyliusBundle\Entity;
 
 use eZ\Publish\API\Repository\Values\User\User as APIUser;
-use eZ\Publish\Core\Repository\Values\User\UserReference;
 use eZ\Publish\API\Repository\Values\User\UserReference as APIUserReference;
+use eZ\Publish\Core\Repository\Values\User\UserReference;
 use LogicException;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 

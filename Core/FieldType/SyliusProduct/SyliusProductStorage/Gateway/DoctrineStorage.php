@@ -22,7 +22,7 @@ class DoctrineStorage extends Gateway
      */
     public function __construct(Connection $connection)
     {
-          $this->connection = $connection;
+        $this->connection = $connection;
     }
 
     /**

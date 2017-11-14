@@ -3,9 +3,9 @@
 namespace Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct;
 
 use Doctrine\ORM\EntityManagerInterface;
+use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 use eZ\Publish\SPI\FieldType\GatewayBasedStorage;
 use eZ\Publish\SPI\FieldType\StorageGateway;
-use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Sylius\Component\Core\Model\ProductInterface;
