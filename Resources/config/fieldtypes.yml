@@ -18,10 +18,13 @@ services:
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: syliusproduct}
 
-    netgen_ez_sylius.field_type.syliusproduct.storage_gateway:
-        class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\LegacyStorage
+    netgen_ez_sylius.field_type.syliusproduct.storage_gateway.doctrine:
+        class: Netgen\Bundle\EzSyliusBundle\Core\FieldType\SyliusProduct\SyliusProductStorage\Gateway\DoctrineStorage
         arguments:
-            - "@ezpublish.api.storage_engine.legacy.dbhandler"
+            - "@ezpublish.api.storage_engine.legacy.connection"
+
+    netgen_ez_sylius.field_type.syliusproduct.storage_gateway:
+        alias: netgen_ez_sylius.field_type.syliusproduct.storage_gateway.doctrine
 
     netgen_ez_sylius.field_type.syliusproduct.converter:
         class: Netgen\Bundle\EzSyliusBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\SyliusProductConverter
