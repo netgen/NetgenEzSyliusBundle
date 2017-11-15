@@ -147,6 +147,10 @@ EOT
      */
     protected function loadSyliusUser($userType, $email)
     {
+        if (empty($email)) {
+            return null;
+        }
+
         /** @var \Sylius\Component\User\Repository\UserRepositoryInterface $userRepository */
         $userRepository = $this->getContainer()->get(
             sprintf('sylius.repository.%s_user', $userType)
