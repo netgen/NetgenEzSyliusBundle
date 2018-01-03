@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "ezsystems/ezpublish-kernel": "^6.11",
+        "ezsystems/ezpublish-kernel": "^6.11|^7.0",
         "sylius/sylius": "^1.0"
     },
     "conflict": {
