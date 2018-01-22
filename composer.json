@@ -1,7 +1,7 @@
 {
     "name": "netgen/ez-sylius-bundle",
     "description": "eZ Platform & Sylius eCommerce integration bundle",
-    "license": "GPL-2.0",
+    "license": "GPL-2.0-only",
     "authors": [
         {
             "name": "Netgen",
