@@ -1,5 +1,5 @@
 Netgen\Bundle\EzSyliusBundle\Entity\SyliusProduct:
-    type: entity
+    type: mappedSuperclass
     table: ngsyliusproduct
     id:
         contentId:
