@@ -1,11 +1,15 @@
 Netgen\Bundle\EzSyliusBundle\Entity\SyliusProduct:
-    type: mappedSuperclass
+    type: entity
     table: ngsyliusproduct
     id:
         contentId:
             type: integer
             column: contentobject_id
             id: true
+        version:
+            type: integer
+            nullable: false
+            default: 1
     fields:
         productId:
             type: integer

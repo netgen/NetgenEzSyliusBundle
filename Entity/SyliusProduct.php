@@ -12,6 +12,11 @@ class SyliusProduct
     /**
      * @var int
      */
+    protected $version;
+
+    /**
+     * @var int
+     */
     protected $productId;
 
     /**
@@ -19,11 +24,13 @@ class SyliusProduct
      *
      * @param int $contentId
      * @param int $productId
+     * @param int $version
      */
-    public function __construct($contentId, $productId)
+    public function __construct($contentId, $productId, $version)
     {
         $this->contentId = $contentId;
         $this->productId = $productId;
+        $this->version = $version;
     }
 
     /**
@@ -44,5 +51,13 @@ class SyliusProduct
     public function getProductId()
     {
         return $this->productId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 }
